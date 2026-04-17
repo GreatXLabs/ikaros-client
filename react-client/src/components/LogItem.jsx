@@ -6,8 +6,8 @@ export function LogItem({ log }) {
     return (
         <div className="log-item">
             <div className="main-info">
+                <p className='overline'>{log.rol}</p>
                 <p className='title'>{log.title}</p>
-                <p>{log.message}</p>
                 <p className='actor'>{log.actor}</p>
             </div>
 

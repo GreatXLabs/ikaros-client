@@ -1,0 +1,86 @@
+.mision-item,
+.mision-list-header {
+  display: grid;
+  grid-template-columns: 64px 1fr 172px 172px 100px;
+  align-items: center;
+  gap: 0;
+  padding: 0 12px;
+}
+
+.mision-list-header {
+  height: 32px;
+  color: var(--color-text-tertiary, #888);
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  border-bottom: 0.5px solid var(--color-border-tertiary, rgba(0,0,0,0.1));
+  margin-bottom: 4px;
+}
+
+.mision-item {
+  height: 36px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--color-text-primary, #111);
+  background: var(--color-background-secondary, rgba(0,0,0,0.03));
+  transition: background 0.1s;
+  cursor: pointer;
+}
+
+.mision-item:hover {
+  background: var(--color-background-tertiary, rgba(0,0,0,0.07));
+}
+
+.mision-cell {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
+.cell-id {
+
+  font-size: 12px;
+}
+
+.cell-nombre {
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cell-fecha {
+  font-size: 12px;
+
+}
+
+.cell-estado {
+  display: flex;
+  align-items: center;
+}
+
+.mision-delta {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.mision-status {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-active { background: var(--color-background-success); color: var(--color-text-success); }
+.status-pending { background: var(--color-background-warning); color: var(--color-text-warning); }
+.status-done { background: var(--color-background-secondary); color: var(--color-text-tertiary); }
+.status-overdue { background: var(--color-background-danger); color: var(--color-text-danger); }
