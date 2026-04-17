@@ -1,0 +1,62 @@
+.log-item{
+    width: 100%;
+    padding: 10px 20px 10px 10px;
+    
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: none;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 5px;
+    box-sizing: border-box;
+
+    border: 1px solid transparent; /* ← borde siempre presente, invisible */
+    transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out; /* ← transición suave para fondo, borde y sombra */
+}
+
+.log-item p{
+    font-weight: 200 ;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.log-item .overline{
+    color:  rgba(255, 255, 255, 0.6);
+    font-weight: 200 ;
+    font-size: 11px;
+}
+
+.log-item .title{
+    font-weight: 300 ;
+    font-size: 14px;
+}
+
+.log-item .actor{
+    font-weight: 200 ;
+    font-size: 11px;
+}
+
+
+
+.main-info{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.log-item:hover{
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+}
+
+
+.log-item:active{
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow:     0 0 10px rgba(255, 255, 255, 0.3);
+}

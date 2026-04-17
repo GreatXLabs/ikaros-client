@@ -1,0 +1,47 @@
+header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%; /* El padding del padre debería respetarse con box-sizing */
+    max-width: 100%;
+    
+    
+    box-sizing: border-box;
+    padding: 20px 30px; /* Un padding más equilibrado */
+    
+    gap: 20px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.329); 
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    backdrop-filter: blur(4px); 
+    -webkit-backdrop-filter: blur(4px);
+    
+    position: relative;
+    z-index: 10;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+}
+
+#logout {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out !important;
+    
+}
+
+
+#logout:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.9);   
+}
+
+#logout:active {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 1);   
+}
