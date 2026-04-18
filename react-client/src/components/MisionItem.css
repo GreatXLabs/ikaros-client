@@ -1,7 +1,7 @@
 .mision-item,
 .mision-list-header {
   display: grid;
-  grid-template-columns: 64px 1fr 172px 172px 100px;
+  grid-template-columns: 64px 1fr 250px 250px 150px;
   align-items: center;
   gap: 0;
   padding: 0 12px;
@@ -54,22 +54,31 @@
 
 }
 
-.cell-estado {
-  display: flex;
-  align-items: center;
-}
-
 .mision-delta {
   display: inline-block;
   font-size: 11px;
   padding: 1px 6px;
   border-radius: 3px;
-  background: rgba(76, 175, 80, 0.15);
-  color: #4caf50;
   font-weight: 500;
   flex-shrink: 0;
   margin-left: 6px;
 }
+
+.delta-adelanto {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+}
+
+.delta-retardo {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+
+.cell-estado {
+  display: flex;
+  align-items: center;
+}
+
 
 .mision-status {
   display: inline-block;

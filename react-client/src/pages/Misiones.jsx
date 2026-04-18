@@ -63,10 +63,11 @@ const misionesData = [
 ]
 
 const estados = [
-  { id: 1, nombre: 'Pendiente' },
-  { id: 2, nombre: 'En curso' },
-  { id: 3, nombre: 'Completada' },
-  { id: 4, nombre: 'Cancelada' }
+  { id: 1, nombre: 'Planificada' },
+  { id: 2, nombre: 'Preparada' },
+  { id: 3, nombre: 'En curso' },
+  { id: 4, nombre: 'Finalizada' },
+  { id: 5, nombre: 'Cancelada' }
 ]
 
 export function Misiones() {

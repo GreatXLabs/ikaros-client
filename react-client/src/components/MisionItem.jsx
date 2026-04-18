@@ -21,7 +21,24 @@ function formatFecha(isoString) {
 
 function parseDelta(delta) {
   if (!delta || delta === '00:00:00' || delta === '+00:00:00' || delta === '-00:00:00') return null
-  return delta
+
+  // Convertir el string a segundos totales para comparar con 0
+  // El formato es "+HH:MM:SS" o "-HH:MM:SS"
+  const signChar = delta.startsWith('-') ? -1 : 1
+  const timePart = delta.replace(/^[+-]/, '') // Quitamos el signo para parsear el tiempo
+  const [hours, minutes, seconds] = timePart.split(':').map(Number)
+  const totalSeconds = (hours * 3600) + (minutes * 60) + seconds
+  const signedSeconds = signChar * totalSeconds
+
+  // Determinar si es adelanto o retardo basado en el valor numérico
+  const isAdvantage = signedSeconds < 0 // Adelanto (negativo)
+  const isDelay = signedSeconds > 0     // Retardo (positivo)
+
+  return {
+    value: delta, // Mostramos el string original con signo (+HH:MM:SS o -HH:MM:SS)
+    isAdvantage,
+    isDelay
+  }
 }
 
 export function MisionItem({ mision }) {
@@ -41,17 +58,17 @@ export function MisionItem({ mision }) {
 
   return (
     <Link to={`/misiones/${misionId}`} className="mision-item">
-      <span className="mision-cell cell-id">M{String(misionId).slice(-2)}</span>
+      <span className="mision-cell cell-id">{misionId}</span>
       <span className="mision-cell cell-nombre">
         {nombre}
       </span>
       <span className="mision-cell cell-fecha">
         {formatFecha(fechaInicioEstimada)}
-        {deltaInicio && <span className="mision-delta">{deltaInicio}</span>}
+        {deltaInicio && <span className={`mision-delta ${deltaInicio.isDelay ? 'delta-retardo' : 'delta-adelanto'}`}>{deltaInicio.value}</span>}
       </span>
       <span className="mision-cell cell-fecha">
         {formatFecha(fechaFinEstimada)}
-        {deltaFin && <span className="mision-delta">{deltaFin}</span>}
+        {deltaFin && <span className={`mision-delta ${deltaFin.isDelay ? 'delta-retardo' : 'delta-adelanto'}`}>{deltaFin.value}</span>}
       </span>
       <span className="mision-cell cell-estado">
         <span className={`mision-status status-${estadoKey}`}>{estadoNombre}</span>
