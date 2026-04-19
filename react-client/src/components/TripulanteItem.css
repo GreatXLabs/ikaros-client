@@ -1,0 +1,86 @@
+.tripulante-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background-color: rgba(29, 29, 29, 0.205);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  gap: 8px;
+  height: fit-content;
+
+  border: var(--IkBorder);
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.tripulante-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.tripulante-img-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.tripulante-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.estado-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.estado-indicator.activo {
+  background-color: #4ade80;
+}
+
+.estado-indicator.inactivo {
+  background-color: #facc15;
+}
+
+.estado-indicator.retirado {
+  background-color: #f87171;
+}
+
+.tripulante-item .Nombre {
+  font-weight: 600 !important;
+  font-size: 16px;
+  text-align: center;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.tripulante-item .info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+
+.info span{
+  padding:5px 10px;
+  background-color: rgba(0, 0, 0, 0.562);
+  border-radius: 1000px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
