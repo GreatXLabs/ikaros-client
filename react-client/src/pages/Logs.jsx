@@ -3,6 +3,7 @@ import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { Logo } from "../components/Logo"
 import { LogItem } from '../components/LogItem'
+import { DateRangeFilter } from '../components/DateRangeFilter'
 import './Logs.css'
 
 // Datos de ejemplo para los logs
@@ -37,7 +38,7 @@ const logsData = [
     title: 'Usuario cerró sesión',
     message: 'El usuario María García ha cerrado sesión',
     actor: 'María García',
-    timestamp: '2026-04-17 09:30:00'
+    timestamp: '2026-04-16 09:30:00'
   },
   {
     id: 5,
@@ -45,7 +46,7 @@ const logsData = [
     title: 'Backup completado',
     message: 'Backup automático completado: backup_20260417.sql (150 MB)',
     actor: 'Sistema',
-    timestamp: '2026-04-17 08:00:00'
+    timestamp: '2026-04-16 08:00:00'
   },
   {
     id: 6,
@@ -53,7 +54,7 @@ const logsData = [
     title: 'Reporte generado',
     message: 'Se generó el reporte financiero mensual de abril',
     actor: 'Carlos López',
-    timestamp: '2026-04-17 07:45:00'
+    timestamp: '2026-04-15 07:45:00'
   },
   {
     id: 7,
@@ -61,7 +62,7 @@ const logsData = [
     title: 'Nueva baja de empleado',
     message: 'Empleado registrado como dado de baja en sistema',
     actor: 'Ana Martínez',
-    timestamp: '2026-04-17 07:30:00'
+    timestamp: '2026-04-15 07:30:00'
   }
 ]
 
@@ -71,6 +72,13 @@ const roles = ['Asignador', 'Coordinador', 'Registrador', 'RRHH']
 export function Logs() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRol, setSelectedRol] = useState('')
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: null,
+      endDate: null,
+      key: 'selection'
+    }
+  ])
 
   const filteredLogs = logsData.filter(log => {
     const matchesSearch =
@@ -81,7 +89,13 @@ export function Logs() {
 
     const matchesRol = selectedRol === '' || log.rol === selectedRol
 
-    return matchesSearch && matchesRol
+    const logDate = new Date(log.timestamp)
+    logDate.setHours(0, 0, 0, 0)
+    const matchesDateRange =
+      (!dateRange[0].startDate || logDate >= dateRange[0].startDate) &&
+      (!dateRange[0].endDate || logDate <= dateRange[0].endDate)
+
+    return matchesSearch && matchesRol && matchesDateRange
   })
 
   return (
@@ -111,6 +125,11 @@ export function Logs() {
                   <option key={rol} value={rol}>{rol}</option>
                 ))}
               </select>
+
+              <DateRangeFilter
+                dateRange={dateRange}
+                onDateChange={setDateRange}
+              />
             </div>
           </div>
           <div className="logs-list">

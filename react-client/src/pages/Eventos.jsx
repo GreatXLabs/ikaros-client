@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { EventItem } from '../components/EventItem'
+import { AddEventForm } from '../components/AddEventForm'
 import './Eventos.css'
 
 // Datos de ejemplo para los eventos
@@ -64,9 +65,20 @@ const eventosData = [
   }
 ]
 
+const misionesList = [
+  { id: 1, nombre: 'Apolo XI' },
+  { id: 2, nombre: 'Artemis II' },
+  { id: 3, nombre: 'Marte One' },
+  { id: 4, nombre: 'ISS Maintenance' }
+]
+
+// Lista de opciones para el filtro de roles
+const roles = ['Asignador', 'Coordinador', 'Registrador', 'RRHH']
+
 export function Eventos() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMision, setSelectedMision] = useState('')
+  const [showAddEvent, setShowAddEvent] = useState(false)
 
   // Obtener lista única de misiones para el filtro
   const misiones = [...new Set(eventosData.map(event => event.misionNombre))]
@@ -81,6 +93,10 @@ export function Eventos() {
 
     return matchesSearch && matchesMision
   })
+
+  const handleAddEvent = (evento) => {
+    console.log('Nuevo evento:', evento)
+  }
 
   return (
     <>
@@ -109,6 +125,9 @@ export function Eventos() {
                   <option key={mision} value={mision}>{mision}</option>
                 ))}
               </select>
+              <button className="add-event-btn" onClick={() => setShowAddEvent(true)}>
+                + Evento
+              </button>
             </div>
           </div>
           <div className="eventos-list">
@@ -118,6 +137,14 @@ export function Eventos() {
           </div>
         </div>
       </div>
+
+      {showAddEvent && (
+        <AddEventForm
+          misiones={misionesList}
+          onClose={() => setShowAddEvent(false)}
+          onSubmit={handleAddEvent}
+        />
+      )}
     </>
   )
 }

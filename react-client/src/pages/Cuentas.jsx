@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { CuentaItem } from '../components/CuentaItem'
+import { EllipsisMenu } from '../components/EllipsisMenu'
 import './Cuentas.css'
 
 const cuentasData = [
@@ -79,8 +81,11 @@ const roles = [
 ]
 
 export function Cuentas() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRol, setSelectedRol] = useState('')
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [cuentaToDelete, setCuentaToDelete] = useState(null)
 
   const filteredCuentas = cuentasData.filter(cuenta => {
     const matchesSearch =
@@ -93,6 +98,24 @@ export function Cuentas() {
 
     return matchesSearch && matchesRol
   })
+
+  const ellipsisItems = [
+    {
+      label: 'Crear cuenta',
+      onClick: () => navigate('/Cuentas/Nueva')
+    }
+  ]
+
+  const handleDeleteCuenta = (usuarioId) => {
+    setCuentaToDelete(usuarioId)
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDelete = () => {
+    console.log('Eliminar cuenta:', cuentaToDelete)
+    setShowDeleteConfirm(false)
+    setCuentaToDelete(null)
+  }
 
   return (
     <>
@@ -121,6 +144,8 @@ export function Cuentas() {
                   <option key={rol.id} value={rol.nombre}>{rol.nombre}</option>
                 ))}
               </select>
+
+              <EllipsisMenu items={ellipsisItems} />
             </div>
           </div>
 
@@ -135,6 +160,7 @@ export function Cuentas() {
               <CuentaItem
                 key={cuenta.UsuarioID}
                 cuenta={cuenta}
+                onDelete={handleDeleteCuenta}
               />
             ))}
           </div>
@@ -146,6 +172,24 @@ export function Cuentas() {
           )}
         </div>
       </div>
+
+      {/* Modal de confirmación para eliminar */}
+      {showDeleteConfirm && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2>¿Eliminar cuenta?</h2>
+            <p>Esta acción no puede ser revertida. Se eliminará permanentemente la cuenta y todos sus datos asociados.</p>
+            <div className="modal-buttons">
+              <button className="modal-cancel-btn" onClick={() => setShowDeleteConfirm(false)}>
+                Cancelar
+              </button>
+              <button className="modal-delete-btn" onClick={confirmDelete}>
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }

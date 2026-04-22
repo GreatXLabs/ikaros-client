@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import './TripulanteItem.css'
 
 const estadosColores = {
@@ -7,10 +8,15 @@ const estadosColores = {
 }
 
 export function TripulanteItem({ tripulante }) {
+  const navigate = useNavigate()
   const estadoClass = estadosColores[tripulante.EstadoTID] || 'inactivo'
 
+  const handleClick = () => {
+    navigate(`/Tripulantes/${tripulante.TripulanteID}`)
+  }
+
   return (
-    <div className="tripulante-item">
+    <div className="tripulante-item" onClick={handleClick}>
       <div className="tripulante-img-wrapper">
         <img
           src={tripulante.img || 'https://via.placeholder.com/150'}
@@ -24,7 +30,6 @@ export function TripulanteItem({ tripulante }) {
         <span>{tripulante.Sexo}</span>
         <span>{tripulante.Altura}m</span>
         <span>{tripulante.Peso}kg</span>
-        
       </div>
     </div>
   )

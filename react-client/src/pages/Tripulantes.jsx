@@ -1,6 +1,8 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
+import { EllipsisMenu } from '../components/EllipsisMenu'
 import './Tripulantes.css'
 import { TripulanteItem } from '../components/TripulanteItem'
 
@@ -89,6 +91,7 @@ const sexos = [
 ]
 
 export function Tripulantes() {
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedEstado, setSelectedEstado] = useState('')
   const [selectedSexo, setSelectedSexo] = useState('')
@@ -103,6 +106,13 @@ export function Tripulantes() {
 
     return matchesSearch && matchesEstado && matchesSexo
   })
+
+  const ellipsisItems = [
+    {
+      label: 'Crear tripulante',
+      onClick: () => navigate('/Tripulantes/Nuevo')
+    }
+  ]
 
   return (
     <>
@@ -141,6 +151,8 @@ export function Tripulantes() {
                   <option key={sexo.id} value={sexo.id}>{sexo.nombre}</option>
                 ))}
               </select>
+
+              <EllipsisMenu items={ellipsisItems} />
             </div>
           </div>
           <div className="tripulantes-container">
