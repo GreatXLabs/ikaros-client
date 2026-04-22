@@ -1,0 +1,70 @@
+.ellipsis-menu-wrapper {
+  position: relative;
+}
+
+.ellipsis-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: var(--IkBorder);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.ellipsis-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.ellipsis-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 160px;
+  background-color: rgba(29, 29, 29, 0.98);
+  border: var(--IkBorder);
+  border-radius: 10px;
+  padding: 8px 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.ellipsis-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  text-align: left;
+}
+
+.ellipsis-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ellipsis-item.danger {
+  color: #f87171;
+}
+
+.ellipsis-item.danger:hover {
+  background-color: rgba(248, 113, 113, 0.1);
+}
+
+.ellipsis-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+}
