@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap');
 
 *{
   font-family: "Roboto Mono", monospace;
@@ -10,9 +11,8 @@
 }
 
 #root{
-
-  --BG: rgba(0, 0, 0, 0.7); 
-  --IkBorder: 1px solid rgba(255, 255, 255, 0.2); 
+  --BG: rgba(0, 0, 0, 0.7);
+  --IkBorder: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 
@@ -34,65 +34,79 @@ body{
   gap: 20px;
 }
 
+.top-line {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.top-line .action-buttons{
+  display: flex;
+  gap: 10px;
+}
 
 .main-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
-    padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding: 30px;
 
-    flex: 1 1 0;   /* ← reemplaza height: 100% */
-    min-height: 0; /* ← permite que flex respete el límite del padre */
-    width: 100%;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
 
-    background-color: var(--BG);
-    border: var(--IkBorder);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 10px;
+  background-color: var(--BG);
+  border: var(--IkBorder);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+
+  overflow-y: auto;
 }
 
 /* Estilos específicos para los Input de Chakra */
 input {
-    margin: 0 !important;
-    background: linear-gradient(30deg, #1b1b1b 0%,  rgba(142, 142, 142, 0.267) 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #f2f2f2;
- 
+  margin: 0 !important;
+  background: linear-gradient(30deg, #1b1b1b 0%, rgba(142, 142, 142, 0.267) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #f2f2f2;
+
 }
 
 
 input:hover {
-    border-color: rgba(255, 255, 255, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }
 
 /* Custom Scrollbar - Dark theme matching project palette */
 * {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.4);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.4);
 }
 
 /* Webkit browsers (Chrome, Edge, Safari) */
 *::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 *::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 4px;
 }
 
 *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 *::-webkit-scrollbar-corner {
-    background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.4);
 }
