@@ -1,0 +1,141 @@
+.add-event-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-event-form {
+  background-color: rgba(29, 29, 29, 0.98);
+  border: var(--IkBorder);
+  border-radius: 12px;
+  padding: 24px;
+  width: 400px;
+  max-width: 90%;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.add-event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.add-event-header h3 {
+  font-family: "Funnel Display", sans-serif;
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.add-event-close {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.add-event-close:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.add-event-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.add-event-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.add-event-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.add-event-select {
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  color-scheme: dark;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.add-event-select:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.add-event-select option {
+  background-color: #1b1b1b;
+  color: #fff;
+}
+
+.add-event-input {
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  transition: border-color 0.2s ease;
+}
+
+.add-event-input:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.add-event-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.add-event-textarea {
+  padding: 10px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  resize: vertical;
+  min-height: 60px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.add-event-textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.add-event-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.add-event-hint {
+  text-align: right;
+}
+
+.add-event-hint span {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
