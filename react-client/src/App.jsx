@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Login } from './pages/Login'
 import { Logs } from './pages/Logs'
 import { Misiones } from './pages/Misiones'
@@ -14,31 +14,43 @@ import { EditarTripulante } from './pages/EditarTripulante'
 import { NuevaCuenta } from './pages/NuevaCuenta'
 import { EditarCuenta } from './pages/EditarCuenta'
 import { ChakraProvider } from '@chakra-ui/react'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+
+function RequireAuth({ children }) {
+	const { user } = useAuth()
+	const location = useLocation()
+
+	if (!user) {
+		return <Navigate to="/" state={{ from: location }} replace />
+	}
+	return children
+}
 
 function App() {
-  return (
-    <ChakraProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/Logs" element={<Logs />} />
-          <Route path="/Misiones" element={<Misiones />} />
-          <Route path="/Misiones/Nueva" element={<NuevaMision />} />
-          <Route path="/Misiones/:id/Editar" element={<EditarMision />} />
-          <Route path="/Misiones/:id" element={<MisionView />} />
-          <Route path="/Eventos" element={<Eventos />} />
-          <Route path="/Tripulantes" element={<Tripulantes />} />
-          <Route path="/Tripulantes/Nuevo" element={<NuevoTripulante />} />
-          <Route path="/Tripulantes/:id/Editar" element={<EditarTripulante />} />
-          <Route path="/Tripulantes/:id" element={<TripulanteView />} />
-          <Route path="/Cuentas" element={<Cuentas />} />
-          <Route path="/Cuentas/Nueva" element={<NuevaCuenta />} />
-          <Route path="/Cuentas/:id/Editar" element={<EditarCuenta />} />
-          <Route path="/TripulanteView" element={<TripulanteView />} />
-        </Routes>
-      </Router>
-    </ChakraProvider>
-  )
+	return (
+		<ChakraProvider>
+			<Router>
+				<AuthProvider>
+					<Routes>
+						<Route path="/" element={<Login />} />
+						<Route path="/Logs" element={<RequireAuth><Logs /></RequireAuth>} />
+						<Route path="/Misiones" element={<RequireAuth><Misiones /></RequireAuth>} />
+						<Route path="/Misiones/Nueva" element={<RequireAuth><NuevaMision /></RequireAuth>} />
+						<Route path="/Misiones/:id/Editar" element={<RequireAuth><EditarMision /></RequireAuth>} />
+						<Route path="/Misiones/:id" element={<RequireAuth><MisionView /></RequireAuth>} />
+						<Route path="/Eventos" element={<RequireAuth><Eventos /></RequireAuth>} />
+						<Route path="/Tripulantes" element={<RequireAuth><Tripulantes /></RequireAuth>} />
+						<Route path="/Tripulantes/Nuevo" element={<RequireAuth><NuevoTripulante /></RequireAuth>} />
+						<Route path="/Tripulantes/:id/Editar" element={<RequireAuth><EditarTripulante /></RequireAuth>} />
+						<Route path="/Tripulantes/:id" element={<RequireAuth><TripulanteView /></RequireAuth>} />
+						<Route path="/Cuentas" element={<RequireAuth><Cuentas /></RequireAuth>} />
+						<Route path="/Cuentas/Nueva" element={<RequireAuth><NuevaCuenta /></RequireAuth>} />
+						<Route path="/Cuentas/:id/Editar" element={<RequireAuth><EditarCuenta /></RequireAuth>} />
+					</Routes>
+				</AuthProvider>
+			</Router>
+		</ChakraProvider>
+	)
 }
 
 export default App
