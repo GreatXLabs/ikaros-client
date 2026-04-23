@@ -17,7 +17,11 @@ export function Cuentas() {
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 	const [cuentaToDelete, setCuentaToDelete] = useState(null)
 
-	const filteredCuentas = cuentasData.filter(cuenta => {
+	const visibleCuentas = user?.RolNombre === 'Jefe'
+		? cuentasData
+		: cuentasData.filter(c => c.RolID !== 1)
+
+	const filteredCuentas = visibleCuentas.filter(cuenta => {
 		const matchesSearch =
 			cuenta.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			cuenta.Apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||

@@ -3,8 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Logo } from "../components/Logo"
 import { useAuth } from '../contexts/AuthContext'
+import { cuentasData } from '../data/cuentasData'
 import './Login.css'
 import { Input } from '@chakra-ui/react'
+
+const DEFAULT_ROUTES = {
+	Jefe: '/Logs',
+	Coordinador: '/Misiones',
+	Asignador: '/Tripulantes',
+	Registrador: '/Eventos',
+	RRHH: '/Cuentas',
+}
 
 export function Login() {
 	const navigate = useNavigate()
@@ -14,7 +23,8 @@ export function Login() {
 	const [error, setError] = useState('')
 
 	if (user) {
-		navigate('/Misiones', { replace: true })
+		const home = DEFAULT_ROUTES[user.RolNombre] || '/Misiones'
+		navigate(home, { replace: true })
 	}
 
 	const handleSubmit = (e) => {
@@ -22,7 +32,9 @@ export function Login() {
 		setError('')
 		const success = login(username, password)
 		if (success) {
-			navigate('/Misiones')
+			const found = cuentasData.find(c => c.Usuario === username)
+			const home = DEFAULT_ROUTES[found?.RolNombre] || '/Misiones'
+			navigate(home)
 		} else {
 			setError('Usuario o contraseña incorrectos')
 			setPassword('')

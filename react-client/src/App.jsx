@@ -16,13 +16,37 @@ import { EditarCuenta } from './pages/EditarCuenta'
 import { ChakraProvider } from '@chakra-ui/react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 
+const ROUTE_PERMISSIONS = {
+	'/Logs': 'logs:view',
+	'/Misiones': 'misiones:view',
+	'/Eventos': 'eventos:view',
+	'/Tripulantes': 'tripulantes:view',
+	'/Cuentas': 'cuentas:view',
+}
+
+const DEFAULT_ROUTES = {
+	Jefe: '/Logs',
+	Coordinador: '/Misiones',
+	Asignador: '/Tripulantes',
+	Registrador: '/Eventos',
+	RRHH: '/Cuentas',
+}
+
 function RequireAuth({ children }) {
-	const { user } = useAuth()
+	const { user, hasPermission } = useAuth()
 	const location = useLocation()
 
 	if (!user) {
-		return <Navigate to="/" state={{ from: location }} replace />
+		return <Navigate to="/" replace />
 	}
+
+	const basePath = '/' + location.pathname.split('/')[1]
+	const required = ROUTE_PERMISSIONS[basePath]
+	if (required && !hasPermission(required)) {
+		const fallback = DEFAULT_ROUTES[user.RolNombre] || '/'
+		return <Navigate to={fallback} replace />
+	}
+
 	return children
 }
 
