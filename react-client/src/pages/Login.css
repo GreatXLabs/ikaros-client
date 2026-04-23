@@ -60,3 +60,10 @@ form{
 #login-button:active {
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
 }
+
+.login-error {
+	color: #f87171;
+	font-size: 13px;
+	text-align: center;
+	margin-top: 5px;
+}
