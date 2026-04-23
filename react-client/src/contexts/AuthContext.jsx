@@ -8,20 +8,18 @@ const ROLE_PERMISSIONS = {
 	Asignador: [
 		'tripulantes:create', 'tripulantes:delete', 'tripulantes:edit', 'tripulantes:view',
 		'tripulantes:assign-mission',
-		'misiones:view', 'eventos:view', 'logs:view'
+		'misiones:view'
 	],
 	Coordinador: [
 		'misiones:create', 'misiones:delete', 'misiones:edit', 'misiones:view',
-		'misiones:start', 'misiones:end',
-		'eventos:view', 'tripulantes:view', 'logs:view'
+		'misiones:start', 'misiones:end'
 	],
 	Registrador: [
 		'eventos:create', 'eventos:delete', 'eventos:view',
-		'misiones:view', 'tripulantes:view', 'logs:view'
+		'misiones:view'
 	],
 	RRHH: [
-		'cuentas:create', 'cuentas:delete', 'cuentas:edit', 'cuentas:view',
-		'logs:view'
+		'cuentas:create', 'cuentas:delete', 'cuentas:edit', 'cuentas:view'
 	]
 }
 

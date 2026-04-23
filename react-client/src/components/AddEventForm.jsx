@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import './AddEventForm.css'
 
 export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
-  const [misionId, setMisionId] = useState(defaultMisionId || (misiones[0]?.id || ''))
+  const [misionId, setMisionId] = useState(defaultMisionId || '')
   const [titulo, setTitulo] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const tituloRef = useRef(null)
@@ -66,6 +66,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
               onChange={(e) => setMisionId(e.target.value)}
               className="add-event-select"
             >
+<option value="" disabled>Seleccione misión</option>
               {misiones.map(m => (
                 <option key={m.id} value={m.id}>{m.nombre}</option>
               ))}
