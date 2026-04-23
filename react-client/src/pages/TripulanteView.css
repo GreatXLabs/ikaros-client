@@ -1,388 +1,302 @@
 .top-line {
-  width: 100%;
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 10px;
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	margin-bottom: 10px;
 }
 
 .hero {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  padding: 0;
-  margin-bottom: 30px;
-  align-items: center;
-  justify-content: flex-start;
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	padding: 0;
+	margin-bottom: 30px;
+	align-items: center;
+	justify-content: flex-start;
 }
 
 .hero h1 {
-  font-family: "Funnel Display", sans-serif;
-  font-size: 2.5rem;
-  margin: 0;
+	font-family: "Funnel Display", sans-serif;
+	font-size: 2.5rem;
+	margin: 0;
 }
 
 .hero p {
-  width: 70%;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-  margin: 0;
+	width: 70%;
+	color: rgba(255, 255, 255, 0.7);
+	line-height: 1.6;
+	margin: 0;
 }
 
 .tripulante-info {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 40px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 15px;
+	margin-bottom: 40px;
 }
 
 .tripulante-info .id-info,
 .tripulante-info .personal-info {
-  gap: 50px;
-  display: flex;
-  flex-direction: row;
+	gap: 50px;
+	display: flex;
+	flex-direction: row;
 }
 
 .tripulante-info .date-info {
-  display: flex;
-  flex-direction: row;
+	display: flex;
+	flex-direction: row;
 }
 
 .section-title {
-  width: 100%;
-  margin-bottom: 15px;
+	width: 100%;
+	margin-bottom: 15px;
 }
 
 .section-title h2 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
+	font-size: 1.2rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	margin: 0;
 }
 
 .aptitudes-section {
-  width: 100%;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 10px;
-  padding: 15px;
-  margin-bottom: 40px;
-  background-color: rgba(29, 29, 29, 0.205);
-  border: var(--IkBorder);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 10px;
+	padding: 15px;
+	margin-bottom: 40px;
+	background-color: rgba(29, 29, 29, 0.205);
+	border: var(--IkBorder);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	border-radius: 10px;
 }
 
 .aptitude-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  transition: background-color 0.2s ease-in-out;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	padding: 12px 15px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+	transition: background-color 0.2s ease-in-out;
 }
 
 .aptitude-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 .aptitude-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .aptitude-nombre {
-  font-weight: 300;
-  font-size: 13px;
+	font-weight: 300;
+	font-size: 13px;
 }
 
 .aptitude-calificacion {
-  font-weight: 600;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 4px 10px;
-  border-radius: 20px;
+	font-weight: 600;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(255, 255, 255, 0.1);
+	padding: 4px 10px;
+	border-radius: 20px;
 }
 
 .aptitude-fecha {
-  font-weight: 200;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+	font-weight: 200;
+	font-size: 11px;
+	color: rgba(255, 255, 255, 0.5);
 }
 
 .misiones-table-container {
-  width: 100%;
-  margin-bottom: 40px;
+	width: 100%;
+	margin-bottom: 40px;
 }
 
 .misiones-table {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  background-color: rgba(29, 29, 29, 0.205);
-  border: var(--IkBorder);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
-  overflow: hidden;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	background-color: rgba(29, 29, 29, 0.205);
+	border: var(--IkBorder);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	border-radius: 10px;
+	overflow: hidden;
 }
 
 .misiones-table-header {
-  display: grid;
-  grid-template-columns: 80px 2fr 1.5fr 1.5fr 100px;
-  padding: 12px 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	display: grid;
+	grid-template-columns: 80px 2fr 1.5fr 1.5fr 100px;
+	padding: 12px 15px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .misiones-table-header span {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+	font-size: 12px;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.6);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .misiones-table-row {
-  display: grid;
-  grid-template-columns: 80px 2fr 1.5fr 1.5fr 100px;
-  padding: 12px 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: background-color 0.2s ease-in-out;
-  cursor: pointer;
+	display: grid;
+	grid-template-columns: 80px 2fr 1.5fr 1.5fr 100px;
+	padding: 12px 15px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	transition: background-color 0.2s ease-in-out;
+	cursor: pointer;
 }
 
 .misiones-table-row:last-child {
-  border-bottom: none;
+	border-bottom: none;
 }
 
 .misiones-table-row:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+	background-color: rgba(255, 255, 255, 0.05);
 }
 
 .misiones-table-row span {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.8);
 }
 
 .misiones-table-row span:nth-child(2) {
-  font-weight: 500;
+	font-weight: 500;
 }
 
 .estado-badge {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px !important;
-  font-weight: 500 !important;
-  text-align: center;
-  width: fit-content;
+	padding: 4px 10px;
+	border-radius: 20px;
+	font-size: 12px !important;
+	font-weight: 500 !important;
+	text-align: center;
+	width: fit-content;
 }
 
 .estado-badge.pendiente {
-  background-color: rgba(250, 204, 21, 0.2);
-  color: #facc15 !important;
+	background-color: rgba(250, 204, 21, 0.2);
+	color: #facc15 !important;
 }
 
 .estado-badge.en-curso {
-  background-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa !important;
+	background-color: rgba(96, 165, 250, 0.2);
+	color: #60a5fa !important;
 }
 
 .estado-badge.completada {
-  background-color: rgba(74, 222, 128, 0.2);
-  color: #4ade80 !important;
+	background-color: rgba(74, 222, 128, 0.2);
+	color: #4ade80 !important;
 }
 
 .estado-badge.cancelada {
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171 !important;
+	background-color: rgba(248, 113, 113, 0.2);
+	color: #f87171 !important;
 }
 
 .no-data {
-  width: 100%;
-  padding: 20px;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 13px;
-  background-color: rgba(29, 29, 29, 0.205);
-  border: var(--IkBorder);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 10px;
+	width: 100%;
+	padding: 20px;
+	text-align: center;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 13px;
+	background-color: rgba(29, 29, 29, 0.205);
+	border: var(--IkBorder);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	border-radius: 10px;
 }
 
 .hero img {
-  width: 200px;
-  height: 200px;
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  border-radius: 8px;
-  background-color: rgba(255, 255, 255, 0.05);
-  margin-right: 20px;
+	width: 200px;
+	height: 200px;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.05);
+	margin-right: 20px;
 }
 
 .action-buttons {
-  margin-left: auto;
+	margin-left: auto;
 }
 
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background-color: rgba(29, 29, 29, 0.98);
-  border: var(--IkBorder);
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 450px;
-  width: 90%;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.modal-content h2 {
-  font-family: "Funnel Display", sans-serif;
-  font-size: 1.5rem;
-  margin: 0 0 10px 0;
-}
-
+/* Assign mission modal specific styles */
 .modal-content-wide {
-  max-width: 550px;
-}
-
-.modal-content p {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  margin: 0 0 20px 0;
-  line-height: 1.5;
+	max-width: 550px;
 }
 
 .modal-misiones-list {
-  max-height: 250px;
-  overflow-y: auto;
-  margin-bottom: 20px;
+	max-height: 250px;
+	overflow-y: auto;
+	margin-bottom: 20px;
 }
 
 .modal-mision-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 12px 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	align-items: center;
+	gap: 15px;
+	padding: 12px 15px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+	margin-bottom: 8px;
+	cursor: pointer;
+	transition: background-color 0.2s ease-in-out;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.5);
+	min-width: 50px;
 }
 
 .modal-mision-item:last-child {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 .modal-mision-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 .modal-misiones-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  padding: 10px 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 8px;
+	display: grid;
+	grid-template-columns: 2fr 1fr;
+	padding: 10px 15px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	margin-bottom: 8px;
 }
 
 .modal-misiones-header span {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.modal-mision-item {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  align-items: center;
-  gap: 15px;
-  padding: 12px 15px;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
-  min-width: 50px;
+	font-size: 12px;
+	font-weight: 600;
+	color: rgba(255, 255, 255, 0.6);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .modal-mision-nombre {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-}
-
-.modal-cancel-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.modal-cancel-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.modal-delete-btn {
-  padding: 10px 20px;
-  border-radius: 8px;
-  border: none;
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-.modal-delete-btn:hover {
-  background-color: rgba(248, 113, 113, 0.3);
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.9);
 }
 
 .section-title-with-action {
-  width: 100%;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	width: 100%;
+	margin-bottom: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .section-title-with-action h2 {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
+	font-size: 1.2rem;
+	font-weight: 500;
+	color: rgba(255, 255, 255, 0.9);
+	margin: 0;
 }
