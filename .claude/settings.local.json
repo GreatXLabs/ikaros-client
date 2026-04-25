@@ -21,7 +21,9 @@
       "Bash(./gradlew build *)",
       "Bash(java -version)",
       "Read(//usr/lib/jvm/**)",
-      "Bash(apt list *)"
+      "Bash(apt list *)",
+      "Bash(git push *)",
+      "Bash(xxd)"
     ]
   }
 }
