@@ -104,11 +104,19 @@ export async function bajaUsuario(username) {
 }
 
 // --- Eventos ---
+export async function consultarEventos(misionID) {
+  return request(`/eventos?misionID=${misionID}`)
+}
+
 export async function registrarEvento(evento) {
   return request('/eventos', {
     method: 'POST',
     body: JSON.stringify(evento)
   })
+}
+
+export async function bajaEvento(id) {
+  return request(`/eventos/${id}`, { method: 'DELETE' })
 }
 
 // --- Logs ---

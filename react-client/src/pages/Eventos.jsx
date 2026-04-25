@@ -5,7 +5,7 @@ import { EventItem } from '../components/EventItem'
 import { AddEventForm } from '../components/AddEventForm'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
-import { registrarEvento, listarMisiones } from '../services/ikarosApi'
+import { registrarEvento, bajaEvento, listarMisiones, consultarEventos } from '../services/ikarosApi'
 import './Eventos.css'
 
 function parseMisionesForFilter(data) {
@@ -17,6 +17,22 @@ function parseMisionesForFilter(data) {
   }).filter(m => m.id)
 }
 
+function parseEventos(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map((item, index) => {
+    const parts = item.split(':')
+    return {
+      id: parseInt(parts[0]) || index + 1,
+      misionID: parseInt(parts[1]) || 0,
+      misionNombre: parts[2] || '',
+      titulo: parts[3] || '',
+      fecha: parts[4] || '',
+      descripcion: parts[5] || ''
+    }
+  }).filter(e => e.id)
+}
+
 export function Eventos() {
   const { hasPermission } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
@@ -24,6 +40,8 @@ export function Eventos() {
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [misionesList, setMisionesList] = useState([])
+  const [eventosData, setEventosData] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadMisiones()
@@ -40,18 +58,62 @@ export function Eventos() {
     }
   }
 
+  const loadEventos = async (misionID) => {
+    setLoading(true)
+    try {
+      const res = await consultarEventos(misionID)
+      if (res.success) {
+        setEventosData(parseEventos(res.data))
+      }
+    } catch {
+      setEventosData([])
+    }
+    setLoading(false)
+  }
+
+  const handleMisionChange = async (misionNombre) => {
+    setSelectedMision(misionNombre)
+    const mision = misionesList.find(m => m.nombre === misionNombre)
+    if (mision) {
+      await loadEventos(mision.id)
+    } else {
+      setEventosData([])
+      setLoading(false)
+    }
+  }
+
   const misiones = misionesList.map(m => m.nombre)
+
+  const filteredEventos = eventosData.filter(event => {
+    const matchesSearch =
+      event.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.misionNombre.toLowerCase().includes(searchTerm.toLowerCase())
+
+    return matchesSearch
+  })
 
   const handleAddEvent = async (evento) => {
     await registrarEvento(evento)
     setShowAddEvent(false)
+    const mision = misionesList.find(m => m.nombre === selectedMision)
+    if (mision) {
+      await loadEventos(mision.id)
+    }
   }
 
   const handleDeleteEvent = (eventId) => {
     setDeleteTarget(eventId)
   }
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+    if (deleteTarget) {
+      await bajaEvento(deleteTarget)
+      const mision = misionesList.find(m => m.nombre === selectedMision)
+      if (mision) {
+        await loadEventos(mision.id)
+      }
+    }
     setDeleteTarget(null)
   }
 
@@ -75,7 +137,7 @@ export function Eventos() {
               <select
                 className="filter-select"
                 value={selectedMision}
-                onChange={(e) => setSelectedMision(e.target.value)}
+                onChange={(e) => handleMisionChange(e.target.value)}
               >
                 <option value="">Todas las misiones</option>
                 {misiones.map(mision => (
@@ -90,8 +152,21 @@ export function Eventos() {
             </div>
           </div>
           <div className="eventos-list">
-            {!misiones.length && (
-              <div className="no-results">No hay misiones activas para registrar eventos</div>
+            {loading ? (
+              <div className="no-results">Cargando eventos...</div>
+            ) : !selectedMision ? (
+              <div className="no-results">Seleccioná una misión para ver sus eventos</div>
+            ) : filteredEventos.length === 0 ? (
+              <div className="no-results">No hay eventos para esta misión</div>
+            ) : (
+              filteredEventos.map(event => (
+                <EventItem
+                  key={event.id}
+                  event={event}
+                  canDelete={hasPermission('eventos:delete')}
+                  onDelete={handleDeleteEvent}
+                />
+              ))
             )}
           </div>
         </div>
