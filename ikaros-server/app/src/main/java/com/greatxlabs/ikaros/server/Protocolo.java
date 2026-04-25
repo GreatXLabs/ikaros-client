@@ -110,6 +110,15 @@ public class Protocolo {
                     accesoDatos.registrarEvento(Integer.parseInt(partes[2]), "EVENTO", partes[3], new Timestamp(System.currentTimeMillis()));
                     return "OK|Evento registrado";
 
+            case "BAJA_EVENTO":
+                if (partes.length < 3) return "ERROR|E99|Parámetros insuficientes";
+                accesoDatos.bajaEvento(Integer.parseInt(partes[2]));
+                return "OK|Evento dado de baja";
+
+            case "CONSULTAR_EVENTOS":
+                if (partes.length < 3) return "ERROR|E99|Parámetros insuficientes";
+                return formatearLista(accesoDatos.consultarEventos(Integer.parseInt(partes[2])), 4);
+
                 // --- LOGS (JEFE) ---
                 case "VER_LOGS":
                     return formatearLista(accesoDatos.verLogs(), 4);

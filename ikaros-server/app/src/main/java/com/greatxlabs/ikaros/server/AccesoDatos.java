@@ -134,6 +134,20 @@ public class AccesoDatos {
         cs.execute();
     }
 
+    public void bajaEvento(int eventoID) throws SQLException {
+        Connection con = ConexionBD.getConexion();
+        CallableStatement cs = con.prepareCall("{CALL AEEvento(?, 0)}");
+        cs.setInt(1, eventoID);
+        cs.execute();
+    }
+
+    public ResultSet consultarEventos(int misionID) throws SQLException {
+        Connection con = ConexionBD.getConexion();
+        CallableStatement cs = con.prepareCall("{CALL ConsultarEventos(?)}");
+        cs.setInt(1, misionID);
+        return cs.executeQuery();
+    }
+
     public ResultSet verLogs() throws SQLException {
         return ConexionBD.getConexion().prepareCall("{CALL VerLogs()}").executeQuery();
     }
