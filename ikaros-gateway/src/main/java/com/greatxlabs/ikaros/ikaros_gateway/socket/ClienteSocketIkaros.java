@@ -9,20 +9,20 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 @Component
-public class IkarosSocketClient {
+public class ClienteSocketIkaros {
 
     private final String host;
-    private final int port;
+    private final int puerto;
 
-    public IkarosSocketClient(
+    public ClienteSocketIkaros(
             @Value("${ikaros.server.host}") String host,
-            @Value("${ikaros.server.port}") int port) {
+            @Value("${ikaros.server.port}") int puerto) {
         this.host = host;
-        this.port = port;
+        this.puerto = puerto;
     }
 
-    public String enviar(String mensaje) {
-        try (Socket socket = new Socket(host, port);
+    public String enviarSolicitud(String mensaje) {
+        try (Socket socket = new Socket(host, puerto);
              BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
              PrintWriter salida = new PrintWriter(socket.getOutputStream(), true)) {
 

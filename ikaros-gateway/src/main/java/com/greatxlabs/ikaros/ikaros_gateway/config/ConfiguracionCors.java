@@ -8,15 +8,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-public class CorsConfig {
+public class ConfiguracionCors {
 
     @Value("${ikaros.cors.allowed-origins}")
-    private String allowedOrigins;
+    private String origenesPermitidos;
 
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin(allowedOrigins);
+        config.addAllowedOrigin(origenesPermitidos);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
