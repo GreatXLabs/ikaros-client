@@ -17,6 +17,13 @@ public class ControladorUsuarios {
         this.clienteSocket = clienteSocket;
     }
 
+    @GetMapping
+    public ResponseEntity<Map<String, Object>> listarUsuarios(@RequestHeader("Authorization") String token) {
+        String solicitud = "LISTAR_USUARIOS|" + token;
+        RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+        return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+    }
+
     @PostMapping
     public ResponseEntity<Map<String, Object>> registrarUsuario(@RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
         String solicitud = "REGISTRAR_USUARIO|" + token + "|" + cuerpo.get("usuario") + "|" + cuerpo.get("clave") + "|" + cuerpo.get("rol");
