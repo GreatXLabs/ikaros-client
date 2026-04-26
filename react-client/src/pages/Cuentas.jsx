@@ -17,6 +17,21 @@ const roles = [
   { id: 5, nombre: 'RRHH' }
 ]
 
+function parseUsuarios(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map(item => {
+    const parts = item.split(':')
+    return {
+      UsuarioID: parseInt(parts[0]),
+      Usuario: parts[1] || '',
+      Nombre: parts[2] || '',
+      Apellido: parts[3] || '',
+      RolNombre: parts[4]?.toUpperCase() || ''
+    }
+  }).filter(u => u.UsuarioID)
+}
+
 export function Cuentas() {
   const navigate = useNavigate()
   const { hasPermission, user } = useAuth()
@@ -28,10 +43,20 @@ export function Cuentas() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // El servidor no tiene un endpoint LISTAR_USUARIOS aun,
-    // pero dejamos la estructura preparada
-    setLoading(false)
+    loadCuentas()
   }, [])
+
+  const loadCuentas = async () => {
+    try {
+      const res = await api.listarUsuarios()
+      if (res.success) {
+        setCuentasData(parseUsuarios(res.data))
+      }
+    } catch {
+      setCuentasData([])
+    }
+    setLoading(false)
+  }
 
   const visibleCuentas = user?.RolNombre?.toUpperCase() === 'JEFE'
     ? cuentasData
@@ -67,6 +92,7 @@ export function Cuentas() {
       const cuenta = cuentasData.find(c => c.UsuarioID === cuentaToDelete)
       if (cuenta) {
         await api.bajaUsuario(cuenta.Usuario)
+        loadCuentas()
       }
     }
     setShowDeleteConfirm(false)

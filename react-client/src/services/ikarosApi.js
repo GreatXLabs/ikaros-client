@@ -85,6 +85,10 @@ export async function bajaTripulante(id) {
 }
 
 // --- Usuarios ---
+export async function listarUsuarios() {
+  return request('/usuarios')
+}
+
 export async function registrarUsuario(usuario) {
   return request('/usuarios', {
     method: 'POST',
