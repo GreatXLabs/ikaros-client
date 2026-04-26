@@ -1,232 +1,401 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { Button } from '../components/Button'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
-import { ChevronRight, Plus, X } from "lucide-react"
+import { ChevronRight, Plus, X, Camera } from "lucide-react"
+import { consultarTripulante, modificarTripulante, consultarAptitudes, subirImagenTripulante } from '../services/ikarosApi'
 import './NuevoTripulante.css'
 
-const tripulantesData = {
-	1: { TripulanteID: 1, EstadoTID: 1, Peso: 78.5, Altura: 1.82, Nombre: 'Carlos', Apellido: 'Rodríguez', FechaDeNacimiento: '1985-03-15', Sexo: 'M', aptitudes: [{ id: 1, nombre: 'Piloto de naves', calificacion: 9, fechaExamen: '2026-01-15' }, { id: 2, nombre: 'Reparación de sistemas', calificacion: 7, fechaExamen: '2026-02-20' }, { id: 3, nombre: 'Primeros auxilios', calificacion: 8, fechaExamen: '2026-03-10' }] },
-	2: { TripulanteID: 2, EstadoTID: 1, Peso: 62.0, Altura: 1.68, Nombre: 'María', Apellido: 'González', FechaDeNacimiento: '1990-07-22', Sexo: 'F', aptitudes: [{ id: 1, nombre: 'Comunicaciones', calificacion: 10, fechaExamen: '2026-01-05' }, { id: 2, nombre: 'Primeros auxilios', calificacion: 9, fechaExamen: '2026-02-15' }] },
-	3: { TripulanteID: 3, EstadoTID: 2, Peso: 85.0, Altura: 1.75, Nombre: 'Juan', Apellido: 'Martínez', FechaDeNacimiento: '1978-11-08', Sexo: 'M', aptitudes: [{ id: 1, nombre: 'Piloto de naves', calificacion: 6, fechaExamen: '2026-01-20' }] },
-	4: { TripulanteID: 4, EstadoTID: 1, Peso: 70.2, Altura: 1.90, Nombre: 'Ana', Apellido: 'Pérez', FechaDeNacimiento: '1988-05-30', Sexo: 'F', aptitudes: [{ id: 1, nombre: 'Ingeniería de propulsión', calificacion: 9, fechaExamen: '2026-03-01' }, { id: 2, nombre: 'Reparación de sistemas', calificacion: 8, fechaExamen: '2026-03-15' }] },
-	5: { TripulanteID: 5, EstadoTID: 3, Peso: 88.0, Altura: 1.80, Nombre: 'Roberto', Apellido: 'López', FechaDeNacimiento: '1965-09-12', Sexo: 'M', aptitudes: [] },
-	6: { TripulanteID: 6, EstadoTID: 2, Peso: 65.5, Altura: 1.72, Nombre: 'Laura', Apellido: 'Sánchez', FechaDeNacimiento: '1992-01-25', Sexo: 'F', aptitudes: [{ id: 1, nombre: 'Médico de vuelo', calificacion: 10, fechaExamen: '2026-02-01' }] },
-	7: { TripulanteID: 7, EstadoTID: 1, Peso: 82.0, Altura: 1.85, Nombre: 'Diego', Apellido: 'Fernández', FechaDeNacimiento: '1983-12-03', Sexo: 'M', aptitudes: [{ id: 1, nombre: 'Navegación espacial', calificacion: 9, fechaExamen: '2026-01-10' }, { id: 2, nombre: 'Comunicaciones', calificacion: 7, fechaExamen: '2026-02-25' }] }
-}
-
 const estados = [
-	{ id: 1, nombre: 'Activo' },
-	{ id: 2, nombre: 'Inactivo' },
-	{ id: 3, nombre: 'Retirado' }
+  { id: 1, nombre: 'ACTIVO' },
+  { id: 2, nombre: 'INACTIVO' },
+  { id: 3, nombre: 'RETIRADO' }
 ]
 
+function parseAptitudes(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map(item => {
+    const parts = item.split(':')
+    return { id: parseInt(parts[0]), nombre: parts[1] || '' }
+  }).filter(a => a.id)
+}
+
+function parseTripulante(data) {
+  if (!data) return null
+  const parts = data.split('|')
+  return {
+    tripulanteId: parts[0] || '',
+    nombre: parts[1] || '',
+    apellido: parts[2] || '',
+    imagen: parts[3] || '',
+    estadoNombre: parts[4] || 'ACTIVO',
+    sexoID: parts[5] || '1',
+    fechaNacimiento: parts[6] || '',
+    peso: parts[7] || '',
+    altura: parts[8] || ''
+  }
+}
+
+const sexoFromID = { '1': 'M', '2': 'F' }
+
 export function EditarTripulante() {
-	const navigate = useNavigate()
-	const { id } = useParams()
-	const tripulante = tripulantesData[id] || Object.values(tripulantesData)[0]
+  const navigate = useNavigate()
+  const { id } = useParams()
+  const fileInputRef = useRef(null)
+  const [aptitudes, setAptitudes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [formData, setFormData] = useState({
+    Nombre: '',
+    Apellido: '',
+    Peso: '',
+    Altura: '',
+    Sexo: 'M',
+    FechaDeNacimiento: '',
+    Estado: 'ACTIVO',
+    imagen: '',
+    aptitudes: [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
+  })
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false)
+  const [cropImage, setCropImage] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
 
-	const [formData, setFormData] = useState({
-		Nombre: tripulante.Nombre,
-		Apellido: tripulante.Apellido,
-		Peso: tripulante.Peso,
-		Altura: tripulante.Altura,
-		Sexo: tripulante.Sexo,
-		FechaDeNacimiento: tripulante.FechaDeNacimiento,
-		EstadoTID: tripulante.EstadoTID,
-		aptitudes: tripulante.aptitudes.length > 0
-			? tripulante.aptitudes.map(a => ({ nombre: a.nombre, calificacion: a.calificacion.toString(), fechaExamen: a.fechaExamen }))
-			: [{ nombre: '', calificacion: '', fechaExamen: '' }]
-	})
-	const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-	const [showSaveConfirm, setShowSaveConfirm] = useState(false)
+  useEffect(() => {
+    loadData()
+  }, [id])
 
-	const handleChange = (e) => {
-		const { name, value } = e.target
-		setFormData(prev => ({ ...prev, [name]: value }))
-	}
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      const [tripRes, aptRes] = await Promise.all([
+        consultarTripulante(id),
+        consultarAptitudes()
+      ])
 
-	const handleAptitudChange = (index, field, value) => {
-		setFormData(prev => {
-			const newAptitudes = [...prev.aptitudes]
-			newAptitudes[index] = { ...newAptitudes[index], [field]: value }
-			return { ...prev, aptitudes: newAptitudes }
-		})
-	}
+      if (tripRes.success) {
+        const t = parseTripulante(tripRes.data)
+        if (t) {
+          setFormData({
+            Nombre: t.nombre,
+            Apellido: t.apellido,
+            Peso: t.peso,
+            Altura: t.altura,
+            Sexo: sexoFromID[t.sexoID] || 'M',
+            FechaDeNacimiento: t.fechaNacimiento,
+            Estado: t.estadoNombre,
+            imagen: t.imagen,
+            aptitudes: [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
+          })
+          if (t.imagen) {
+            setPreviewUrl(`http://localhost:8080${t.imagen}`)
+          }
+        }
+      } else {
+        setError(tripRes.message || 'Tripulante no encontrado')
+      }
 
-	const addAptitud = () => {
-		setFormData(prev => ({
-			...prev,
-			aptitudes: [...prev.aptitudes, { nombre: '', calificacion: '', fechaExamen: '' }]
-		}))
-	}
+      if (aptRes.success) {
+        setAptitudes(parseAptitudes(aptRes.data))
+      }
+    } catch {
+      setError('Error de conexión con el servidor')
+    }
+    setLoading(false)
+  }
 
-	const removeAptitud = (index) => {
-		setFormData(prev => ({
-			...prev,
-			aptitudes: prev.aptitudes.filter((_, i) => i !== index)
-		}))
-	}
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
 
-	const handleSave = () => {
-		setShowSaveConfirm(true)
-	}
+  const handleAptitudChange = (index, field, value) => {
+    setFormData(prev => {
+      const newAptitudes = [...prev.aptitudes]
+      newAptitudes[index] = { ...newAptitudes[index], [field]: value }
+      return { ...prev, aptitudes: newAptitudes }
+    })
+  }
 
-	const confirmSave = () => {
-		console.log('Guardar cambios:', formData)
-		navigate(`/Tripulantes/${id}`)
-	}
+  const addAptitud = () => {
+    setFormData(prev => ({
+      ...prev,
+      aptitudes: [...prev.aptitudes, { aptitudID: '', calificacion: '', fechaExamen: '' }]
+    }))
+  }
 
-	const handleCancel = () => {
-		setShowCancelConfirm(true)
-	}
+  const removeAptitud = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      aptitudes: prev.aptitudes.filter((_, i) => i !== index)
+    }))
+  }
 
-	const confirmCancel = () => {
-		navigate(-1)
-	}
+  const handleSelectImage = () => {
+    fileInputRef.current?.click()
+  }
 
-	return (
-		<>
-			<Background />
-			<div className="main-wrapper">
-				<Header />
-				<div className="main-panel">
-					<div className="top-line">
-						<Breadcrumb separator={<ChevronRight size={14} color="gray" />}>
-							<BreadcrumbItem>
-								<BreadcrumbLink href="/Tripulantes">Tripulantes</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbItem>
-								<BreadcrumbLink href={`/Tripulantes/${id}`}>{tripulante.Nombre} {tripulante.Apellido}</BreadcrumbLink>
-							</BreadcrumbItem>
-							<BreadcrumbItem isCurrentPage>
-								<BreadcrumbLink>Editar</BreadcrumbLink>
-							</BreadcrumbItem>
-						</Breadcrumb>
-						<div className="action-buttons">
-							<Button label="Cancelar" color="red" onClick={handleCancel} />
-							<Button label="Guardar" color="blue" onClick={handleSave} />
-						</div>
-					</div>
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      setCropImage(reader.result)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
 
-					<div className="form-container">
-						<h1 className="form-title">Editar tripulante</h1>
+  const handleCropComplete = async (croppedFile) => {
+    setCropImage(null)
+    try {
+      const res = await subirImagenTripulante(croppedFile)
+      if (res.success) {
+        setFormData(prev => ({ ...prev, imagen: res.path }))
+        setPreviewUrl(`http://localhost:8080${res.path}`)
+      } else {
+        setError(res.message || 'Error al subir la imagen')
+      }
+    } catch {
+      setError('Error al subir la imagen')
+    }
+  }
 
-						<div className="form-row">
-							<div className="form-group">
-								<label className="form-label">Nombre</label>
-								<input type="text" name="Nombre" className="form-input" placeholder="Nombre" value={formData.Nombre} onChange={handleChange} />
-							</div>
-							<div className="form-group">
-								<label className="form-label">Apellido</label>
-								<input type="text" name="Apellido" className="form-input" placeholder="Apellido" value={formData.Apellido} onChange={handleChange} />
-							</div>
-						</div>
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, imagen: '' }))
+    setPreviewUrl(null)
+  }
 
-						<div className="form-row">
-							<div className="form-group">
-								<label className="form-label">Peso (kg)</label>
-								<input type="number" name="Peso" className="form-input" placeholder="70.5" step="0.1" value={formData.Peso} onChange={handleChange} />
-							</div>
-							<div className="form-group">
-								<label className="form-label">Altura (m)</label>
-								<input type="number" name="Altura" className="form-input" placeholder="1.75" step="0.01" value={formData.Altura} onChange={handleChange} />
-							</div>
-						</div>
+  const handleSave = () => {
+    setError('')
+    setShowSaveConfirm(true)
+  }
 
-						<div className="form-row">
-							<div className="form-group">
-								<label className="form-label">Sexo</label>
-								<select name="Sexo" className="form-input form-select" value={formData.Sexo} onChange={handleChange}>
-									<option value="M">Masculino</option>
-									<option value="F">Femenino</option>
-								</select>
-							</div>
-							<div className="form-group">
-								<label className="form-label">Estado</label>
-								<select name="EstadoTID" className="form-input form-select" value={formData.EstadoTID} onChange={handleChange}>
-									{estados.map(estado => (
-										<option key={estado.id} value={estado.id}>{estado.nombre}</option>
-									))}
-								</select>
-							</div>
-						</div>
+  const confirmSave = async () => {
+    try {
+      const res = await modificarTripulante(id, {
+        estado: formData.Estado,
+        sexo: formData.Sexo,
+        fechaNacimiento: formData.FechaDeNacimiento,
+        peso: formData.Peso,
+        altura: formData.Altura,
+        nombre: formData.Nombre,
+        apellido: formData.Apellido,
+        imagen: formData.imagen
+      })
+      if (res.success) {
+        navigate(`/Tripulantes/${id}`)
+      } else {
+        setError(res.message || 'Error al modificar el tripulante')
+      }
+    } catch {
+      setError('Error de conexión con el servidor')
+    }
+    setShowSaveConfirm(false)
+  }
 
-						<div className="form-group">
-							<label className="form-label">Fecha de nacimiento</label>
-							<input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
-						</div>
+  const handleCancel = () => {
+    setShowCancelConfirm(true)
+  }
 
-						<h2 className="form-section-title">Aptitudes</h2>
+  const confirmCancel = () => {
+    navigate(-1)
+  }
 
-						<div className="aptitudes-form-section">
-							{formData.aptitudes.map((aptitud, index) => (
-								<div key={index} className="aptitud-form-row">
-									<div className="form-group aptitud-nombre-group">
-										<input
-											type="text"
-											className="form-input"
-											placeholder="Nombre de aptitud"
-											value={aptitud.nombre}
-											onChange={(e) => handleAptitudChange(index, 'nombre', e.target.value)}
-										/>
-									</div>
-									<div className="form-group aptitud-calif-group">
-										<input
-											type="number"
-											className="form-input"
-											placeholder="1-10"
-											min="1"
-											max="10"
-											value={aptitud.calificacion}
-											onChange={(e) => handleAptitudChange(index, 'calificacion', e.target.value)}
-										/>
-									</div>
-									<div className="form-group aptitud-fecha-group">
-										<input
-											type="date"
-											className="form-input"
-											value={aptitud.fechaExamen}
-											onChange={(e) => handleAptitudChange(index, 'fechaExamen', e.target.value)}
-										/>
-									</div>
-									{formData.aptitudes.length > 1 && (
-										<button type="button" className="aptitud-remove-btn" onClick={() => removeAptitud(index)}>
-											<X size={16} />
-										</button>
-									)}
-								</div>
-							))}
-							<button type="button" className="add-aptitud-btn" onClick={addAptitud}>
-								<Plus size={16} /> Agregar aptitud
-							</button>
-						</div>
-					</div>
-				</div>
-			</div>
+  if (loading) {
+    return (
+      <>
+        <Background />
+        <div className="main-wrapper">
+          <Header />
+          <div className="main-panel">
+            <div className="no-data">Cargando tripulante...</div>
+          </div>
+        </div>
+      </>
+    )
+  }
 
-			<ConfirmModal
-				open={showCancelConfirm}
-				title="¿Estás seguro?"
-				message="Los cambios no podrán ser revertidos. Perderás las modificaciones realizadas."
-				confirmLabel="Sí, cancelar"
-				confirmVariant="danger"
-				onConfirm={confirmCancel}
-				onCancel={() => setShowCancelConfirm(false)}
-			/>
+  return (
+    <>
+      <Background />
+      <div className="main-wrapper">
+        <Header />
+        <div className="main-panel">
+          <div className="top-line">
+            <Breadcrumb separator={<ChevronRight size={14} color="gray" />}>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/Tripulantes">Tripulantes</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/Tripulantes/${id}`}>{formData.Nombre} {formData.Apellido}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbItem isCurrentPage>
+                <BreadcrumbLink>Editar</BreadcrumbLink>
+              </BreadcrumbItem>
+            </Breadcrumb>
+            <div className="action-buttons">
+              <Button label="Cancelar" color="red" onClick={handleCancel} />
+              <Button label="Guardar" color="blue" onClick={handleSave} />
+            </div>
+          </div>
 
-			<ConfirmModal
-				open={showSaveConfirm}
-				title="¿Guardar cambios?"
-				message="Se actualizarán los datos del tripulante con la información ingresada."
-				confirmLabel="Guardar"
-				confirmVariant="primary"
-				onConfirm={confirmSave}
-				onCancel={() => setShowSaveConfirm(false)}
-			/>
-		</>
-	)
+          <div className="form-container">
+            <h1 className="form-title">Editar tripulante</h1>
+
+            {error && <p className="form-error">{error}</p>}
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Nombre</label>
+                <input type="text" name="Nombre" className="form-input" placeholder="Nombre" value={formData.Nombre} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Apellido</label>
+                <input type="text" name="Apellido" className="form-input" placeholder="Apellido" value={formData.Apellido} onChange={handleChange} />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Peso (kg)</label>
+                <input type="number" name="Peso" className="form-input" placeholder="70" step="1" value={formData.Peso} onChange={handleChange} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Altura (cm)</label>
+                <input type="number" name="Altura" className="form-input" placeholder="175" step="1" value={formData.Altura} onChange={handleChange} />
+              </div>
+            </div>
+
+            <div className="form-row">
+              <div className="form-group">
+                <label className="form-label">Sexo</label>
+                <select name="Sexo" className="form-input form-select" value={formData.Sexo} onChange={handleChange}>
+                  <option value="M">Masculino</option>
+                  <option value="F">Femenino</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Estado</label>
+                <select name="Estado" className="form-input form-select" value={formData.Estado} onChange={handleChange}>
+                  {estados.map(estado => (
+                    <option key={estado.id} value={estado.nombre}>{estado.nombre}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Fecha de nacimiento</label>
+              <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+            </div>
+
+            <div className="form-row image-row">
+              <div className="form-group image-group">
+                <label className="form-label">Foto</label>
+                <div className="image-upload-area">
+                  {previewUrl ? (
+                    <div className="image-preview-container">
+                      <img src={previewUrl} alt="Preview" className="image-preview" />
+                      <div className="image-preview-actions">
+                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
+                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
+                      <Camera size={24} />
+                      <span>Subir foto</span>
+                    </button>
+                  )}
+                </div>
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
+              </div>
+            </div>
+
+            <h2 className="form-section-title">Aptitudes</h2>
+
+            <div className="aptitudes-form-section">
+              {formData.aptitudes.map((aptitud, index) => (
+                <div key={index} className="aptitud-form-row">
+                  <div className="form-group aptitud-nombre-group">
+                    <select
+                      className="form-input"
+                      value={aptitud.aptitudID}
+                      onChange={(e) => handleAptitudChange(index, 'aptitudID', e.target.value)}
+                    >
+                      <option value="">Seleccionar aptitud</option>
+                      {aptitudes.map(a => (
+                        <option key={a.id} value={a.id}>{a.nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group aptitud-calif-group">
+                    <input
+                      type="number"
+                      className="form-input"
+                      placeholder="1-10"
+                      min="1"
+                      max="10"
+                      value={aptitud.calificacion}
+                      onChange={(e) => handleAptitudChange(index, 'calificacion', e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group aptitud-fecha-group">
+                    <input
+                      type="date"
+                      className="form-input"
+                      value={aptitud.fechaExamen}
+                      onChange={(e) => handleAptitudChange(index, 'fechaExamen', e.target.value)}
+                    />
+                  </div>
+                  {formData.aptitudes.length > 1 && (
+                    <button type="button" className="aptitud-remove-btn" onClick={() => removeAptitud(index)}>
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" className="add-aptitud-btn" onClick={addAptitud}>
+                <Plus size={16} /> Agregar aptitud
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ConfirmModal
+        open={showCancelConfirm}
+        title="¿Estás seguro?"
+        message="Los cambios no podrán ser revertidos. Perderás las modificaciones realizadas."
+        confirmLabel="Sí, cancelar"
+        confirmVariant="danger"
+        onConfirm={confirmCancel}
+        onCancel={() => setShowCancelConfirm(false)}
+      />
+
+      <ConfirmModal
+        open={showSaveConfirm}
+        title="¿Guardar cambios?"
+        message="Se actualizarán los datos del tripulante con la información ingresada."
+        confirmLabel="Guardar"
+        confirmVariant="primary"
+        onConfirm={confirmSave}
+        onCancel={() => setShowSaveConfirm(false)}
+      />
+
+      {cropImage && (
+        <ImageCropModal
+          imageSrc={cropImage}
+          onClose={() => setCropImage(null)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
+    </>
+  )
 }

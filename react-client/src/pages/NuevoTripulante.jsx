@@ -1,16 +1,28 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { Button } from '../components/Button'
 import { ConfirmModal } from '../components/ConfirmModal'
+import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
-import { ChevronRight, Plus, X } from "lucide-react"
-import { registrarTripulante } from '../services/ikarosApi'
+import { ChevronRight, Plus, X, Camera } from "lucide-react"
+import { registrarTripulante, consultarAptitudes, subirImagenTripulante } from '../services/ikarosApi'
 import './NuevoTripulante.css'
+
+function parseAptitudes(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map(item => {
+    const parts = item.split(':')
+    return { id: parseInt(parts[0]), nombre: parts[1] || '' }
+  }).filter(a => a.id)
+}
 
 export function NuevoTripulante() {
   const navigate = useNavigate()
+  const fileInputRef = useRef(null)
+  const [aptitudes, setAptitudes] = useState([])
   const [formData, setFormData] = useState({
     Nombre: '',
     Apellido: '',
@@ -18,11 +30,28 @@ export function NuevoTripulante() {
     Altura: '',
     Sexo: 'M',
     FechaDeNacimiento: '',
-    aptitudes: [{ nombre: '', calificacion: '', fechaExamen: '' }]
+    imagen: '',
+    aptitudes: [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
   })
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [showSaveConfirm, setShowSaveConfirm] = useState(false)
   const [error, setError] = useState('')
+  const [cropImage, setCropImage] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
+
+  useEffect(() => {
+    const fetchAptitudes = async () => {
+      try {
+        const res = await consultarAptitudes()
+        if (res.success) {
+          setAptitudes(parseAptitudes(res.data))
+        }
+      } catch {
+        setAptitudes([])
+      }
+    }
+    fetchAptitudes()
+  }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -40,7 +69,7 @@ export function NuevoTripulante() {
   const addAptitud = () => {
     setFormData(prev => ({
       ...prev,
-      aptitudes: [...prev.aptitudes, { nombre: '', calificacion: '', fechaExamen: '' }]
+      aptitudes: [...prev.aptitudes, { aptitudID: '', calificacion: '', fechaExamen: '' }]
     }))
   }
 
@@ -51,6 +80,41 @@ export function NuevoTripulante() {
     }))
   }
 
+  const handleSelectImage = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      setCropImage(reader.result)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleCropComplete = async (croppedFile) => {
+    setCropImage(null)
+    try {
+      const res = await subirImagenTripulante(croppedFile)
+      if (res.success) {
+        setFormData(prev => ({ ...prev, imagen: res.path }))
+        setPreviewUrl(`http://localhost:8080${res.path}`)
+      } else {
+        setError(res.message || 'Error al subir la imagen')
+      }
+    } catch {
+      setError('Error al subir la imagen')
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setFormData(prev => ({ ...prev, imagen: '' }))
+    setPreviewUrl(null)
+  }
+
   const handleCreate = () => {
     setError('')
     setShowSaveConfirm(true)
@@ -59,10 +123,13 @@ export function NuevoTripulante() {
   const confirmSave = async () => {
     try {
       const res = await registrarTripulante({
-        nombre: formData.Nombre + ' ' + formData.Apellido,
+        nombre: formData.Nombre,
+        apellido: formData.Apellido,
         fechaNacimiento: formData.FechaDeNacimiento,
         peso: formData.Peso,
-        altura: formData.Altura
+        altura: formData.Altura,
+        sexo: formData.Sexo,
+        imagen: formData.imagen
       })
       if (res.success) {
         navigate('/Tripulantes')
@@ -123,11 +190,11 @@ export function NuevoTripulante() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Peso (kg)</label>
-                <input type="number" name="Peso" className="form-input" placeholder="70.5" step="0.1" value={formData.Peso} onChange={handleChange} />
+                <input type="number" name="Peso" className="form-input" placeholder="70" step="1" value={formData.Peso} onChange={handleChange} />
               </div>
               <div className="form-group">
-                <label className="form-label">Altura (m)</label>
-                <input type="number" name="Altura" className="form-input" placeholder="1.75" step="0.01" value={formData.Altura} onChange={handleChange} />
+                <label className="form-label">Altura (cm)</label>
+                <input type="number" name="Altura" className="form-input" placeholder="175" step="1" value={formData.Altura} onChange={handleChange} />
               </div>
             </div>
 
@@ -139,11 +206,33 @@ export function NuevoTripulante() {
                   <option value="F">Femenino</option>
                 </select>
               </div>
+              <div className="form-group">
+                <label className="form-label">Fecha de nacimiento</label>
+                <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Fecha de nacimiento</label>
-              <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+            <div className="form-row image-row">
+              <div className="form-group image-group">
+                <label className="form-label">Foto</label>
+                <div className="image-upload-area">
+                  {previewUrl ? (
+                    <div className="image-preview-container">
+                      <img src={previewUrl} alt="Preview" className="image-preview" />
+                      <div className="image-preview-actions">
+                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
+                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
+                      <Camera size={24} />
+                      <span>Subir foto</span>
+                    </button>
+                  )}
+                </div>
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
+              </div>
             </div>
 
             <h2 className="form-section-title">Aptitudes</h2>
@@ -152,13 +241,16 @@ export function NuevoTripulante() {
               {formData.aptitudes.map((aptitud, index) => (
                 <div key={index} className="aptitud-form-row">
                   <div className="form-group aptitud-nombre-group">
-                    <input
-                      type="text"
+                    <select
                       className="form-input"
-                      placeholder="Nombre de aptitud"
-                      value={aptitud.nombre}
-                      onChange={(e) => handleAptitudChange(index, 'nombre', e.target.value)}
-                    />
+                      value={aptitud.aptitudID}
+                      onChange={(e) => handleAptitudChange(index, 'aptitudID', e.target.value)}
+                    >
+                      <option value="">Seleccionar aptitud</option>
+                      {aptitudes.map(a => (
+                        <option key={a.id} value={a.id}>{a.nombre}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="form-group aptitud-calif-group">
                     <input
@@ -213,6 +305,14 @@ export function NuevoTripulante() {
         onConfirm={confirmSave}
         onCancel={() => setShowSaveConfirm(false)}
       />
+
+      {cropImage && (
+        <ImageCropModal
+          imageSrc={cropImage}
+          onClose={() => setCropImage(null)}
+          onCropComplete={handleCropComplete}
+        />
+      )}
     </>
   )
 }

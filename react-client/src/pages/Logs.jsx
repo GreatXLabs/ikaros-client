@@ -3,111 +3,112 @@ import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { LogItem } from '../components/LogItem'
 import { DateRangeFilter } from '../components/DateRangeFilter'
-import { verLogs } from '../services/ikarosApi'
+import * as api from '../services/ikarosApi'
 import './Logs.css'
 
 function parseLogs(data) {
-  if (!data) return []
-  const items = data.split(';')
-  return items.map((item, index) => {
-    const parts = item.split(':')
-    return {
-      id: index + 1,
-      rol: parts[0] || '',
-      title: parts[1] || '',
-      message: parts[2] || '',
-      actor: parts[3] || '',
-      timestamp: parts[4] || ''
-    }
-  })
+	if (!data) return []
+	const items = data.split(';')
+	return items.map(item => {
+		const parts = item.split(':')
+		return {
+			id: parseInt(parts[0]) || 0,
+			usuario: parts[1] || '',
+			rol: parts[2] || '',
+			accion: parts[3] || '',
+			tipoEntidad: parts[4] || '',
+			entidadID: parts[5] || '',
+			fechaHora: parts[6] || ''
+		}
+	}).filter(l => l.id)
 }
 
-const roles = ['ASIGNADOR', 'COORDINADOR', 'REGISTRADOR', 'RRHH', 'JEFE']
-
 export function Logs() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRol, setSelectedRol] = useState('')
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: null,
-      endDate: null,
-      key: 'selection'
-    }
-  ])
-  const [logsData, setLogsData] = useState([])
-  const [loading, setLoading] = useState(true)
+	const [searchTerm, setSearchTerm] = useState('')
+	const [dateRange, setDateRange] = useState([
+		{
+			startDate: null,
+			endDate: null,
+			key: 'selection'
+		}
+	])
+	const [logsData, setLogsData] = useState([])
+	const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    loadLogs()
-  }, [])
+	useEffect(() => {
+		loadLogs()
+	}, [])
 
-  const loadLogs = async () => {
-    try {
-      const res = await verLogs()
-      if (res.success) {
-        setLogsData(parseLogs(res.data))
-      }
-    } catch {
-      setLogsData([])
-    }
-    setLoading(false)
-  }
+	const loadLogs = async () => {
+		try {
+			const res = await api.verLogs()
+			if (res.success) {
+				setLogsData(parseLogs(res.data))
+			}
+		} catch {
+			setLogsData([])
+		}
+		setLoading(false)
+	}
 
-  const filteredLogs = logsData.filter(log => {
-    const matchesSearch =
-      log.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.actor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      log.rol.toLowerCase().includes(searchTerm.toLowerCase())
+	const filteredLogs = logsData.filter(log => {
+		const matchesSearch =
+			log.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			log.accion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			log.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			log.entidadID.toString().includes(searchTerm)
 
-    const matchesRol = selectedRol === '' || log.rol.toUpperCase() === selectedRol
+		const start = dateRange[0].startDate
+		const end = dateRange[0].endDate
+		if (!start && !end) return matchesSearch
 
-    return matchesSearch && matchesRol
-  })
+		const logDate = new Date(log.fechaHora)
+		if (isNaN(logDate.getTime())) return matchesSearch
 
-  return (
-    <>
-      <Background />
-      <div className="main-wrapper">
-        <Header />
-        <div className="main-panel">
-          <div className="top-bar">
-            <div className="search-container">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Buscar logs..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="filters-container">
-              <select
-                className="filter-select"
-                value={selectedRol}
-                onChange={(e) => setSelectedRol(e.target.value)}
-              >
-                <option value="">Todos los roles</option>
-                {roles.map(rol => (
-                  <option key={rol} value={rol}>{rol}</option>
-                ))}
-              </select>
+		const startDate = start ? new Date(start.setHours(0, 0, 0, 0)) : null
+		const endDate = end ? new Date(end.setHours(23, 59, 59, 999)) : null
 
-              <DateRangeFilter
-                dateRange={dateRange}
-                onDateChange={setDateRange}
-              />
-            </div>
-          </div>
-          <div className="logs-list">
-            {loading ? (
-              <div className="no-results">Cargando logs...</div>
-            ) : filteredLogs.map(log => (
-              <LogItem key={log.id} log={log} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  )
+		if (startDate && logDate < startDate) return false
+		if (endDate && logDate > endDate) return false
+
+		return matchesSearch
+	})
+
+	return (
+		<>
+			<Background />
+			<div className="main-wrapper">
+				<Header />
+				<div className="main-panel">
+					<div className="top-bar">
+						<div className="search-container">
+							<input
+								type="text"
+								className="search-input"
+								placeholder="Buscar logs por usuario, acción o rol..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+							/>
+						</div>
+						<div className="filters-container">
+							<DateRangeFilter
+								dateRange={dateRange}
+								onDateChange={setDateRange}
+							/>
+						</div>
+					</div>
+					<div className="logs-list">
+						{loading ? (
+							<div className="no-results">Cargando logs...</div>
+						) : filteredLogs.map(log => (
+							<LogItem key={log.id} log={log} />
+						))}
+						{!loading && filteredLogs.length === 0 && (
+							<div className="no-results">No se encontraron logs</div>
+						)}
+					</div>
+				</div>
+			</div>
+		</>
+	)
 }

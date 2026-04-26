@@ -5,7 +5,7 @@ import './CuentaItem.css'
 
 export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true }) {
 	const navigate = useNavigate()
-	const { UsuarioID, Nombre, Apellido, Clave, RolNombre } = cuenta
+	const { UsuarioID, Usuario,  Clave, RolNombre } = cuenta
 	const [showMenu, setShowMenu] = useState(false)
 	const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
 	const menuRef = useRef(null)
@@ -26,7 +26,7 @@ export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true 
 	}
 
 	const handleEdit = () => {
-		navigate(`/Cuentas/${UsuarioID}/Editar`)
+		navigate(`/Cuentas/${UsuarioID}/Editar`, { state: { cuenta } })
 	}
 
 	const handleDelete = () => {
@@ -61,7 +61,7 @@ export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true 
 		<>
 			<div className="cuenta-item" onContextMenu={handleContextMenu}>
 				<span className="cuenta-cell cell-id">{UsuarioID}</span>
-				<span className="cuenta-cell cell-nombre">{Nombre} {Apellido}</span>
+				<span className="cuenta-cell cell-nombre">{Usuario}</span>
 				<span className="cuenta-cell cell-clave">{formatClave(Clave)}</span>
 				<span className="cuenta-cell cell-rol">
 					<span className={`rol-badge rol-${RolNombre?.toLowerCase()}`}>{RolNombre}</span>
@@ -69,7 +69,7 @@ export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true 
 			</div>
 
 			{showMenu && createPortal(
-				<div
+				<div	
 					ref={menuRef}
 					className="context-menu"
 					style={{ left: menuPos.x, top: menuPos.y }}

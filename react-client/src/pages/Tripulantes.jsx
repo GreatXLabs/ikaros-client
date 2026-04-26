@@ -68,7 +68,7 @@ export function Tripulantes() {
       tripulante.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
       tripulante.Apellido.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesEstado = selectedEstado === '' || tripulante.EstadoTID === parseInt(selectedEstado)
+    const matchesEstado = selectedEstado === '' || tripulante.EstadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
 
     return matchesSearch && matchesEstado
   })

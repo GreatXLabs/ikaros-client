@@ -226,6 +226,15 @@
 	margin-right: 20px;
 }
 
+.hero-placeholder {
+	width: 200px;
+	height: 200px;
+	aspect-ratio: 1 / 1;
+	border-radius: 8px;
+	background-color: rgba(255, 255, 255, 0.05);
+	margin-right: 20px;
+}
+
 .action-buttons {
 	margin-left: auto;
 }

@@ -1,103 +1,24 @@
 .logs-list {
-    width: 100%;
-    flex: 1 1 0;   /* ← cambiá auto por 0 */
-    min-height: 0;
-    overflow-y: auto;
-    /* resto igual... */
-
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    padding: 10px;
-    background-color: rgba(29, 29, 29, 0.205);
-    border: var(--IkBorder);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border-radius: 10px;
-    overflow-y: auto;
+	width: 100%;
+	flex: 1 1 0;
+	min-height: 0;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding: 10px;
+	background-color: rgba(29, 29, 29, 0.205);
+	border: var(--IkBorder);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+	border-radius: 10px;
 }
 
-
-  .log-item:nth-child(odd) {
-      background-color: rgba(79, 79, 79, 0.2); /* color impares */
-  }
-
-  .log-item:nth-child(even) {
-      background-color: rgba(125, 125, 125, 0.3); /* color pares */
-  }
-
-/* Top bar styles */
-.top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 15px;
-    width: 100%;
-    margin-bottom: 10px;
-}
-
-.search-container {
-    width: 100%;
-    max-width: 400px;
-}
-
-.search-input {
-    width: 100%;
-    padding: 8px 12px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: var(--IkBorder);
-    border-radius: 20px;
-    color: #fff;
-    font-size: 14px;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.search-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-/* Filters container */
-.filters-container {
-    display: flex;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-.filter-select {
-    padding: 8px 35px 8px 12px;
-    background-color: rgba(255, 255, 255, 0.1);
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255, 255, 255, 0.6)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 14px;
-    border: var(--IkBorder);
-    border-radius: 20px;
-    color: #fff;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-    min-width: 140px;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-.filter-select:focus {
-    outline: none;
-    border-color: rgba(255, 255, 255, 0.5);
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-.filter-select-wrapper {
-    position: relative;
-}
-
-.filter-select option {
-    background-color: #1b1b1b;
-    color: #fff;
+.no-results {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 40px;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 13px;
 }

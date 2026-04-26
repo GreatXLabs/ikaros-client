@@ -5,6 +5,9 @@ import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
 import './DateRangeFilter.css'
 
+const staticRanges = []
+const inputRanges = []
+
 export function DateRangeFilter({ onDateChange, dateRange }) {
   const [showDatePicker, setShowDatePicker] = useState(false)
   const datePickerRef = useRef(null)
@@ -84,8 +87,11 @@ export function DateRangeFilter({ onDateChange, dateRange }) {
             moveRangeOnFirstSelection={false}
             months={1}
             ranges={dateRange}
-            direction="horizontal"
+            direction="vertical"
             locale={es}
+            staticRanges={staticRanges}
+            inputRanges={inputRanges}
+            rangeColors={['rgba(255, 255, 255, 0.85)']}
           />
         </div>
       )}

@@ -9,164 +9,176 @@ import { useAuth } from '../contexts/AuthContext'
 import * as api from '../services/ikarosApi'
 import './Cuentas.css'
 
-const roles = [
-  { id: 1, nombre: 'JEFE' },
-  { id: 2, nombre: 'COORDINADOR' },
-  { id: 3, nombre: 'ASIGNADOR' },
-  { id: 4, nombre: 'REGISTRADOR' },
-  { id: 5, nombre: 'RRHH' }
-]
-
 function parseUsuarios(data) {
-  if (!data) return []
-  const items = data.split(';')
-  return items.map(item => {
-    const parts = item.split(':')
-    return {
-      UsuarioID: parseInt(parts[0]),
-      Usuario: parts[1] || '',
-      Nombre: parts[2] || '',
-      Apellido: parts[3] || '',
-      RolNombre: parts[4]?.toUpperCase() || ''
-    }
-  }).filter(u => u.UsuarioID)
+	if (!data) return []
+	const items = data.split(';')
+	return items.map(item => {
+		const parts = item.split(':')
+		return {
+			UsuarioID: parseInt(parts[0]),
+			Usuario: parts[1] || '',
+			Nombre: parts[2] || '',
+			Apellido: parts[3] || '',
+			Clave: parts[4] || '',
+			RolNombre: parts[5]?.toUpperCase() || '',
+			RolID: parts[6] || ''
+		}
+	}).filter(u => u.UsuarioID)
+}
+
+function parseRoles(data) {
+	if (!data) return []
+	const items = data.split(';')
+	return items.map(item => {
+		const parts = item.split(':')
+		return { id: parseInt(parts[0]), nombre: parts[1]?.toUpperCase() || '' }
+	}).filter(r => r.id)
 }
 
 export function Cuentas() {
-  const navigate = useNavigate()
-  const { hasPermission, user } = useAuth()
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRol, setSelectedRol] = useState('')
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const [cuentaToDelete, setCuentaToDelete] = useState(null)
-  const [cuentasData, setCuentasData] = useState([])
-  const [loading, setLoading] = useState(true)
+	const navigate = useNavigate()
+	const { hasPermission } = useAuth()
+	const [searchTerm, setSearchTerm] = useState('')
+	const [selectedRol, setSelectedRol] = useState('')
+	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+	const [cuentaToDelete, setCuentaToDelete] = useState(null)
+	const [cuentasData, setCuentasData] = useState([])
+	const [roles, setRoles] = useState([])
+	const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    loadCuentas()
-  }, [])
+	useEffect(() => {
+		loadCuentas()
+		loadRoles()
+	}, [])
 
-  const loadCuentas = async () => {
-    try {
-      const res = await api.listarUsuarios()
-      if (res.success) {
-        setCuentasData(parseUsuarios(res.data))
-      }
-    } catch {
-      setCuentasData([])
-    }
-    setLoading(false)
-  }
+	const loadCuentas = async () => {
+		try {
+			const res = await api.listarUsuarios()
+			if (res.success) {
+				setCuentasData(parseUsuarios(res.data))
+			}
+		} catch {
+			setCuentasData([])
+		}
+		setLoading(false)
+	}
 
-  const visibleCuentas = user?.RolNombre?.toUpperCase() === 'JEFE'
-    ? cuentasData
-    : cuentasData.filter(c => c.RolNombre?.toUpperCase() !== 'JEFE')
+	const loadRoles = async () => {
+		try {
+			const res = await api.consultarRoles()
+			if (res.success) {
+				setRoles(parseRoles(res.data))
+			}
+		} catch {
+			setRoles([])
+		}
+	}
 
-  const filteredCuentas = visibleCuentas.filter(cuenta => {
-    const matchesSearch =
-      cuenta.Nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cuenta.Apellido?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cuenta.Usuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cuenta.UsuarioID?.toString().includes(searchTerm)
+	const visibleCuentas = cuentasData.filter(c => c.RolNombre?.toUpperCase() !== 'JEFE')
 
-    const matchesRol = selectedRol === '' || cuenta.RolNombre === selectedRol
+	const filteredCuentas = visibleCuentas.filter(cuenta => {
+		const matchesSearch =
+			cuenta.Usuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+			cuenta.UsuarioID?.toString().includes(searchTerm)
 
-    return matchesSearch && matchesRol
-  })
+		const matchesRol = selectedRol === '' || cuenta.RolNombre === selectedRol
 
-  const ellipsisItems = []
-  if (hasPermission('cuentas:create')) {
-    ellipsisItems.push({
-      label: 'Crear cuenta',
-      onClick: () => navigate('/Cuentas/Nueva')
-    })
-  }
+		return matchesSearch && matchesRol
+	})
 
-  const handleDeleteCuenta = (usuarioId) => {
-    setCuentaToDelete(usuarioId)
-    setShowDeleteConfirm(true)
-  }
+	const ellipsisItems = []
+	if (hasPermission('cuentas:create')) {
+		ellipsisItems.push({
+			label: 'Crear cuenta',
+			onClick: () => navigate('/Cuentas/Nueva')
+		})
+	}
 
-  const confirmDelete = async () => {
-    if (cuentaToDelete) {
-      const cuenta = cuentasData.find(c => c.UsuarioID === cuentaToDelete)
-      if (cuenta) {
-        await api.bajaUsuario(cuenta.Usuario)
-        loadCuentas()
-      }
-    }
-    setShowDeleteConfirm(false)
-    setCuentaToDelete(null)
-  }
+	const handleDeleteCuenta = (usuarioId) => {
+		setCuentaToDelete(usuarioId)
+		setShowDeleteConfirm(true)
+	}
 
-  return (
-    <>
-      <Background />
-      <div className="main-wrapper">
-        <Header />
-        <div className="main-panel">
-          <div className="top-bar">
-            <div className="search-container">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Buscar cuentas por nombre, usuario o ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="filters-container">
-              <select
-                className="filter-select"
-                value={selectedRol}
-                onChange={(e) => setSelectedRol(e.target.value)}
-              >
-                <option value="">Todos los roles</option>
-                {roles.map(rol => (
-                  <option key={rol.id} value={rol.nombre}>{rol.nombre}</option>
-                ))}
-              </select>
+	const confirmDelete = async () => {
+		if (cuentaToDelete) {
+			const cuenta = cuentasData.find(c => c.UsuarioID === cuentaToDelete)
+			if (cuenta) {
+				await api.bajaUsuario(cuenta.Usuario)
+				loadCuentas()
+			}
+		}
+		setShowDeleteConfirm(false)
+		setCuentaToDelete(null)
+	}
 
-              {ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
-            </div>
-          </div>
+	return (
+		<>
+			<Background />
+			<div className="main-wrapper">
+				<Header />
+				<div className="main-panel">
+					<div className="top-bar">
+						<div className="search-container">
+							<input
+								type="text"
+								className="search-input"
+								placeholder="Buscar cuentas por usuario o ID..."
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+							/>
+						</div>
+						<div className="filters-container">
+							<select
+								className="filter-select"
+								value={selectedRol}
+								onChange={(e) => setSelectedRol(e.target.value)}
+							>
+								<option value="">Todos los roles</option>
+								{roles.map(rol => (
+									<option key={rol.id} value={rol.nombre}>{rol.nombre}</option>
+								))}
+							</select>
 
-          <div className="cuentas-list">
-            <div className="cuenta-list-header">
-              <span>Id</span>
-              <span>Nombre</span>
-              <span>Contraseña</span>
-              <span>Rol</span>
-            </div>
-            {loading ? (
-              <div className="no-results">Cargando cuentas...</div>
-            ) : filteredCuentas.map(cuenta => (
-              <CuentaItem
-                key={cuenta.UsuarioID}
-                cuenta={cuenta}
-                onDelete={handleDeleteCuenta}
-                canEdit={hasPermission('cuentas:edit') && !(cuenta.RolNombre?.toUpperCase() === 'JEFE' && user?.RolNombre?.toUpperCase() !== 'JEFE')}
-                canDelete={hasPermission('cuentas:delete') && !(cuenta.RolNombre?.toUpperCase() === 'JEFE' && user?.RolNombre?.toUpperCase() !== 'JEFE')}
-              />
-            ))}
-            {!loading && filteredCuentas.length === 0 && (
-              <div className="no-results">
-                No se encontraron cuentas que coincidan con los filtros
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+							{ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
+						</div>
+					</div>
 
-      <ConfirmModal
-        open={showDeleteConfirm}
-        title="¿Eliminar cuenta?"
-        message="Esta acción no puede ser revertida. Se eliminará permanentemente la cuenta y todos sus datos asociados."
-        confirmLabel="Eliminar"
-        confirmVariant="danger"
-        onConfirm={confirmDelete}
-        onCancel={() => { setShowDeleteConfirm(false); setCuentaToDelete(null) }}
-      />
-    </>
-  )
+					<div className="cuentas-list">
+						<div className="cuenta-list-header">
+							<span>Id</span>
+							<span>Usuario</span>
+							<span>Contraseña</span>
+							<span>Rol</span>
+						</div>
+						{loading ? (
+							<div className="no-results">Cargando cuentas...</div>
+						) : filteredCuentas.map(cuenta => (
+							<CuentaItem
+								key={cuenta.UsuarioID}
+								cuenta={cuenta}
+								onDelete={handleDeleteCuenta}
+								canEdit={hasPermission('cuentas:edit')}
+								canDelete={hasPermission('cuentas:delete')}
+							/>
+						))}
+						{!loading && filteredCuentas.length === 0 && (
+							<div className="no-results">
+								No se encontraron cuentas que coincidan con los filtros
+							</div>
+						)}
+					</div>
+				</div>
+			</div>
+
+			<ConfirmModal
+				open={showDeleteConfirm}
+				title="¿Eliminar cuenta?"
+				message="Esta acción no puede ser revertida. Se eliminará permanentemente la cuenta y todos sus datos asociados."
+				confirmLabel="Eliminar"
+				confirmVariant="danger"
+				onConfirm={confirmDelete}
+				onCancel={() => { setShowDeleteConfirm(false); setCuentaToDelete(null) }}
+			/>
+		</>
+	)
 }

@@ -1,137 +1,132 @@
 .cuenta-item,
 .cuenta-list-header {
-  display: grid;
-  grid-template-columns: 64px 1fr 180px 120px;
-  align-items: center;
-  gap: 0;
-  padding: 0 12px;
+	display: grid;
+	grid-template-columns: 64px 1fr 180px 120px;
+	align-items: center;
+	gap: 0;
+	padding: 0 12px;
 }
 
 .cuenta-list-header {
-  height: 32px;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 4px;
+	height: 32px;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 11px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	margin-bottom: 4px;
 }
 
 .cuenta-item {
-  height: 40px;
-  border-radius: 6px;
-  color: #fff;
-  transition: background-color 0.2s ease-in-out;
-  cursor: pointer;
+	height: 40px;
+	border-radius: 6px;
+	color: #fff;
+	transition: background-color 0.2s ease-in-out;
+	cursor: pointer;
 }
 
 .cuenta-item:nth-child(odd) {
-  background-color: rgba(79, 79, 79, 0.2);
+	background-color: rgba(79, 79, 79, 0.2);
 }
 
 .cuenta-item:nth-child(even) {
-  background-color: rgba(125, 125, 125, 0.3);
+	background-color: rgba(125, 125, 125, 0.3);
 }
 
 .cuenta-item:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+	background-color: rgba(255, 255, 255, 0.15);
 }
 
 .cuenta-cell {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding-right: 8px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	padding-right: 8px;
 }
 
 .cell-id {
-  font-size: 12px;
-  font-family: 'Roboto Mono', monospace;
-  color: rgba(255, 255, 255, 0.6);
+	font-size: 12px;
+	font-family: 'Roboto Mono', monospace;
+	color: rgba(255, 255, 255, 0.6);
 }
 
-.cell-nombre {
-  font-weight: 300;
-  font-size: 14px;
+.cell-usuario {
+	font-weight: 300;
+	font-size: 14px;
 }
 
 .cell-clave {
-  font-family: 'Roboto Mono', monospace;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 1px;
+	font-family: 'Roboto Mono', monospace;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.5);
+	letter-spacing: 1px;
 }
 
 .cell-rol {
-  display: flex;
-  align-items: center;
+	display: flex;
+	align-items: center;
 }
 
 .rol-badge {
-  display: inline-block;
-  font-size: 11px;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-weight: 500;
-  white-space: nowrap;
-  text-transform: capitalize;
-}
-
-.rol-jefe {
-  background-color: rgba(255, 193, 7, 0.2);
-  color: #ffc107;
+	display: inline-block;
+	font-size: 11px;
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-weight: 500;
+	white-space: nowrap;
+	text-transform: capitalize;
 }
 
 .rol-coordinador {
-  background-color: rgba(33, 150, 243, 0.2);
-  color: #2196f3;
+	background-color: rgba(33, 150, 243, 0.2);
+	color: #2196f3;
 }
 
 .rol-asignador {
-  background-color: rgba(156, 39, 176, 0.2);
-  color: #ce93d8;
+	background-color: rgba(156, 39, 176, 0.2);
+	color: #ce93d8;
 }
 
 .rol-registrador {
-  background-color: rgba(76, 175, 80, 0.2);
-  color: #81c784;
+	background-color: rgba(76, 175, 80, 0.2);
+	color: #81c784;
 }
 
 .rol-rrhh {
-  background-color: rgba(255, 152, 0, 0.2);
-  color: #ffb74d;
+	background-color: rgba(255, 152, 0, 0.2);
+	color: #ffb74d;
 }
 
 /* Context Menu */
 .context-menu {
-  position: fixed;
-  z-index: 2000;
-  min-width: 100px;
-  background-color: rgba(29, 29, 29, 0.98);
-  border: var(--IkBorder);
-  border-radius: 6px;
-  padding: 4px 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+	position: fixed;
+	z-index: 2000;
+	min-width: 100px;
+	background-color: rgba(29, 29, 29, 0.98);
+	border: var(--IkBorder);
+	border-radius: 6px;
+	padding: 4px 0;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .context-menu-item {
-  padding: 6px 12px;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+	padding: 6px 12px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.85);
+	cursor: pointer;
+	transition: background-color 0.15s ease;
 }
 
 .context-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 .context-menu-item.danger {
-  color: #f87171;
+	color: #f87171;
 }
 
 .context-menu-item.danger:hover {
-  background-color: rgba(248, 113, 113, 0.15);
+	background-color: rgba(248, 113, 113, 0.15);
 }

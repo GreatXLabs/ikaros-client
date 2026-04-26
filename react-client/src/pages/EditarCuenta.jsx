@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { Button } from '../components/Button'
@@ -7,42 +7,80 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight } from "lucide-react"
 import { useAuth } from '../contexts/AuthContext'
-import { cuentasData, roles } from '../data/cuentasData'
+import * as api from '../services/ikarosApi'
 import './NuevaCuenta.css'
+
+function parseRoles(data) {
+	if (!data) return []
+	const items = data.split(';')
+	return items.map(item => {
+		const parts = item.split(':')
+		return { id: parseInt(parts[0]), nombre: parts[1]?.toUpperCase() || '' }
+	}).filter(r => r.id)
+}
 
 export function EditarCuenta() {
 	const navigate = useNavigate()
 	const { id } = useParams()
+	const location = useLocation()
 	const { user } = useAuth()
-	const cuenta = cuentasData.find(c => c.UsuarioID === parseInt(id)) || cuentasData[0]
+	const [roles, setRoles] = useState([])
+	const [formData, setFormData] = useState({
+		Nombre: '',
+		Apellido: '',
+		Usuario: '',
+		Clave: '',
+		RolID: ''
+	})
+	const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+	const [showSaveConfirm, setShowSaveConfirm] = useState(false)
+	const [error, setError] = useState('')
 
-	if (cuenta.RolID === 1 && user?.RolNombre !== 'Jefe') {
+	const cuenta = location.state?.cuenta
+
+	useEffect(() => {
+		if (cuenta) {
+			setFormData({
+				Nombre: cuenta.Nombre || '',
+				Apellido: cuenta.Apellido || '',
+				Usuario: cuenta.Usuario || '',
+				Clave: '',
+				RolID: cuenta.RolID || ''
+			})
+		}
+
+		const fetchRoles = async () => {
+			try {
+				const res = await api.consultarRoles()
+				if (res.success) {
+					const parsed = parseRoles(res.data)
+					setRoles(parsed)
+					if (!cuenta && parsed.length > 0) {
+						setFormData(prev => ({ ...prev, RolID: parsed[0].id.toString() }))
+					}
+				}
+			} catch {
+				setRoles([])
+			}
+		}
+		fetchRoles()
+	}, [])
+
+	if (!cuenta) {
 		return (
 			<>
 				<Background />
 				<div className="main-wrapper">
 					<Header />
 					<div className="main-panel">
-						<div className="no-data">Acceso no autorizado</div>
+						<div className="no-data">No se encontró la cuenta</div>
 					</div>
 				</div>
 			</>
 		)
 	}
 
-	const filteredRoles = user?.RolNombre === 'Jefe'
-		? roles
-		: roles.filter(r => r.nombre !== 'Jefe')
-
-	const [formData, setFormData] = useState({
-		Nombre: cuenta.Nombre,
-		Apellido: cuenta.Apellido,
-		Usuario: cuenta.Usuario,
-		Clave: cuenta.Clave,
-		RolID: cuenta.RolID
-	})
-	const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-	const [showSaveConfirm, setShowSaveConfirm] = useState(false)
+	const filteredRoles = roles.filter(r => r.nombre !== 'JEFE')
 
 	const handleChange = (e) => {
 		const { name, value } = e.target
@@ -50,12 +88,29 @@ export function EditarCuenta() {
 	}
 
 	const handleSave = () => {
+		setError('')
 		setShowSaveConfirm(true)
 	}
 
-	const confirmSave = () => {
-		console.log('Guardar cambios:', formData)
-		navigate('/Cuentas')
+	const confirmSave = async () => {
+		const selectedRole = roles.find(r => r.id.toString() === formData.RolID)
+		try {
+			const res = await api.modificarUsuario({
+				usuario: formData.Usuario,
+				nombre: formData.Nombre,
+				apellido: formData.Apellido,
+				clave: formData.Clave,
+				rol: selectedRole?.nombre || ''
+			})
+			if (res.success) {
+				navigate('/Cuentas')
+			} else {
+				setError(res.message || 'Error al modificar la cuenta')
+			}
+		} catch {
+			setError('Error de conexión con el servidor')
+		}
+		setShowSaveConfirm(false)
 	}
 
 	const handleCancel = () => {
@@ -78,7 +133,7 @@ export function EditarCuenta() {
 								<BreadcrumbLink href="/Cuentas">Cuentas</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbItem>
-								<BreadcrumbLink href={`/Cuentas/${id}`}>{cuenta.Nombre} {cuenta.Apellido}</BreadcrumbLink>
+								<BreadcrumbLink href={`/Cuentas/${id}`}>{cuenta.Usuario}</BreadcrumbLink>
 							</BreadcrumbItem>
 							<BreadcrumbItem isCurrentPage>
 								<BreadcrumbLink>Editar</BreadcrumbLink>
@@ -92,6 +147,8 @@ export function EditarCuenta() {
 
 					<div className="form-container">
 						<h1 className="form-title">Editar cuenta</h1>
+
+						{error && <p className="form-error">{error}</p>}
 
 						<div className="form-row">
 							<div className="form-group">
@@ -111,7 +168,7 @@ export function EditarCuenta() {
 
 						<div className="form-group">
 							<label className="form-label">Contraseña</label>
-							<input type="password" name="Clave" className="form-input" placeholder="Contraseña" value={formData.Clave} onChange={handleChange} />
+							<input type="password" name="Clave" className="form-input" placeholder="Nueva contraseña (dejar vacío para mantener)" value={formData.Clave} onChange={handleChange} />
 						</div>
 
 						<div className="form-group">
