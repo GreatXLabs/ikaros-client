@@ -51,7 +51,7 @@ function parseMisiones(data) {
     return {
       misionId: parts[0] || '',
       nombre: parts[1] || '',
-      estadoNombre: parts[2] || ''
+      estadoNombre: parts[6] || ''
     }
   }).filter(m => m.misionId)
 }

@@ -54,7 +54,9 @@ public class ControladorMisiones {
 
 	@PatchMapping("/{id}/estado")
 	public ResponseEntity<Map<String, Object>> actualizarEstadoMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "ACTUALIZAR_ESTADO_MISION|" + token + "|" + id + "|" + cuerpo.get("estado");
+		String retrasoInicio = cuerpo.getOrDefault("retrasoInicio", "");
+			String retrasoFin = cuerpo.getOrDefault("retrasoFin", "");
+			String solicitud = "ACTUALIZAR_ESTADO_MISION|" + token + "|" + id + "|" + cuerpo.get("estado") + "|" + retrasoInicio + "|" + retrasoFin;
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		if (respuesta.esExitosa()) {

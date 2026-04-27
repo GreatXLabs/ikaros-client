@@ -18,7 +18,11 @@ function parseMisiones(data) {
     return {
       misionId: parseInt(parts[0]),
       nombre: parts[1] || '',
-      estadoNombre: parts[2] || ''
+      fechaInicioEstimada: parts[2] || '',
+      fechaFinEstimada: parts[3] || '',
+      retrasoInicio: parts[4] || '',
+      retrasoFin: parts[5] || '',
+      estadoNombre: parts[6] || ''
     }
   }).filter(m => m.misionId)
 }

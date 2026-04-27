@@ -65,10 +65,10 @@ export async function registrarMision(mision) {
   })
 }
 
-export async function actualizarEstadoMision(id, estado) {
+export async function actualizarEstadoMision(id, estado, retrasoInicio, retrasoFin) {
   return request(`/misiones/${id}/estado`, {
     method: 'PATCH',
-    body: JSON.stringify({ estado })
+    body: JSON.stringify({ estado, retrasoInicio: retrasoInicio ?? '', retrasoFin: retrasoFin ?? '' })
   })
 }
 

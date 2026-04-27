@@ -159,13 +159,25 @@ export function MisionView() {
 	}
 
 	const handleStartMission = async () => {
-		await api.actualizarEstadoMision(id, 'EN_CURSO')
+		let retrasoInicio = null
+		if (mision.fechaInicioEstimada) {
+			const estimada = new Date(mision.fechaInicioEstimada).getTime()
+			const ahora = Date.now()
+			retrasoInicio = Math.round((ahora - estimada) / 1000)
+		}
+		await api.actualizarEstadoMision(id, 'EN_CURSO', retrasoInicio, undefined)
 		setShowStartConfirm(false)
 		loadData()
 	}
 
 	const handleEndMission = async () => {
-		await api.actualizarEstadoMision(id, 'FINALIZADA')
+		let retrasoFin = null
+		if (mision.fechaFinEstimada) {
+			const estimada = new Date(mision.fechaFinEstimada).getTime()
+			const ahora = Date.now()
+			retrasoFin = Math.round((ahora - estimada) / 1000)
+		}
+		await api.actualizarEstadoMision(id, 'FINALIZADA', undefined, retrasoFin)
 		setShowEndConfirm(false)
 		loadData()
 	}
