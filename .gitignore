@@ -25,3 +25,13 @@ replay_pid*
 
 # Separate repos
 ikaros-server/
+
+# Claude
+.claude/
+CLAUDE.md
+
+# Uploads
+ikaros-gateway/uploads/
+
+# ikaros-server-local copy
+ikaros-server-local/
