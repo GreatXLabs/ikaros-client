@@ -1,4 +1,7 @@
-const BASE_URL = 'http://localhost:8080/api'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const BASE_URL = `${API_URL}/api`
+
+export { API_URL }
 
 function getToken() {
 	const user = sessionStorage.getItem('ikaros_user')

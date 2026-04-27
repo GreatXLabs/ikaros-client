@@ -7,7 +7,7 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight, Plus, X, Camera } from "lucide-react"
-import { registrarTripulante, consultarAptitudes, subirImagenTripulante } from '../services/ikarosApi'
+import { registrarTripulante, consultarAptitudes, subirImagenTripulante, API_URL } from '../services/ikarosApi'
 import './NuevoTripulante.css'
 
 function parseAptitudes(data) {
@@ -101,7 +101,7 @@ export function NuevoTripulante() {
       const res = await subirImagenTripulante(croppedFile)
       if (res.success) {
         setFormData(prev => ({ ...prev, imagen: res.path }))
-        setPreviewUrl(`http://localhost:8080${res.path}`)
+        setPreviewUrl(`${API_URL}${res.path}`)
       } else {
         setError(res.message || 'Error al subir la imagen')
       }

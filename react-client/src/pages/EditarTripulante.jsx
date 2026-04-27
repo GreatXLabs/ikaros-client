@@ -7,7 +7,7 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight, Plus, X, Camera } from "lucide-react"
-import { consultarTripulante, modificarTripulante, consultarAptitudes, subirImagenTripulante } from '../services/ikarosApi'
+import { consultarTripulante, modificarTripulante, consultarAptitudes, subirImagenTripulante, API_URL } from '../services/ikarosApi'
 import './NuevoTripulante.css'
 
 const estados = [
@@ -32,16 +32,16 @@ function parseTripulante(data) {
     tripulanteId: parts[0] || '',
     nombre: parts[1] || '',
     apellido: parts[2] || '',
-    imagen: parts[3] || '',
-    estadoNombre: parts[4] || 'ACTIVO',
-    sexoID: parts[5] || '1',
+    peso: parts[3] || '',
+    altura: parts[4] || '',
+    imagen: parts[5] || '',
     fechaNacimiento: parts[6] || '',
-    peso: parts[7] || '',
-    altura: parts[8] || ''
+    estadoNombre: parts[7] || 'ACTIVO',
+    sexoNombre: parts[8] || 'Masculino'
   }
 }
 
-const sexoFromID = { '1': 'M', '2': 'F' }
+const sexoFromNombre = { 'Masculino': 'M', 'Femenino': 'F' }
 
 export function EditarTripulante() {
   const navigate = useNavigate()
@@ -86,14 +86,14 @@ export function EditarTripulante() {
             Apellido: t.apellido,
             Peso: t.peso,
             Altura: t.altura,
-            Sexo: sexoFromID[t.sexoID] || 'M',
+            Sexo: sexoFromNombre[t.sexoNombre] || 'M',
             FechaDeNacimiento: t.fechaNacimiento,
             Estado: t.estadoNombre,
             imagen: t.imagen,
             aptitudes: [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
           })
           if (t.imagen) {
-            setPreviewUrl(`http://localhost:8080${t.imagen}`)
+            setPreviewUrl(`${API_URL}${t.imagen}`)
           }
         }
       } else {
@@ -157,7 +157,7 @@ export function EditarTripulante() {
       const res = await subirImagenTripulante(croppedFile)
       if (res.success) {
         setFormData(prev => ({ ...prev, imagen: res.path }))
-        setPreviewUrl(`http://localhost:8080${res.path}`)
+        setPreviewUrl(`${API_URL}${res.path}`)
       } else {
         setError(res.message || 'Error al subir la imagen')
       }

@@ -8,6 +8,7 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight } from "lucide-react"
 import { useAuth } from '../contexts/AuthContext'
+import { API_URL } from '../services/ikarosApi'
 import * as api from '../services/ikarosApi'
 import './TripulanteView.css'
 
@@ -18,16 +19,16 @@ function parseTripulante(data) {
     tripulanteId: parts[0] || '',
     nombre: parts[1] || '',
     apellido: parts[2] || '',
-    imagen: parts[3] || '',
-    estadoNombre: parts[4] || '',
-    sexoID: parts[5] || '1',
+    peso: parts[3] || '',
+    altura: parts[4] || '',
+    imagen: parts[5] || '',
     fechaNacimiento: parts[6] || '',
-    peso: parts[7] || '',
-    altura: parts[8] || ''
+    estadoNombre: parts[7] || '',
+    sexoNombre: parts[8] || ''
   }
 }
 
-const sexoLabel = { '1': 'Masculino', '2': 'Femenino' }
+
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
@@ -98,7 +99,7 @@ export function TripulanteView() {
   }
 
   const nombreCompleto = `${tripulante.nombre} ${tripulante.apellido}`
-  const imageUrl = tripulante.imagen ? `http://localhost:8080${tripulante.imagen}` : null
+  const imageUrl = tripulante.imagen ? `${API_URL}${tripulante.imagen}` : null
 
   const ellipsisItems = []
   if (hasPermission('tripulantes:edit')) {
@@ -145,7 +146,7 @@ export function TripulanteView() {
             <div className='personal-info'>
               <Infoshow label="Altura" subtitle="" content={`${tripulante.altura} cm`} />
               <Infoshow label="Peso" subtitle="" content={`${tripulante.peso} kg`} />
-              <Infoshow label="Sexo" subtitle="" content={sexoLabel[tripulante.sexoID] || '—'} />
+              <Infoshow label="Sexo" subtitle="" content={tripulante.sexoNombre || '—'} />
             </div>
             <div className='date-info'>
               <Infoshow label="Fecha de nacimiento" subtitle="" content={formatDate(tripulante.fechaNacimiento)} />
