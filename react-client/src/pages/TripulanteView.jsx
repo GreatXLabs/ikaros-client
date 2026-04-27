@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { createPortal } from 'react-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { Infoshow } from '../components/Infoshow'
@@ -28,7 +29,40 @@ function parseTripulante(data) {
   }
 }
 
+function parseMisionesTripulante(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map(item => {
+    const parts = item.split(':')
+    return {
+      misionId: parts[0] || '',
+      nombre: parts[1] || '',
+      descripcion: parts[2] || '',
+      estadoNombre: parts[3] || ''
+    }
+  }).filter(m => m.misionId)
+}
 
+function parseMisiones(data) {
+  if (!data) return []
+  const items = data.split(';')
+  return items.map(item => {
+    const parts = item.split(':')
+    return {
+      misionId: parts[0] || '',
+      nombre: parts[1] || '',
+      estadoNombre: parts[2] || ''
+    }
+  }).filter(m => m.misionId)
+}
+
+const estadoBadgeClass = {
+  'Planificada': 'pendiente',
+  'Preparada': 'pendiente',
+  'En Curso': 'en-curso',
+  'Finalizada': 'completada',
+  'Cancelada': 'cancelada'
+}
 
 function formatDate(dateStr) {
   if (!dateStr) return '—'
@@ -37,14 +71,48 @@ function formatDate(dateStr) {
   return date.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
+function AsignarMisionModal({ open, misiones, onSelect, onClose }) {
+  if (!open) return null
+
+  return createPortal(
+    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="modal-content modal-content-wide">
+        <h2>Asignar misión</h2>
+        <p>Seleccioná una misión pendiente para asignar a este tripulante.</p>
+        <div className="modal-misiones-header">
+          <span>Nombre</span>
+          <span>Estado</span>
+        </div>
+        <div className="modal-misiones-list">
+          {misiones.length === 0 ? (
+            <div className="no-data">No hay misiones disponibles</div>
+          ) : misiones.map(m => (
+            <div key={m.misionId} className="modal-mision-item" onClick={() => onSelect(m.misionId)}>
+              <span className="modal-mision-nombre">{m.nombre}</span>
+              <span className={`estado-badge ${estadoBadgeClass[m.estadoNombre] || 'pendiente'}`}>{m.estadoNombre}</span>
+            </div>
+          ))}
+        </div>
+        <div className="modal-buttons">
+          <button className="modal-cancel-btn" onClick={onClose}>Cancelar</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  )
+}
+
 export function TripulanteView() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { hasPermission } = useAuth()
   const [tripulante, setTripulante] = useState(null)
+  const [misiones, setMisiones] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showAsignarModal, setShowAsignarModal] = useState(false)
+  const [misionesDisponibles, setMisionesDisponibles] = useState([])
 
   useEffect(() => {
     loadData()
@@ -53,16 +121,47 @@ export function TripulanteView() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const res = await api.consultarTripulante(id)
-      if (res.success) {
-        setTripulante(parseTripulante(res.data))
+      const [tripRes, misRes] = await Promise.all([
+        api.consultarTripulante(id),
+        api.listarMisionesTripulante(id)
+      ])
+      if (tripRes.success) {
+        setTripulante(parseTripulante(tripRes.data))
       } else {
-        setError(res.message || 'Tripulante no encontrado')
+        setError(tripRes.message || 'Tripulante no encontrado')
+      }
+      if (misRes.success) {
+        setMisiones(parseMisionesTripulante(misRes.data))
       }
     } catch {
       setError('Error de conexión con el servidor')
     }
     setLoading(false)
+  }
+
+  const handleOpenAsignar = async () => {
+    try {
+      const res = await api.listarMisiones()
+      if (res.success) {
+        setMisionesDisponibles(parseMisiones(res.data))
+      }
+    } catch {}
+    setShowAsignarModal(true)
+  }
+
+  const handleAsignar = async (misionId) => {
+    try {
+      const res = await api.asignarMisionTripulante(id, misionId)
+      if (res.success) {
+        setShowAsignarModal(false)
+        loadData()
+      } else {
+        setError(res.message || 'Error al asignar misión')
+      }
+    } catch {
+      setError('Error de conexión con el servidor')
+    }
+    setShowAsignarModal(false)
   }
 
   const handleDelete = async () => {
@@ -104,6 +203,9 @@ export function TripulanteView() {
   const ellipsisItems = []
   if (hasPermission('tripulantes:edit')) {
     ellipsisItems.push({ label: 'Editar tripulante', onClick: () => navigate(`/Tripulantes/${id}/Editar`) })
+  }
+  if (hasPermission('tripulantes:assign-mission')) {
+    ellipsisItems.push({ label: 'Asignar misión', onClick: handleOpenAsignar })
   }
   if (hasPermission('tripulantes:delete')) {
     ellipsisItems.push({ label: 'Eliminar tripulante', variant: 'danger', onClick: () => setShowDeleteConfirm(true) })
@@ -152,6 +254,39 @@ export function TripulanteView() {
               <Infoshow label="Fecha de nacimiento" subtitle="" content={formatDate(tripulante.fechaNacimiento)} />
             </div>
           </div>
+
+          <div className="section-title">
+            <h2>Misiones asignadas</h2>
+          </div>
+
+          {misiones.length === 0 ? (
+            <div className="no-data">Sin misiones asignadas</div>
+          ) : (
+            <div className="misiones-table-container">
+              <div className="misiones-table">
+                <div className="misiones-table-header">
+                  <span>ID</span>
+                  <span>Nombre</span>
+                  <span>Descripción</span>
+                  <span>Estado</span>
+                </div>
+                {misiones.map(m => (
+                  <div
+                    key={m.misionId}
+                    className="misiones-table-row"
+                    onClick={() => navigate(`/Misiones/${m.misionId}`)}
+                  >
+                    <span>{m.misionId.toString().padStart(3, '0')}</span>
+                    <span>{m.nombre}</span>
+                    <span>{m.descripcion}</span>
+                    <span className={`estado-badge ${estadoBadgeClass[m.estadoNombre] || 'pendiente'}`}>
+                      {m.estadoNombre}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -163,6 +298,13 @@ export function TripulanteView() {
         confirmVariant="danger"
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteConfirm(false)}
+      />
+
+      <AsignarMisionModal
+        open={showAsignarModal}
+        misiones={misionesDisponibles}
+        onSelect={handleAsignar}
+        onClose={() => setShowAsignarModal(false)}
       />
     </>
   )

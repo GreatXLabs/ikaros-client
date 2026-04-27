@@ -52,6 +52,22 @@ public class ControladorTripulantes {
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
 
+	@GetMapping("/{id}/misiones")
+	public ResponseEntity<Map<String, Object>> listarMisionesTripulante(@PathVariable int id, @RequestHeader("Authorization") String token) {
+		String solicitud = "LISTAR_MISIONES_TRIPULANTE|" + token + "|" + id;
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+	}
+
+	@PostMapping("/asignar")
+	public ResponseEntity<Map<String, Object>> asignarMision(@RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
+		String tripulanteId = cuerpo.getOrDefault("tripulanteId", "");
+		String misionId = cuerpo.getOrDefault("misionId", "");
+		String solicitud = "ASIGNAR_TRIPULANTE|" + token + "|" + tripulanteId + "|" + misionId;
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+	}
+
 	@PostMapping("/imagen")
 	public ResponseEntity<Map<String, Object>> subirImagen(@RequestParam("imagen") MultipartFile archivo) {
 		if (archivo.isEmpty()) {

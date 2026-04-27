@@ -33,6 +33,13 @@
   background-color: rgba(255, 255, 255, 0.05);
 }
 
+.tripulante-img-placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
 .estado-indicator {
   position: absolute;
   bottom: 8px;
@@ -69,18 +76,21 @@
 .tripulante-item .info {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: center;
   width: 100%;
-  gap: 8px;
+  gap: 6px;
   font-weight: 600;
   font-size: 11px;
   color: rgba(255, 255, 255, 0.6);
+  flex-wrap: wrap;
 }
 
 
 .info span{
-  padding:5px 10px;
+  padding: 3px 8px;
   background-color: rgba(0, 0, 0, 0.562);
   border-radius: 1000px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  min-width: 0;
 }

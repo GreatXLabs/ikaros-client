@@ -18,10 +18,11 @@ function parseTripulantes(data) {
       TripulanteID: parseInt(parts[0]),
       Nombre: parts[1] || '',
       Apellido: parts[2] || '',
-      Peso: parseFloat(parts[3]) || 0,
-      Altura: parseFloat(parts[4]) || 0,
-      FechaDeNacimiento: parts[5] || '',
-      EstadoTID: parseInt(parts[6]) || 1
+      Imagen: parts[3] || '',
+      EstadoNombre: parts[4] || 'Activo',
+      SexoNombre: parts[5] || '',
+      Peso: parts[6] || '',
+      Altura: parts[7] || ''
     }
   }).filter(t => t.TripulanteID)
 }
