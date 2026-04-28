@@ -5,7 +5,7 @@ import { Header } from '../components/Header'
 import { EllipsisMenu } from '../components/EllipsisMenu'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
-import { listarTripulantes, bajaTripulante } from '../services/ikarosApi'
+import { listarTripulantes, bajaTripulante, listarEstadosTripulantes } from '../services/ikarosApi'
 import { TripulanteItem } from '../components/TripulanteItem'
 import './Tripulantes.css'
 
@@ -13,7 +13,7 @@ function parseTripulantes(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map(item => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return {
       TripulanteID: parseInt(parts[0]),
       Nombre: parts[1] || '',
@@ -27,17 +27,6 @@ function parseTripulantes(data) {
   }).filter(t => t.TripulanteID)
 }
 
-const estados = [
-  { id: 1, nombre: 'Activo' },
-  { id: 2, nombre: 'Inactivo' },
-  { id: 3, nombre: 'Retirado' }
-]
-
-const sexos = [
-  { id: 'M', nombre: 'Masculino' },
-  { id: 'F', nombre: 'Femenino' }
-]
-
 export function Tripulantes() {
   const navigate = useNavigate()
   const { hasPermission } = useAuth()
@@ -47,9 +36,15 @@ export function Tripulantes() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [tripulantesData, setTripulantesData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [estados, setEstados] = useState([])
+  const sexos = [
+    { id: 'M', nombre: 'Masculino' },
+    { id: 'F', nombre: 'Femenino' }
+  ]
 
   useEffect(() => {
     loadTripulantes()
+    loadEstados()
   }, [])
 
   const loadTripulantes = async () => {
@@ -64,6 +59,18 @@ export function Tripulantes() {
     setLoading(false)
   }
 
+  const loadEstados = async () => {
+    try {
+      const res = await listarEstadosTripulantes()
+      if (res.success && res.data) {
+        setEstados(res.data.split(";").map(item => {
+          const parts = item.split("~")
+          return { id: parseInt(parts[0]), nombre: parts[1] || "" }
+        }))
+      }
+    } catch {}
+  }
+
   const filteredTripulantes = tripulantesData.filter(tripulante => {
     const matchesSearch =
       tripulante.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -71,7 +78,9 @@ export function Tripulantes() {
 
     const matchesEstado = selectedEstado === '' || tripulante.EstadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
 
-    return matchesSearch && matchesEstado
+    const matchesSexo = selectedSexo === '' || tripulante.SexoNombre.toUpperCase().startsWith(selectedSexo)
+
+    return matchesSearch && matchesEstado && matchesSexo
   })
 
   const ellipsisItems = []

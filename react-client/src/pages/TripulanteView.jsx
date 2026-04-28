@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { createPortal } from 'react-dom'
@@ -33,12 +34,13 @@ function parseMisionesTripulante(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map(item => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return {
       misionId: parts[0] || '',
       nombre: parts[1] || '',
-      descripcion: parts[2] || '',
-      estadoNombre: parts[3] || ''
+      fechaInicioEstimada: parts[2] || '',
+			fechaFinEstimada: parts[3] || '',
+      estadoNombre: parts[4] || ''
     }
   }).filter(m => m.misionId)
 }
@@ -47,7 +49,7 @@ function parseMisiones(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map(item => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return {
       misionId: parts[0] || '',
       nombre: parts[1] || '',
@@ -231,7 +233,7 @@ export function TripulanteView() {
             </div>
           </div>
 
-          <div className="hero">
+          <div className="hero-tripulante ">
             {imageUrl ? (
               <img src={imageUrl} alt={nombreCompleto} />
             ) : (
@@ -267,7 +269,8 @@ export function TripulanteView() {
                 <div className="misiones-table-header">
                   <span>ID</span>
                   <span>Nombre</span>
-                  <span>Descripción</span>
+                  <span>Fecha Inicio</span>
+                  <span>Fecha Fin</span>
                   <span>Estado</span>
                 </div>
                 {misiones.map(m => (
@@ -278,7 +281,9 @@ export function TripulanteView() {
                   >
                     <span>{m.misionId.toString().padStart(3, '0')}</span>
                     <span>{m.nombre}</span>
-                    <span>{m.descripcion}</span>
+                    <span>{m.fechaInicioEstimada}</span>
+                    <span>{m.fechaFinEstimada}</span>
+
                     <span className={`estado-badge ${estadoBadgeClass[m.estadoNombre] || 'pendiente'}`}>
                       {m.estadoNombre}
                     </span>

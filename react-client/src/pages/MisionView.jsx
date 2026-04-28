@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
@@ -30,17 +31,18 @@ function parseMision(data) {
 	}
 }
 
-function parseEventos(data) {
+function parseEventos(data, misionNombre) {
 	if (!data) return []
 	const items = data.split(';')
 	return items.map(item => {
-		const parts = item.split(':')
+		const parts = item.split('~')
 		return {
 			id: parseInt(parts[0]) || 0,
-			misionNombre: parts[1] || '',
-			titulo: parts[2] || '',
+			misionNombre: misionNombre || '',
+			titulo: parts[1] || '',
+			fecha: parts[2] || '',
 			descripcion: parts[3] || '',
-			fecha: parts[4] || ''
+			estadoNombre: parts[4] || ''
 		}
 	}).filter(e => e.id)
 }
@@ -55,10 +57,6 @@ function formatFecha(fechaStr) {
 	})
 }
 
-const ESTADO_MAP = {
-	'PLANIFICADA': 1, 'PREPARADA': 2, 'EN_CURSO': 3, 'EN CURSO': 3,
-	'FINALIZADA': 4, 'CANCELADA': 5
-}
 
 export function MisionView() {
 	const { id } = useParams()
@@ -77,32 +75,33 @@ export function MisionView() {
 	useEffect(() => {
 		loadData()
 	}, [id])
-
 	const loadData = async () => {
 		setLoading(true)
 		try {
 			const [misionRes, eventosRes, tripRes] = await Promise.all([
 				api.consultarMision(id),
 				api.consultarEventos(id),
-				api.listarTripulantes()
+				api.listarTripulantesMision(id)
 			])
 
-			if (misionRes.success) {
-				setMision(parseMision(misionRes.data))
+			const parsedMision = misionRes.success ? parseMision(misionRes.data) : null
+
+			if (parsedMision) {
+				setMision(parsedMision)
 			} else {
 				setError(misionRes.message || 'Misión no encontrada')
 			}
 
 			if (eventosRes.success) {
-				setEventos(parseEventos(eventosRes.data))
+				setEventos(parseEventos(eventosRes.data, parsedMision?.nombre || ''))
 			}
 
 			if (tripRes.success && tripRes.data) {
-				const allTrip = tripRes.data.split(';').map(item => {
-					const parts = item.split(':')
-					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', MisionID: parts[3] || '' }
+				const tripItems = tripRes.data.split(';').map(item => {
+					const parts = item.split('~')
+					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', Imagen: parts[3] || '', Estado: parts[4] || '' }
 				}).filter(t => t.TripulanteID)
-				setTripulantes(allTrip.filter(t => t.MisionID === id || t.MisionID === String(id)))
+				setTripulantes(tripItems)
 			}
 		} catch {
 			setError('Error de conexión con el servidor')
@@ -138,7 +137,6 @@ export function MisionView() {
 		)
 	}
 
-	const estadoMID = ESTADO_MAP[mision.estadoNombre?.toUpperCase()] || 1
 
 	const ellipsisItems = []
 	if (hasPermission('misiones:edit')) {
@@ -165,7 +163,7 @@ export function MisionView() {
 			const ahora = Date.now()
 			retrasoInicio = Math.round((ahora - estimada) / 1000)
 		}
-		await api.actualizarEstadoMision(id, 'EN_CURSO', retrasoInicio, undefined)
+		await api.actualizarEstadoMision(id, 'EN CURSO', retrasoInicio, undefined)
 		setShowStartConfirm(false)
 		loadData()
 	}
@@ -211,10 +209,10 @@ export function MisionView() {
 							</BreadcrumbItem>
 						</Breadcrumb>
 						<div className="action-buttons">
-							{hasPermission('misiones:start') && estadoMID === 1 && (
+							{hasPermission('misiones:start') && mision.estadoNombre?.toUpperCase() === 'PLANIFICADA' && (
 								<Button label="Iniciar misión" color="blue" onClick={() => setShowStartConfirm(true)} />
 							)}
-							{hasPermission('misiones:end') && estadoMID === 3 && (
+							{hasPermission('misiones:end') && mision.estadoNombre?.toUpperCase() === 'EN CURSO' && (
 								<Button label="Finalizar misión" color="red" onClick={() => setShowEndConfirm(true)} />
 							)}
 							{ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
@@ -232,8 +230,15 @@ export function MisionView() {
 							<Infoshow label="Estado" subtitle="" content={mision.estadoNombre} />
 						</div>
 						<div className='time-info'>
-							<Infoshow label="Fecha inicio" subtitle="Estimada" content={formatFecha(mision.fechaInicioEstimada)} />
-							<Infoshow label="Fecha finalización" subtitle="Estimada" content={formatFecha(mision.fechaFinEstimada)} />
+							<div className="time">
+								<Infoshow label="Fecha inicio" subtitle="Estimada" content={formatFecha(mision.fechaInicioEstimada)} />
+								<Infoshow label="Fecha finalización" subtitle="Estimada" content={formatFecha(mision.fechaFinEstimada)} />
+							</div>
+							<div className="time">
+								<Infoshow  subtitle="Real" content={formatFecha(mision.fechaInicioEstimada)} />
+								<Infoshow  subtitle="Real" content={formatFecha(mision.fechaFinEstimada)} />
+							</div>
+							
 						</div>
 					</div>
 

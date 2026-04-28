@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
@@ -7,14 +8,14 @@ import { DateRangeFilter } from '../components/DateRangeFilter'
 import { EllipsisMenu } from '../components/EllipsisMenu'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
-import { listarMisiones, actualizarEstadoMision } from '../services/ikarosApi'
+import { listarMisiones, actualizarEstadoMision, listarEstadosMisiones } from '../services/ikarosApi'
 import './Misiones.css'
 
 function parseMisiones(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map(item => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return {
       misionId: parseInt(parts[0]),
       nombre: parts[1] || '',
@@ -27,14 +28,6 @@ function parseMisiones(data) {
   }).filter(m => m.misionId)
 }
 
-const estados = [
-  { id: 1, nombre: 'Planificada' },
-  { id: 2, nombre: 'Preparada' },
-  { id: 3, nombre: 'En curso' },
-  { id: 4, nombre: 'Finalizada' },
-  { id: 5, nombre: 'Cancelada' }
-]
-
 export function Misiones() {
   const navigate = useNavigate()
   const { hasPermission } = useAuth()
@@ -46,9 +39,11 @@ export function Misiones() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [misionesData, setMisionesData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [estados, setEstados] = useState([])
 
   useEffect(() => {
     loadMisiones()
+    loadEstados()
   }, [])
 
   const loadMisiones = async () => {
@@ -61,6 +56,18 @@ export function Misiones() {
       setMisionesData([])
     }
     setLoading(false)
+  }
+
+  const loadEstados = async () => {
+    try {
+      const res = await listarEstadosMisiones()
+      if (res.success && res.data) {
+        setEstados(res.data.split(';').map(item => {
+          const parts = item.split('~')
+          return { id: parseInt(parts[0]), nombre: parts[1] || '' }
+        }))
+      }
+    } catch {}
   }
 
   const filteredMisiones = misionesData.filter(mision => {

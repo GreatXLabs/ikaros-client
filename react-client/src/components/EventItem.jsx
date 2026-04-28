@@ -7,6 +7,16 @@ export function EventItem({ event, canDelete = false, onDelete }) {
 	const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
 	const menuRef = useRef(null)
 
+	const formatFecha = (fechaHora) => {
+		if (!fechaHora) return '—'
+		const date = new Date(fechaHora)
+		if (isNaN(date.getTime())) return fechaHora
+		return date.toLocaleDateString('es-AR', {
+			day: '2-digit', month: '2-digit', year: 'numeric',
+			hour: '2-digit', minute: '2-digit'
+		})
+	}
+
 	const handleContextMenu = (e) => {
 		if (!canDelete) return
 		e.preventDefault()
@@ -38,7 +48,7 @@ export function EventItem({ event, canDelete = false, onDelete }) {
 				</div>
 
 				<div className="time-stamp">
-					<p>{event.fecha}</p>
+					<p>{formatFecha(event.fecha)}</p>
 				</div>
 			</div>
 

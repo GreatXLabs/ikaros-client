@@ -25,7 +25,7 @@ public class ControladorMisiones {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Object>> listarActivas(@RequestHeader("Authorization") String token) {
-		String solicitud = "LISTAR_MISIONES_ACTIVAS|" + token;
+		String solicitud = "LISTAR_MISIONES|" + token;
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
@@ -33,6 +33,13 @@ public class ControladorMisiones {
 	@GetMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> consultarPorId(@PathVariable int id, @RequestHeader("Authorization") String token) {
 		String solicitud = "CONSULTAR_MISION|" + token + "|" + id;
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+	}
+
+	@GetMapping("/{id}/tripulantes")
+	public ResponseEntity<Map<String, Object>> listarTripulantesMision(@PathVariable int id, @RequestHeader("Authorization") String token) {
+		String solicitud = "LISTAR_TRIPULANTES_MISION|" + token + "|" + id;
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}

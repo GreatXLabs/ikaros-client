@@ -42,6 +42,15 @@ export async function consultarRoles() {
   return request('/roles')
 }
 
+// --- Estados ---
+export async function listarEstadosMisiones() {
+  return request('/estados/misiones')
+}
+
+export async function listarEstadosTripulantes() {
+  return request('/estados/tripulantes')
+}
+
 // --- Misiones ---
 export async function listarMisiones() {
   return request('/misiones')
@@ -56,6 +65,10 @@ export async function asignarMisionTripulante(tripulanteId, misionId) {
 
 export async function consultarMision(id) {
   return request(`/misiones/${id}`)
+}
+
+export async function listarTripulantesMision(misionId) {
+  return request(`/misiones/${misionId}/tripulantes`)
 }
 
 export async function registrarMision(mision) {
@@ -145,6 +158,10 @@ export async function bajaUsuario(username) {
 }
 
 // --- Eventos ---
+export async function listarTodosEventos() {
+  return request('/eventos/listar')
+}
+
 export async function consultarEventos(misionID) {
   return request(`/eventos?misionID=${misionID}`)
 }

@@ -5,14 +5,14 @@ import { EventItem } from '../components/EventItem'
 import { AddEventForm } from '../components/AddEventForm'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
-import { registrarEvento, bajaEvento, listarMisiones, consultarEventos } from '../services/ikarosApi'
+import { registrarEvento, bajaEvento, listarMisiones, listarTodosEventos } from '../services/ikarosApi'
 import './Eventos.css'
 
 function parseMisionesForFilter(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map(item => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return { id: parseInt(parts[0]), nombre: parts[1] || '' }
   }).filter(m => m.id)
 }
@@ -21,14 +21,14 @@ function parseEventos(data) {
   if (!data) return []
   const items = data.split(';')
   return items.map((item, index) => {
-    const parts = item.split(':')
+    const parts = item.split('~')
     return {
       id: parseInt(parts[0]) || index + 1,
-      misionID: parseInt(parts[1]) || 0,
-      misionNombre: parts[2] || '',
-      titulo: parts[3] || '',
-      fecha: parts[4] || '',
-      descripcion: parts[5] || ''
+      misionNombre: parts[1] || '',
+      titulo: parts[2] || '',
+      fecha: parts[3] || '',
+      descripcion: parts[4] || '',
+      estadoNombre: parts[5] || ''
     }
   }).filter(e => e.id)
 }
@@ -44,26 +44,21 @@ export function Eventos() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    loadMisiones()
+    loadAll()
   }, [])
 
-  const loadMisiones = async () => {
-    try {
-      const res = await listarMisiones()
-      if (res.success) {
-        setMisionesList(parseMisionesForFilter(res.data))
-      }
-    } catch {
-      setMisionesList([])
-    }
-  }
-
-  const loadEventos = async (misionID) => {
+  const loadAll = async () => {
     setLoading(true)
     try {
-      const res = await consultarEventos(misionID)
-      if (res.success) {
-        setEventosData(parseEventos(res.data))
+      const [eventosRes, misionesRes] = await Promise.all([
+        listarTodosEventos(),
+        listarMisiones()
+      ])
+      if (misionesRes.success) {
+        setMisionesList(parseMisionesForFilter(misionesRes.data))
+      }
+      if (eventosRes.success) {
+        setEventosData(parseEventos(eventosRes.data))
       }
     } catch {
       setEventosData([])
@@ -71,35 +66,22 @@ export function Eventos() {
     setLoading(false)
   }
 
-  const handleMisionChange = async (misionNombre) => {
-    setSelectedMision(misionNombre)
-    const mision = misionesList.find(m => m.nombre === misionNombre)
-    if (mision) {
-      await loadEventos(mision.id)
-    } else {
-      setEventosData([])
-      setLoading(false)
-    }
-  }
-
   const misiones = misionesList.map(m => m.nombre)
 
   const filteredEventos = eventosData.filter(event => {
     const matchesSearch =
       event.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.misionNombre.toLowerCase().includes(searchTerm.toLowerCase())
+      event.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
 
-    return matchesSearch
+    const matchesMision = !selectedMision || event.misionNombre === selectedMision
+
+    return matchesSearch && matchesMision
   })
 
   const handleAddEvent = async (evento) => {
     await registrarEvento(evento)
     setShowAddEvent(false)
-    const mision = misionesList.find(m => m.nombre === selectedMision)
-    if (mision) {
-      await loadEventos(mision.id)
-    }
+    loadAll()
   }
 
   const handleDeleteEvent = (eventId) => {
@@ -109,10 +91,7 @@ export function Eventos() {
   const confirmDelete = async () => {
     if (deleteTarget) {
       await bajaEvento(deleteTarget)
-      const mision = misionesList.find(m => m.nombre === selectedMision)
-      if (mision) {
-        await loadEventos(mision.id)
-      }
+      loadAll()
     }
     setDeleteTarget(null)
   }
@@ -137,7 +116,7 @@ export function Eventos() {
               <select
                 className="filter-select"
                 value={selectedMision}
-                onChange={(e) => handleMisionChange(e.target.value)}
+                onChange={(e) => setSelectedMision(e.target.value)}
               >
                 <option value="">Todas las misiones</option>
                 {misiones.map(mision => (
@@ -154,10 +133,8 @@ export function Eventos() {
           <div className="eventos-list">
             {loading ? (
               <div className="no-results">Cargando eventos...</div>
-            ) : !selectedMision ? (
-              <div className="no-results">Seleccioná una misión para ver sus eventos</div>
             ) : filteredEventos.length === 0 ? (
-              <div className="no-results">No hay eventos para esta misión</div>
+              <div className="no-results">No hay eventos registrados</div>
             ) : (
               filteredEventos.map(event => (
                 <EventItem

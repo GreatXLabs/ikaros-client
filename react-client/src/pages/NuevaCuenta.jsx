@@ -14,7 +14,7 @@ function parseRoles(data) {
 	if (!data) return []
 	const items = data.split(';')
 	return items.map(item => {
-		const parts = item.split(':')
+		const parts = item.split('~')
 		return { id: parseInt(parts[0]), nombre: parts[1]?.toUpperCase() || '' }
 	}).filter(r => r.id)
 }
