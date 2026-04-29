@@ -96,7 +96,6 @@ export function EditarMision() {
   const confirmSave = async () => {
     try {
       const res = await modificarMision(id, {
-        estado: estado,
         nombre: formData.nombre,
         descripcion: formData.descripcion,
         fechaInicio: formData.fechaInicioEstimada,

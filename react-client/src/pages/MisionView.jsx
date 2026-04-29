@@ -77,6 +77,7 @@ export function MisionView() {
 	const [showStartConfirm, setShowStartConfirm] = useState(false)
 	const [showEndConfirm, setShowEndConfirm] = useState(false)
 	const [showAddEvent, setShowAddEvent] = useState(false)
+	const [showPrepararConfirm, setShowPrepararConfirm] = useState(false)
 	const [error, setError] = useState('')
 
 	useEffect(() => {
@@ -149,6 +150,9 @@ export function MisionView() {
 	if (hasPermission('misiones:edit')) {
 		ellipsisItems.push({ label: 'Editar misión', onClick: () => navigate(`/Misiones/${id}/Editar`) })
 	}
+	if (hasPermission('misiones:edit') && mision.estadoNombre?.toUpperCase() === 'PLANIFICADA') {
+		ellipsisItems.push({ label: 'Misión preparada', onClick: () => setShowPrepararConfirm(true) })
+	}
 	if (hasPermission('misiones:delete')) {
 		ellipsisItems.push({ label: 'Cancelar misión', variant: 'danger', onClick: () => setShowDeleteConfirm(true) })
 	}
@@ -156,6 +160,12 @@ export function MisionView() {
 	const eventosEllipsisItems = []
 	if (hasPermission('eventos:create')) {
 		eventosEllipsisItems.push({ label: 'Registrar evento', onClick: () => setShowAddEvent(true) })
+	}
+
+	const handlePrepararMision = async () => {
+		await api.actualizarEstadoMision(id, 'PREPARADA')
+		setShowPrepararConfirm(false)
+		loadData()
 	}
 
 	const handleDelete = async () => {
@@ -279,6 +289,16 @@ export function MisionView() {
 					</div>
 				</div>
 			</div>
+
+			<ConfirmModal
+				open={showPrepararConfirm}
+				title="¿Marcar como preparada?"
+				message="Esta acción cambiará el estado de la misión a 'Preparada'."
+				confirmLabel="Preparada"
+				confirmVariant="primary"
+				onConfirm={handlePrepararMision}
+				onCancel={() => setShowPrepararConfirm(false)}
+			/>
 
 			<ConfirmModal
 				open={showDeleteConfirm}

@@ -61,7 +61,7 @@ public class ControladorMisiones {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> modificarMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "PLANIFICADA") + "|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
+		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		if (respuesta.esExitosa()) {

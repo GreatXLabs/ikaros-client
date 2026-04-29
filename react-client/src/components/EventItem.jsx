@@ -40,7 +40,7 @@ export function EventItem({ event, canDelete = false, onDelete }) {
 
 	return (
 		<>
-			<div className="event-item" onContextMenu={handleContextMenu}>
+			<div className={`event-item${event.estadoNombre?.toUpperCase() === "DESESTIMADO" ? " desestimado" : ""}`} onContextMenu={handleContextMenu}>
 				<div className="main-info">
 					<p className='overline'>{event.misionNombre}</p>
 					<p className='title'>{event.titulo}</p>
