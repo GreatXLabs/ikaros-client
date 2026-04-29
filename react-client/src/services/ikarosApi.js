@@ -22,7 +22,7 @@ async function request(endpoint, options = {}) {
 
   if (res.status === 401) {
     sessionStorage.removeItem('ikaros_user')
-    window.location.hash = '#/'
+    window.location.href = '/'
     throw new Error('Sesión expirada')
   }
 
