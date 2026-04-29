@@ -78,6 +78,13 @@ export async function registrarMision(mision) {
   })
 }
 
+export async function modificarMision(id, mision) {
+  return request(`/misiones/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(mision)
+  })
+}
+
 export async function actualizarEstadoMision(id, estado, retrasoInicio, retrasoFin) {
   return request(`/misiones/${id}/estado`, {
     method: 'PATCH',

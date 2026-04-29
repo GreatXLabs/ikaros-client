@@ -59,6 +59,21 @@ public class ControladorMisiones {
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
 
+	@PutMapping("/{id}")
+	public ResponseEntity<Map<String, Object>> modificarMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
+		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "PLANIFICADA") + "|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+
+		if (respuesta.esExitosa()) {
+			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
+			if (usuarioID != null) {
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_MISION, RegistradorLogs.ENT_MISION, id);
+			}
+		}
+
+		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+	}
+
 	@PatchMapping("/{id}/estado")
 	public ResponseEntity<Map<String, Object>> actualizarEstadoMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
 		String retrasoInicio = cuerpo.getOrDefault("retrasoInicio", "");
