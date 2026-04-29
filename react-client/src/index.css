@@ -110,3 +110,34 @@ input:hover {
 *::-webkit-scrollbar-corner {
   background: rgba(0, 0, 0, 0.4);
 }
+
+
+ select::picker(select) {
+    -webkit-appearance: none;                                             
+    appearance: none;                                                     
+    padding: 10px;                                                        
+    border: 1px solid #cccccc67;                                          
+    border-radius: 10px !important;                                                   
+    background: rgb(0, 0, 0);                               
+  }                                                                       
+                                                            
+  option {                                                                
+    background: rgb(0, 0, 0);                               
+    color: white;    
+    border-radius: 10px !important;     
+                                                       
+  }                                                                       
+                                                                          
+  option:hover,                                                           
+  option:checked {                                          
+    background: #6d6d6d;                                                  
+  } 
+.form-error {
+  color: #fc8181;
+  font-size: 14px;
+  padding: 10px 14px;
+  background: rgba(252, 129, 129, 0.1);
+  border: 1px solid rgba(252, 129, 129, 0.4);
+  border-radius: 10px;
+  margin: 0 0 15px 0;
+}

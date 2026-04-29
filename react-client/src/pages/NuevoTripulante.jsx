@@ -7,7 +7,7 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight, Plus, X, Camera } from "lucide-react"
-import { registrarTripulante, consultarAptitudes, subirImagenTripulante, API_URL } from '../services/ikarosApi'
+import { registrarTripulante, consultarAptitudes, guardarCapacidades, subirImagenTripulante, API_URL } from '../services/ikarosApi'
 import './NuevoTripulante.css'
 
 function parseAptitudes(data) {
@@ -117,6 +117,10 @@ export function NuevoTripulante() {
 
   const handleCreate = () => {
     setError('')
+    if (!formData.Nombre.trim() || !formData.Apellido.trim() || !formData.Peso || !formData.Altura || !formData.FechaDeNacimiento) {
+      setError('Completá todos los campos obligatorios')
+      return
+    }
     setShowSaveConfirm(true)
   }
 
@@ -132,6 +136,17 @@ export function NuevoTripulante() {
         imagen: formData.imagen
       })
       if (res.success) {
+        const capacidades = formData.aptitudes
+          .filter(a => a.aptitudID && a.calificacion)
+          .map(a => ({
+            aptitudID: a.aptitudID,
+            calificacion: a.calificacion,
+            fechaExamen: a.fechaExamen || ''
+          }))
+        if (capacidades.length > 0) {
+          const nuevoId = res.data
+          await guardarCapacidades(nuevoId, capacidades)
+        }
         navigate('/Tripulantes')
       } else {
         setError(res.message || 'Error al crear el tripulante')
@@ -176,6 +191,29 @@ export function NuevoTripulante() {
 
             {error && <p className="form-error">{error}</p>}
 
+            <div className="form-row image-row">
+              <div className="form-group image-group">
+                <label className="form-label">Foto</label>
+                <div className="image-upload-area">
+                  {previewUrl ? (
+                    <div className="image-preview-container">
+                      <img src={previewUrl} alt="Preview" className="image-preview" />
+                      <div className="image-preview-actions">
+                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
+                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
+                      <Camera size={24} />
+                      <span>Subir foto</span>
+                    </button>
+                  )}
+                </div>
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
+              </div>
+            </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Nombre</label>
@@ -212,28 +250,7 @@ export function NuevoTripulante() {
               </div>
             </div>
 
-            <div className="form-row image-row">
-              <div className="form-group image-group">
-                <label className="form-label">Foto</label>
-                <div className="image-upload-area">
-                  {previewUrl ? (
-                    <div className="image-preview-container">
-                      <img src={previewUrl} alt="Preview" className="image-preview" />
-                      <div className="image-preview-actions">
-                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
-                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
-                      <Camera size={24} />
-                      <span>Subir foto</span>
-                    </button>
-                  )}
-                </div>
-                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
-              </div>
-            </div>
+
 
             <h2 className="form-section-title">Aptitudes</h2>
 
@@ -256,11 +273,24 @@ export function NuevoTripulante() {
                     <input
                       type="number"
                       className="form-input"
-                      placeholder="1-10"
-                      min="1"
-                      max="10"
+                      placeholder="1-100"
+                      min="0"
+                      max="100"
                       value={aptitud.calificacion}
-                      onChange={(e) => handleAptitudChange(index, 'calificacion', e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        if (raw === '') {
+                          handleAptitudChange(index, 'calificacion', '');
+                          return;
+                        }
+                        const val = Math.min(100, Math.max(1, Number(raw)));
+                        handleAptitudChange(index, 'calificacion', val);
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value === '' || Number(e.target.value) < 1) {
+                          handleAptitudChange(index, 'calificacion', 1);
+                        }
+                      }}
                     />
                   </div>
                   <div className="form-group aptitud-fecha-group">

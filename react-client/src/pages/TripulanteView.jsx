@@ -11,7 +11,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight } from "lucide-react"
 import { useAuth } from '../contexts/AuthContext'
 import { API_URL } from '../services/ikarosApi'
-import * as api from '../services/ikarosApi'
+import { consultarTripulante, listarMisionesTripulante, consultarCapacidades, listarMisiones, asignarMisionTripulante, bajaTripulante } from '../services/ikarosApi'
 import './TripulanteView.css'
 
 function parseTripulante(data) {
@@ -110,6 +110,7 @@ export function TripulanteView() {
   const { hasPermission } = useAuth()
   const [tripulante, setTripulante] = useState(null)
   const [misiones, setMisiones] = useState([])
+  const [capacidades, setCapacidades] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -123,9 +124,10 @@ export function TripulanteView() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const [tripRes, misRes] = await Promise.all([
-        api.consultarTripulante(id),
-        api.listarMisionesTripulante(id)
+      const [tripRes, misRes, capRes] = await Promise.all([
+        consultarTripulante(id),
+        listarMisionesTripulante(id),
+        consultarCapacidades(id)
       ])
       if (tripRes.success) {
         setTripulante(parseTripulante(tripRes.data))
@@ -135,6 +137,13 @@ export function TripulanteView() {
       if (misRes.success) {
         setMisiones(parseMisionesTripulante(misRes.data))
       }
+      if (capRes.success && capRes.data) {
+        const parsed = capRes.data.split(';').map(item => {
+          const parts = item.split('~')
+          return { aptitudID: parts[0] || '', nombre: parts[1] || '', calificacion: parts[2] || '', fecha: parts[3] || '' }
+        }).filter(c => c.aptitudID)
+        setCapacidades(parsed)
+      }
     } catch {
       setError('Error de conexión con el servidor')
     }
@@ -143,7 +152,7 @@ export function TripulanteView() {
 
   const handleOpenAsignar = async () => {
     try {
-      const res = await api.listarMisiones()
+      const res = await listarMisiones()
       if (res.success) {
         setMisionesDisponibles(parseMisiones(res.data))
       }
@@ -153,7 +162,7 @@ export function TripulanteView() {
 
   const handleAsignar = async (misionId) => {
     try {
-      const res = await api.asignarMisionTripulante(id, misionId)
+      const res = await asignarMisionTripulante(id, misionId)
       if (res.success) {
         setShowAsignarModal(false)
         loadData()
@@ -167,7 +176,7 @@ export function TripulanteView() {
   }
 
   const handleDelete = async () => {
-    await api.bajaTripulante(id)
+    await bajaTripulante(id)
     navigate('/Tripulantes')
   }
 
@@ -257,6 +266,27 @@ export function TripulanteView() {
             </div>
           </div>
 
+			<div className="section-title">
+				<h2>Aptitudes</h2>
+			</div>
+			{capacidades.length === 0 ? (
+				<div className="no-data">Sin aptitudes registradas</div>
+			) : (
+				<div className="aptitudes-section ">
+				
+						{capacidades.map(c => (
+							<div key={c.aptitudID} className="aptitude-item">
+                <div className="aptitude-top">
+                  <span className='aptitude-nombre'>{c.nombre}</span>
+                  <span>{c.fecha ? formatDate(c.fecha) : '—'}</span>
+                  
+                </div>
+								<span className='aptitude-calificacion'>{c.calificacion}/100</span>
+								
+							</div>
+						))}
+				</div>
+			)}
           <div className="section-title">
             <h2>Misiones asignadas</h2>
           </div>
@@ -298,7 +328,7 @@ export function TripulanteView() {
       <ConfirmModal
         open={showDeleteConfirm}
         title="¿Dar de baja tripulante?"
-        message="Esta acción cambiará el estado del tripulante a 'Inactivo'."
+        message="Esta acción cambiará el estado del tripulante a 'Retirado'."
         confirmLabel="Dar de baja"
         confirmVariant="danger"
         onConfirm={handleDelete}

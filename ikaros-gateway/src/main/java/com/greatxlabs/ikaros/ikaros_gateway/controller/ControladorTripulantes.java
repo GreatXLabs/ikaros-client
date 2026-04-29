@@ -59,6 +59,26 @@ public class ControladorTripulantes {
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
 
+	@GetMapping("/{id}/capacidades")
+	public ResponseEntity<Map<String, Object>> consultarCapacidades(@PathVariable int id, @RequestHeader("Authorization") String token) {
+		String solicitud = "CONSULTAR_CAPACIDADES|" + token + "|" + id;
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
+	}
+
+	@PostMapping("/{id}/capacidades")
+	public ResponseEntity<Map<String, Object>> guardarCapacidades(@PathVariable int id, @RequestBody java.util.List<java.util.Map<String, String>> capacidades, @RequestHeader("Authorization") String token) {
+		// Primero eliminar las existentes
+		String solEliminar = "ELIMINAR_CAPACIDADES|" + token + "|" + id;
+		clienteSocket.enviarSolicitud(solEliminar);
+		// Luego registrar cada una
+		for (java.util.Map<String, String> cap : capacidades) {
+			String solRegistrar = "REGISTRAR_CAPACIDAD|" + token + "|" + id + "|" + cap.get("aptitudID") + "|" + cap.get("calificacion") + "|" + (cap.getOrDefault("fechaExamen", ""));
+			clienteSocket.enviarSolicitud(solRegistrar);
+		}
+		return ResponseEntity.ok(Map.of("success", true, "message", "Capacidades guardadas"));
+	}
+
 	@PostMapping("/asignar")
 	public ResponseEntity<Map<String, Object>> asignarMision(@RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
 		String tripulanteId = cuerpo.getOrDefault("tripulanteId", "");

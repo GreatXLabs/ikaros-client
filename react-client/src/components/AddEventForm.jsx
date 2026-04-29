@@ -4,6 +4,7 @@ import './AddEventForm.css'
 export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
   const [misionId, setMisionId] = useState(defaultMisionId || '')
   const [titulo, setTitulo] = useState('')
+	const [validationError, setValidationError] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const tituloRef = useRef(null)
   const containerRef = useRef(null)
@@ -23,7 +24,11 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!titulo.trim() || !misionId) return
+    setValidationError('')
+    if (!titulo.trim() || !misionId) {
+      setValidationError('Completá todos los campos obligatorios')
+      return
+    }
 
     const now = new Date()
     const timestamp = now.getFullYear() + '-' +
@@ -55,6 +60,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
       <div className="add-event-form" ref={containerRef}>
         <div className="add-event-header">
           <h3>Registrar evento</h3>
+				{validationError && <p className="form-error">{validationError}</p>}
           <button className="add-event-close" onClick={onClose}>Esc</button>
         </div>
 

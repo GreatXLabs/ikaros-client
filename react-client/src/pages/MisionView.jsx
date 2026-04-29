@@ -47,6 +47,13 @@ function parseEventos(data, misionNombre) {
 	}).filter(e => e.id)
 }
 
+function calcularFechaReal(fechaEstimada, retrasoSegundos) {
+  if (!fechaEstimada || !retrasoSegundos) return null
+  const retraso = parseInt(retrasoSegundos)
+  if (isNaN(retraso)) return null
+  return new Date(new Date(fechaEstimada).getTime() + retraso * 1000)
+}
+
 function formatFecha(fechaStr) {
 	if (!fechaStr) return '—'
 	const d = new Date(fechaStr)
@@ -235,8 +242,8 @@ export function MisionView() {
 								<Infoshow label="Fecha finalización" subtitle="Estimada" content={formatFecha(mision.fechaFinEstimada)} />
 							</div>
 							<div className="time">
-								<Infoshow  subtitle="Real" content={formatFecha(mision.fechaInicioEstimada)} />
-								<Infoshow  subtitle="Real" content={formatFecha(mision.fechaFinEstimada)} />
+								<Infoshow  subtitle="Real" content={formatFecha(calcularFechaReal(mision.fechaInicioEstimada, mision.retrasoInicio))} />
+								<Infoshow  subtitle="Real" content={formatFecha(calcularFechaReal(mision.fechaFinEstimada, mision.retrasoFin))} />
 							</div>
 							
 						</div>

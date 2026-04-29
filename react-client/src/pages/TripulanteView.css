@@ -14,12 +14,19 @@
 	margin-bottom: 30px;
 	align-items: center;
 	justify-content: flex-start;
+	
 }
 
 .hero-tripulante  h1 {
 	font-family: "Funnel Display", sans-serif;
 	font-size: 2.5rem;
 	margin: 0;
+}
+
+.hero-tripulante  img {
+	height: 200px;
+	border-radius: 10px;
+	margin-right: 10px;
 }
 
 .hero-tripulante  p {
@@ -76,14 +83,19 @@
 }
 
 .aptitude-item {
+	width:fit-content;
 	display: flex;
-	flex-direction: column;
-	gap: 6px;
-	padding: 12px 15px;
+	flex-direction: row;
+	align-items: center;
+	gap: 25px;
+	padding: 15px;
 	background-color: rgba(255, 255, 255, 0.05);
 	border-radius: 8px;
 	transition: background-color 0.2s ease-in-out;
+	border: 1px solid rgba(255, 255, 255, 0.096);
+
 }
+
 
 .aptitude-item:hover {
 	background-color: rgba(255, 255, 255, 0.1);
@@ -92,12 +104,15 @@
 .aptitude-top {
 	display: flex;
 	justify-content: space-between;
-	align-items: center;
+	align-items: left;
+	flex-direction: column;
 }
 
 .aptitude-nombre {
 	font-weight: 300;
 	font-size: 13px;
+	width: fit-content;
+	margin-bottom: 5px;
 }
 
 .aptitude-calificacion {

@@ -73,6 +73,10 @@ export function NuevaMision() {
 
 	const handleCreate = () => {
 		setError('')
+		if (!formData.nombre.trim() || !formData.descripcion.trim() || !formData.fechaInicio || !formData.fechaFin) {
+			setError('Completá todos los campos obligatorios')
+			return
+		}
 		const isValid = validate(null, null, formData)
 		if (!isValid) {
 			setError('Corregí los campos marcados en rojo')

@@ -98,6 +98,17 @@ export async function consultarTripulante(id) {
   return request(`/tripulantes/${id}`)
 }
 
+export async function consultarCapacidades(id) {
+  return request(`/tripulantes/${id}/capacidades`)
+}
+
+export async function guardarCapacidades(id, capacidades) {
+  return request(`/tripulantes/${id}/capacidades`, {
+    method: 'POST',
+    body: JSON.stringify(capacidades)
+  })
+}
+
 export async function listarMisionesTripulante(id) {
   return request(`/tripulantes/${id}/misiones`)
 }

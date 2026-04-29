@@ -59,6 +59,10 @@ export function NuevaCuenta() {
 
 	const handleCreate = () => {
 		setError('')
+		if (!formData.Nombre.trim() || !formData.Apellido.trim() || !formData.Usuario.trim() || !formData.Clave.trim()) {
+			setError('Completá todos los campos obligatorios')
+			return
+		}
 		setShowSaveConfirm(true)
 	}
 

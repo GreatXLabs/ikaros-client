@@ -7,7 +7,7 @@ import { ConfirmModal } from '../components/ConfirmModal'
 import { ImageCropModal } from '../components/ImageCropModal'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react"
 import { ChevronRight, Plus, X, Camera } from "lucide-react"
-import { consultarTripulante, modificarTripulante, consultarAptitudes, subirImagenTripulante, API_URL } from '../services/ikarosApi'
+import { consultarTripulante, modificarTripulante, consultarAptitudes, consultarCapacidades, guardarCapacidades, subirImagenTripulante, API_URL } from '../services/ikarosApi'
 import './NuevoTripulante.css'
 
 const estados = [
@@ -73,14 +73,28 @@ export function EditarTripulante() {
   const loadData = async () => {
     setLoading(true)
     try {
-      const [tripRes, aptRes] = await Promise.all([
+      const [tripRes, aptRes, capRes] = await Promise.all([
         consultarTripulante(id),
-        consultarAptitudes()
+        consultarAptitudes(),
+        consultarCapacidades(id)
       ])
 
       if (tripRes.success) {
         const t = parseTripulante(tripRes.data)
         if (t) {
+          let existingAptitudes = [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
+          if (capRes.success && capRes.data) {
+            const parsed = capRes.data.split(';').map(item => {
+              const parts = item.split('~')
+              return {
+                aptitudID: parts[0] || '',
+                calificacion: parts[2] || '',
+                fechaExamen: parts[3] || ''
+              }
+            }).filter(a => a.aptitudID)
+            if (parsed.length > 0) existingAptitudes = parsed
+          }
+
           setFormData({
             Nombre: t.nombre,
             Apellido: t.apellido,
@@ -90,7 +104,7 @@ export function EditarTripulante() {
             FechaDeNacimiento: t.fechaNacimiento,
             Estado: t.estadoNombre,
             imagen: t.imagen,
-            aptitudes: [{ aptitudID: '', calificacion: '', fechaExamen: '' }]
+            aptitudes: existingAptitudes
           })
           if (t.imagen) {
             setPreviewUrl(`${API_URL}${t.imagen}`)
@@ -189,6 +203,16 @@ export function EditarTripulante() {
         imagen: formData.imagen
       })
       if (res.success) {
+        const capacidades = formData.aptitudes
+          .filter(a => a.aptitudID && a.calificacion)
+          .map(a => ({
+            aptitudID: a.aptitudID,
+            calificacion: a.calificacion,
+            fechaExamen: a.fechaExamen || ''
+          }))
+        if (capacidades.length > 0) {
+          await guardarCapacidades(id, capacidades)
+        }
         navigate(`/Tripulantes/${id}`)
       } else {
         setError(res.message || 'Error al modificar el tripulante')
@@ -250,6 +274,29 @@ export function EditarTripulante() {
 
             {error && <p className="form-error">{error}</p>}
 
+            <div className="form-row image-row">
+              <div className="form-group image-group">
+                <label className="form-label">Foto</label>
+                <div className="image-upload-area">
+                  {previewUrl ? (
+                    <div className="image-preview-container">
+                      <img src={previewUrl} alt="Preview" className="image-preview" />
+                      <div className="image-preview-actions">
+                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
+                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
+                      <Camera size={24} />
+                      <span>Subir foto</span>
+                    </button>
+                  )}
+                </div>
+                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
+              </div>
+            </div>
+
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Nombre</label>
@@ -295,28 +342,7 @@ export function EditarTripulante() {
               <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
             </div>
 
-            <div className="form-row image-row">
-              <div className="form-group image-group">
-                <label className="form-label">Foto</label>
-                <div className="image-upload-area">
-                  {previewUrl ? (
-                    <div className="image-preview-container">
-                      <img src={previewUrl} alt="Preview" className="image-preview" />
-                      <div className="image-preview-actions">
-                        <button type="button" className="image-action-btn" onClick={handleSelectImage}>Cambiar</button>
-                        <button type="button" className="image-action-btn image-action-remove" onClick={handleRemoveImage}>Quitar</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button type="button" className="image-upload-btn" onClick={handleSelectImage}>
-                      <Camera size={24} />
-                      <span>Subir foto</span>
-                    </button>
-                  )}
-                </div>
-                <input type="file" ref={fileInputRef} accept="image/*" onChange={handleFileChange} hidden />
-              </div>
-            </div>
+
 
             <h2 className="form-section-title">Aptitudes</h2>
 
@@ -339,11 +365,24 @@ export function EditarTripulante() {
                     <input
                       type="number"
                       className="form-input"
-                      placeholder="1-10"
-                      min="1"
-                      max="10"
+                      placeholder="1-100"
+                      min="0"
+                      max="100"
                       value={aptitud.calificacion}
-                      onChange={(e) => handleAptitudChange(index, 'calificacion', e.target.value)}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        if (raw === '') {
+                          handleAptitudChange(index, 'calificacion', '');
+                          return;
+                        }
+                        const val = Math.min(100, Math.max(1, Number(raw)));
+                        handleAptitudChange(index, 'calificacion', val);
+                      }}
+                      onBlur={(e) => {
+                        if (e.target.value === '' || Number(e.target.value) < 1) {
+                          handleAptitudChange(index, 'calificacion', 1);
+                        }
+                      }}
                     />
                   </div>
                   <div className="form-group aptitud-fecha-group">
