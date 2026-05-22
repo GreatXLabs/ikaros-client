@@ -246,7 +246,7 @@ export function NuevoTripulante() {
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha de nacimiento</label>
-                <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+                <input type="date" name="FechaDeNacimiento" max={new Date().toISOString().split("T")[0]} className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
               </div>
             </div>
 

@@ -45,6 +45,7 @@ export function EditarMision() {
     fechaFinEstimada: ''
   })
   const [estado, setEstado] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
   const [showSaveConfirm, setShowSaveConfirm] = useState(false)
 
@@ -79,15 +80,45 @@ export function EditarMision() {
     setLoading(false)
   }
 
+  const validate = (name, value, data) => {
+    const errors = { ...fieldErrors }
+
+    if (name === 'fechaInicioEstimada' || name === 'fechaFinEstimada') {
+      const inicio = name === 'fechaInicioEstimada' ? value : data?.fechaInicioEstimada ?? formData.fechaInicioEstimada
+      const fin = name === 'fechaFinEstimada' ? value : data?.fechaFinEstimada ?? formData.fechaFinEstimada
+
+      delete errors.fechaInicioEstimada
+      delete errors.fechaFinEstimada
+
+      if (inicio && fin) {
+        const dtFin = new Date(fin)
+        const dtInicio = new Date(inicio)
+        if (dtFin < dtInicio) {
+          errors.fechaFinEstimada = 'La fecha de finalización no puede ser anterior a la de inicio'
+        }
+      }
+    }
+
+    setFieldErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
+    const newData = { ...formData, [name]: value }
+    setFormData(newData)
+    validate(name, value, newData)
   }
 
   const handleSave = () => {
     setError('')
     if (!formData.nombre.trim() || !formData.descripcion.trim()) {
       setError('Completá todos los campos obligatorios')
+      return
+    }
+    const isValid = validate(null, null, formData)
+    if (!isValid) {
+      setError('Corregí los campos marcados en rojo')
       return
     }
     setShowSaveConfirm(true)
@@ -176,11 +207,25 @@ export function EditarMision() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Fecha inicio estimada</label>
-                <input type="datetime-local" name="fechaInicioEstimada" className="form-input form-datetime" value={formData.fechaInicioEstimada} onChange={handleChange} />
+                <input
+                  type="datetime-local"
+                  name="fechaInicioEstimada"
+                  className={`form-input form-datetime${fieldErrors.fechaInicioEstimada ? ' field-error' : ''}`}
+                  value={formData.fechaInicioEstimada}
+                  onChange={handleChange}
+                />
+                {fieldErrors.fechaInicioEstimada && <span className="field-error-msg">{fieldErrors.fechaInicioEstimada}</span>}
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha fin estimada</label>
-                <input type="datetime-local" name="fechaFinEstimada" className="form-input form-datetime" value={formData.fechaFinEstimada} onChange={handleChange} />
+                <input
+                  type="datetime-local"
+                  name="fechaFinEstimada"
+                  className={`form-input form-datetime${fieldErrors.fechaFinEstimada ? ' field-error' : ''}`}
+                  value={formData.fechaFinEstimada}
+                  onChange={handleChange}
+                />
+                {fieldErrors.fechaFinEstimada && <span className="field-error-msg">{fieldErrors.fechaFinEstimada}</span>}
               </div>
             </div>
           </div>

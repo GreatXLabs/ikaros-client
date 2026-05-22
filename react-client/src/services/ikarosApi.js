@@ -165,14 +165,14 @@ export async function registrarUsuario(usuario) {
 }
 
 export async function modificarUsuario(usuario) {
-  return request('/usuarios', {
+  return request(`/usuarios/${usuario.usuarioID}`, {
     method: 'PUT',
     body: JSON.stringify(usuario)
   })
 }
 
-export async function bajaUsuario(username) {
-  return request(`/usuarios/${username}`, { method: 'DELETE' })
+export async function bajaUsuario(usuarioID) {
+  return request(`/usuarios/${usuarioID}`, { method: 'DELETE' })
 }
 
 // --- Eventos ---
