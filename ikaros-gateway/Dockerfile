@@ -1,30 +1,15 @@
-# Use official OpenJDK runtime as a parent image
-FROM openjdk:17-jdk-slim
-
-# Set the working directory to /app
+# Use Gradle image to build the application
+FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
-
-# Copy the gradlew, gradle directory and the source code
-COPY gradlew .
-COPY gradle gradle
 COPY . .
+RUN gradle build --no-daemon
 
-# Make gradlew executable
-RUN chmod +x gradlew
-
-# Build the application
-RUN ./gradlew build --no-daemon
-
-# Expose the port the app runs on
+# Use Eclipse Temurin JRE for runtime (smaller than full JDK)
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/build/libs/ikaros-gateway-*.jar ./app.jar
 EXPOSE 8080
-
-# Set environment variables with defaults, can be overridden at runtime
 ENV JAVA_APP_PORT=8080
 ENV SERVER_PORT=${JAVA_APP_PORT}
-ENV SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ikaros
-ENV SPRING_DATASOURCE_USERNAME=root
-ENV SPRING_DATASOURCE_PASSWORD=root
-ENV SPRING_PROFILES_ACTIVE=cloud
-
-# Run the jar file
-ENTRYPOINT ["java", "-jar", "build/libs/ikaros-gateway-*.jar"]
+ENV SPRING_PROFILE=cloud
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
