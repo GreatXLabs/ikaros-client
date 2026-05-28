@@ -2,7 +2,7 @@
 FROM gradle:8.14-jdk17 AS build
 WORKDIR /app
 COPY . .
-RUN gradle build --no-daemon
+RUN gradle assemble --no-daemon
 
 # Use Eclipse Temurin JRE for runtime (multi-arch, works on ARM64 and x86_64)
 FROM eclipse-temurin:17-jre
