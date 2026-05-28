@@ -4,8 +4,8 @@ WORKDIR /app
 COPY . .
 RUN gradle build --no-daemon
 
-# Use Eclipse Temurin JRE for runtime (smaller than full JDK)
-FROM eclipse-temurin:17-jre-alpine
+# Use Eclipse Temurin JRE for runtime (multi-arch, works on ARM64 and x86_64)
+FROM eclipse-temurin:17-jre
 WORKDIR /app
 COPY --from=build /app/build/libs/ikaros-gateway-*.jar ./app.jar
 EXPOSE 8080
