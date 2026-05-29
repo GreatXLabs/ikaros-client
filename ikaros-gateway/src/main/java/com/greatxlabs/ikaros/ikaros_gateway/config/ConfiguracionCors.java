@@ -16,13 +16,18 @@ public class ConfiguracionCors {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin(origenesPermitidos);
+        if (origenesPermitidos != null && !origenesPermitidos.isEmpty()) {
+            String[] originsArray = origenesPermitidos.split(",");
+            for (String origin : originsArray) {
+                config.addAllowedOrigin(origin.trim());
+            }
+        }
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
 }

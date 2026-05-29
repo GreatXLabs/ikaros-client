@@ -1,10 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import './AddEventForm.css'
 
+const MAX_TITULO = 20
+const MAX_DESCRIPCION = 510
+
 export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
   const [misionId, setMisionId] = useState(defaultMisionId || '')
   const [titulo, setTitulo] = useState('')
-	const [validationError, setValidationError] = useState('')
+  const [validationError, setValidationError] = useState('')
   const [descripcion, setDescripcion] = useState('')
   const tituloRef = useRef(null)
   const containerRef = useRef(null)
@@ -25,7 +28,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     setValidationError('')
-    if (!titulo.trim() || !misionId) {
+    if (!titulo.trim() || !misionId || !descripcion.trim()) {
       setValidationError('Completá todos los campos obligatorios')
       return
     }
@@ -60,7 +63,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
       <div className="add-event-form" ref={containerRef}>
         <div className="add-event-header">
           <h3>Registrar evento</h3>
-				{validationError && <p className="form-error">{validationError}</p>}
+          {validationError && <p className="form-error">{validationError}</p>}
           <button className="add-event-close" onClick={onClose}>Esc</button>
         </div>
 
@@ -72,7 +75,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
               onChange={(e) => setMisionId(e.target.value)}
               className="add-event-select"
             >
-<option value="" disabled>Seleccione misión</option>
+              <option value="" disabled>Seleccione misión</option>
               {misiones.map(m => (
                 <option key={m.id} value={m.id}>{m.nombre}</option>
               ))}
@@ -80,22 +83,29 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
           </div>
 
           <div className="add-event-field">
-            <label>Título</label>
+            <div className="field-label-row">
+              <label>Título</label>
+              <span className={`char-counter${titulo.length > MAX_TITULO ? ' over-limit' : ''}`}>{titulo.length}/{MAX_TITULO}</span>
+            </div>
             <input
               ref={tituloRef}
               type="text"
               value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
+              onChange={(e) => setTitulo(e.target.value.slice(0, MAX_TITULO))}
               placeholder="Título del evento"
               className="add-event-input"
+              maxLength={MAX_TITULO}
             />
           </div>
 
           <div className="add-event-field">
-            <label>Descripción</label>
+            <div className="field-label-row">
+              <label>Descripción</label>
+              <span className={`char-counter${descripcion.length > MAX_DESCRIPCION ? ' over-limit' : ''}`}>{descripcion.length}/{MAX_DESCRIPCION}</span>
+            </div>
             <textarea
               value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
+              onChange={(e) => setDescripcion(e.target.value.slice(0, MAX_DESCRIPCION))}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
@@ -105,6 +115,7 @@ export function AddEventForm({ misiones, defaultMisionId, onClose, onSubmit }) {
               placeholder="Descripción del evento (Shift+Enter para salto de línea)"
               className="add-event-textarea"
               rows={3}
+              maxLength={MAX_DESCRIPCION}
             />
           </div>
 

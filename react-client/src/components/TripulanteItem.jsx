@@ -61,9 +61,9 @@ export function TripulanteItem({ tripulante, canEdit = false, canDelete = false,
         </div>
         <p className='Nombre'>{tripulante.Nombre} {tripulante.Apellido}</p>
         <div className='info'>
-          <span>{tripulante.SexoNombre}</span>
-          <span>{tripulante.Altura}cm</span>
-          <span>{tripulante.Peso}kg</span>
+          {tripulante.SexoNombre && <span>{tripulante.SexoNombre}</span>}
+          {tripulante.Altura && <span>{tripulante.Altura}cm</span>}
+          {tripulante.Peso && <span>{tripulante.Peso}kg</span>}
         </div>
       </div>
 

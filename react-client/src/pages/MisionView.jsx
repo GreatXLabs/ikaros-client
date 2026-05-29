@@ -150,7 +150,7 @@ export function MisionView() {
 	if (hasPermission('misiones:edit')) {
 		ellipsisItems.push({ label: 'Editar misión', onClick: () => navigate(`/Misiones/${id}/Editar`) })
 	}
-	if (hasPermission('misiones:edit') && mision.estadoNombre?.toUpperCase() === 'PLANIFICADA') {
+	if (hasPermission('misiones:edit') && (mision.estadoNombre?.toUpperCase() === 'PLANIFICADA' || mision.estadoNombre?.toUpperCase() === 'PREPARADA')) {
 		ellipsisItems.push({ label: 'Misión preparada', onClick: () => setShowPrepararConfirm(true) })
 	}
 	if (hasPermission('misiones:delete')) {
@@ -226,7 +226,7 @@ export function MisionView() {
 							</BreadcrumbItem>
 						</Breadcrumb>
 						<div className="action-buttons">
-							{hasPermission('misiones:start') && mision.estadoNombre?.toUpperCase() === 'PLANIFICADA' && (
+							{hasPermission('misiones:start') && (mision.estadoNombre?.toUpperCase() === 'PLANIFICADA' || mision.estadoNombre?.toUpperCase() === 'PREPARADA') && (
 								<Button label="Iniciar misión" color="blue" onClick={() => setShowStartConfirm(true)} />
 							)}
 							{hasPermission('misiones:end') && mision.estadoNombre?.toUpperCase() === 'EN CURSO' && (
