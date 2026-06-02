@@ -24,6 +24,10 @@ function parseMision(data) {
   }
 }
 
+function getDatePart(dt) { return dt ? dt.split('T')[0] : '' }
+function getTimePart(dt) { return dt?.includes('T') ? dt.split('T')[1].substring(0, 5) : '' }
+function combineDateTime(date, time) { return date ? `${date}T${time || '00:00'}` : '' }
+
 function toDatetimeLocal(fechaStr) {
   if (!fechaStr) return ''
   const d = new Date(fechaStr)
@@ -108,6 +112,17 @@ export function EditarMision() {
     const newData = { ...formData, [name]: value }
     setFormData(newData)
     validate(name, value, newData)
+  }
+
+  const handleDateTimeChange = (field, part, value) => {
+    const current = formData[field] || ''
+    const combined = combineDateTime(
+      part === 'date' ? value : getDatePart(current),
+      part === 'time' ? value : (getTimePart(current) || '00:00')
+    )
+    const newData = { ...formData, [field]: combined }
+    setFormData(newData)
+    validate(field, combined, newData)
   }
 
   const handleSave = () => {
@@ -207,26 +222,40 @@ export function EditarMision() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Fecha inicio estimada</label>
-                <input
-                  type="datetime-local"
-                  lang="es"
-                  name="fechaInicioEstimada"
-                  className={`form-input form-datetime${fieldErrors.fechaInicioEstimada ? ' field-error' : ''}`}
-                  value={formData.fechaInicioEstimada}
-                  onChange={handleChange}
-                />
+                <div className="form-datetime-inputs">
+                  <input
+                    type="date"
+                    lang="es"
+                    className={`form-input form-datetime${fieldErrors.fechaInicioEstimada ? ' field-error' : ''}`}
+                    value={getDatePart(formData.fechaInicioEstimada)}
+                    onChange={(e) => handleDateTimeChange('fechaInicioEstimada', 'date', e.target.value)}
+                  />
+                  <input
+                    type="time"
+                    className={`form-input form-datetime${fieldErrors.fechaInicioEstimada ? ' field-error' : ''}`}
+                    value={getTimePart(formData.fechaInicioEstimada)}
+                    onChange={(e) => handleDateTimeChange('fechaInicioEstimada', 'time', e.target.value)}
+                  />
+                </div>
                 {fieldErrors.fechaInicioEstimada && <span className="field-error-msg">{fieldErrors.fechaInicioEstimada}</span>}
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha fin estimada</label>
-                <input
-                  type="datetime-local"
-                  lang="es"
-                  name="fechaFinEstimada"
-                  className={`form-input form-datetime${fieldErrors.fechaFinEstimada ? ' field-error' : ''}`}
-                  value={formData.fechaFinEstimada}
-                  onChange={handleChange}
-                />
+                <div className="form-datetime-inputs">
+                  <input
+                    type="date"
+                    lang="es"
+                    className={`form-input form-datetime${fieldErrors.fechaFinEstimada ? ' field-error' : ''}`}
+                    value={getDatePart(formData.fechaFinEstimada)}
+                    onChange={(e) => handleDateTimeChange('fechaFinEstimada', 'date', e.target.value)}
+                  />
+                  <input
+                    type="time"
+                    className={`form-input form-datetime${fieldErrors.fechaFinEstimada ? ' field-error' : ''}`}
+                    value={getTimePart(formData.fechaFinEstimada)}
+                    onChange={(e) => handleDateTimeChange('fechaFinEstimada', 'time', e.target.value)}
+                  />
+                </div>
                 {fieldErrors.fechaFinEstimada && <span className="field-error-msg">{fieldErrors.fechaFinEstimada}</span>}
               </div>
             </div>
