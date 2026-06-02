@@ -209,6 +209,7 @@ export function EditarMision() {
                 <label className="form-label">Fecha inicio estimada</label>
                 <input
                   type="datetime-local"
+                  lang="es"
                   name="fechaInicioEstimada"
                   className={`form-input form-datetime${fieldErrors.fechaInicioEstimada ? ' field-error' : ''}`}
                   value={formData.fechaInicioEstimada}
@@ -220,6 +221,7 @@ export function EditarMision() {
                 <label className="form-label">Fecha fin estimada</label>
                 <input
                   type="datetime-local"
+                  lang="es"
                   name="fechaFinEstimada"
                   className={`form-input form-datetime${fieldErrors.fechaFinEstimada ? ' field-error' : ''}`}
                   value={formData.fechaFinEstimada}

@@ -191,6 +191,7 @@ export function NuevaMision() {
                 <label className="form-label">Fecha y hora de inicio</label>
                 <input
                   type="datetime-local"
+                  lang="es"
                   name="fechaInicio"
                   className={`form-input form-datetime${fieldErrors.fechaInicio ? ' field-error' : ''}`}
                   value={formData.fechaInicio}
@@ -202,6 +203,7 @@ export function NuevaMision() {
                 <label className="form-label">Fecha y hora de finalización</label>
                 <input
                   type="datetime-local"
+                  lang="es"
                   name="fechaFin"
                   className={`form-input form-datetime${fieldErrors.fechaFin ? ' field-error' : ''}`}
                   value={formData.fechaFin}
