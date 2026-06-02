@@ -1,42 +1,43 @@
 package com.greatxlabs.ikaros.ikaros_gateway.config;
 
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
 
 @Configuration
-public class ConfiguracionCors {
+public class ConfiguracionCors implements WebMvcConfigurer {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfiguracionCors.class);
 
     @Value("${ikaros.cors.allowed-origins}")
     private String origenesPermitidos;
 
-    @Bean
-    public FilterRegistrationBean<CorsFilter> corsFilterRegistration() {
-        CorsConfiguration config = new CorsConfiguration();
-        if (origenesPermitidos != null && !origenesPermitidos.isBlank()) {
-            for (String origin : origenesPermitidos.split(",")) {
-                config.addAllowedOrigin(origin.trim());
-                logger.info("CORS: origen permitido → {}", origin.trim());
-            }
-        }
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setAllowCredentials(true);
+    @PostConstruct
+    public void logOrigins() {
+        Arrays.stream(origenesPermitidos.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .forEach(o -> logger.info("CORS: origen permitido → {}", o));
+    }
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        String[] origins = Arrays.stream(origenesPermitidos.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toArray(String[]::new);
 
-        FilterRegistrationBean<CorsFilter> registration = new FilterRegistrationBean<>(new CorsFilter(source));
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return registration;
+        registry.addMapping("/**")
+            .allowedOrigins(origins)
+            .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true)
+            .maxAge(3600);
     }
 }
