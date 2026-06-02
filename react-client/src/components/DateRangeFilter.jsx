@@ -92,6 +92,8 @@ export function DateRangeFilter({ onDateChange, dateRange }) {
             staticRanges={staticRanges}
             inputRanges={inputRanges}
             rangeColors={['rgba(255, 255, 255, 0.85)']}
+            startDatePlaceholder="Desde"
+            endDatePlaceholder="Hasta"
           />
         </div>
       )}

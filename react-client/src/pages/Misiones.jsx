@@ -77,7 +77,22 @@ export function Misiones() {
 
     const matchesEstado = selectedEstado === '' || mision.estadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
 
-    return matchesSearch && matchesEstado
+    const rangeStart = dateRange[0].startDate
+    const rangeEnd = dateRange[0].endDate
+    let matchesDate = true
+    if (rangeStart || rangeEnd) {
+      const dayStart = rangeStart ? new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate()) : null
+      const dayEnd = rangeEnd ? new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate(), 23, 59, 59, 999) : null
+      const misionStart = mision.fechaInicioEstimada ? new Date(mision.fechaInicioEstimada) : null
+      const misionEnd = mision.fechaFinEstimada ? new Date(mision.fechaFinEstimada) : null
+      if (misionStart && misionEnd) {
+        matchesDate = (!dayStart || misionEnd >= dayStart) && (!dayEnd || misionStart <= dayEnd)
+      } else if (misionStart) {
+        matchesDate = (!dayStart || misionStart >= dayStart) && (!dayEnd || misionStart <= dayEnd)
+      }
+    }
+
+    return matchesSearch && matchesEstado && matchesDate
   })
 
   const ellipsisItems = []
