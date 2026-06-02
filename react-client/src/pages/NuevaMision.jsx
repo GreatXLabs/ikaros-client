@@ -11,10 +11,6 @@ import './NuevaMision.css'
 
 const MAX_DESC_LENGTH = 510
 
-function getDatePart(dt) { return dt ? dt.split('T')[0] : '' }
-function getTimePart(dt) { return dt?.includes('T') ? dt.split('T')[1].substring(0, 5) : '' }
-function combineDateTime(date, time) { return date ? `${date}T${time || '00:00'}` : '' }
-
 function parseNombresMisiones(data) {
   if (!data) return []
   return data.split(';').map(item => {
@@ -102,17 +98,6 @@ export function NuevaMision() {
     const newData = { ...formData, [name]: value }
     setFormData(newData)
     validate(name, value, newData)
-  }
-
-  const handleDateTimeChange = (field, part, value) => {
-    const current = formData[field] || ''
-    const combined = combineDateTime(
-      part === 'date' ? value : getDatePart(current),
-      part === 'time' ? value : (getTimePart(current) || '00:00')
-    )
-    const newData = { ...formData, [field]: combined }
-    setFormData(newData)
-    validate(field, combined, newData)
   }
 
   const handleCreate = () => {
@@ -204,40 +189,26 @@ export function NuevaMision() {
             <div className="form-row">
               <div className="form-group">
                 <label className="form-label">Fecha y hora de inicio</label>
-                <div className="form-datetime-inputs">
-                  <input
-                    type="date"
-                    lang="es"
-                    className={`form-input form-datetime${fieldErrors.fechaInicio ? ' field-error' : ''}`}
-                    value={getDatePart(formData.fechaInicio)}
-                    onChange={(e) => handleDateTimeChange('fechaInicio', 'date', e.target.value)}
-                  />
-                  <input
-                    type="time"
-                    className={`form-input form-datetime${fieldErrors.fechaInicio ? ' field-error' : ''}`}
-                    value={getTimePart(formData.fechaInicio)}
-                    onChange={(e) => handleDateTimeChange('fechaInicio', 'time', e.target.value)}
-                  />
-                </div>
+                <input
+                  type="datetime-local"
+                  lang="es"
+                  name="fechaInicio"
+                  className={`form-input form-datetime${fieldErrors.fechaInicio ? ' field-error' : ''}`}
+                  value={formData.fechaInicio}
+                  onChange={handleChange}
+                />
                 {fieldErrors.fechaInicio && <span className="field-error-msg">{fieldErrors.fechaInicio}</span>}
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha y hora de finalización</label>
-                <div className="form-datetime-inputs">
-                  <input
-                    type="date"
-                    lang="es"
-                    className={`form-input form-datetime${fieldErrors.fechaFin ? ' field-error' : ''}`}
-                    value={getDatePart(formData.fechaFin)}
-                    onChange={(e) => handleDateTimeChange('fechaFin', 'date', e.target.value)}
-                  />
-                  <input
-                    type="time"
-                    className={`form-input form-datetime${fieldErrors.fechaFin ? ' field-error' : ''}`}
-                    value={getTimePart(formData.fechaFin)}
-                    onChange={(e) => handleDateTimeChange('fechaFin', 'time', e.target.value)}
-                  />
-                </div>
+                <input
+                  type="datetime-local"
+                  lang="es"
+                  name="fechaFin"
+                  className={`form-input form-datetime${fieldErrors.fechaFin ? ' field-error' : ''}`}
+                  value={formData.fechaFin}
+                  onChange={handleChange}
+                />
                 {fieldErrors.fechaFin && <span className="field-error-msg">{fieldErrors.fechaFin}</span>}
               </div>
             </div>
