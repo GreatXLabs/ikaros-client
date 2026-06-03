@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import './CuentaItem.css'
 
-export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true }) {
+export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true, style }) {
   const navigate = useNavigate()
   const { UsuarioID, Usuario, Clave, RolNombre, EstadoNombre } = cuenta
   const [showMenu, setShowMenu] = useState(false)
@@ -61,7 +61,7 @@ export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true 
 
   return (
     <>
-      <div className={`cuenta-item${isInactive ? ' cuenta-inactive' : ''}`} onContextMenu={handleContextMenu}>
+      <div className={`cuenta-item${isInactive ? ' cuenta-inactive' : ''}`} style={style} onContextMenu={handleContextMenu}>
         <span className="cuenta-cell cell-id">{UsuarioID}</span>
         <span className="cuenta-cell cell-nombre">{Usuario}</span>
         <span className="cuenta-cell cell-clave">{formatClave(Clave)}</span>

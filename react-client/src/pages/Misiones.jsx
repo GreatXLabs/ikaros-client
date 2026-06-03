@@ -162,13 +162,14 @@ export function Misiones() {
             </div>
             {loading ? (
               <div className="no-results">Cargando misiones...</div>
-            ) : filteredMisiones.map(mision => (
+            ) : filteredMisiones.map((mision, index) => (
               <MisionItem
                 key={mision.misionId}
                 mision={mision}
                 canEdit={hasPermission('misiones:edit')}
                 canDelete={hasPermission('misiones:delete')}
                 onDelete={handleDeleteMision}
+                style={{ '--index': index }}
               />
             ))}
             {!loading && filteredMisiones.length === 0 && (

@@ -100,8 +100,8 @@ export function Logs() {
 					<div className="logs-list">
 						{loading ? (
 							<div className="no-results">Cargando logs...</div>
-						) : filteredLogs.map(log => (
-							<LogItem key={log.id} log={log} />
+						) : filteredLogs.map((log, index) => (
+							<LogItem key={log.id} log={log} style={{ '--index': index }} />
 						))}
 						{!loading && filteredLogs.length === 0 && (
 							<div className="no-results">No se encontraron logs</div>

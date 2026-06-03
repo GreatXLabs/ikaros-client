@@ -161,13 +161,14 @@ export function Cuentas() {
             </div>
             {loading ? (
               <div className="no-results">Cargando cuentas...</div>
-            ) : filteredCuentas.map(cuenta => (
+            ) : filteredCuentas.map((cuenta, index) => (
               <CuentaItem
                 key={cuenta.UsuarioID}
                 cuenta={cuenta}
                 onDelete={handleDeleteCuenta}
                 canEdit={hasPermission('cuentas:edit') && cuenta.EstadoNombre?.toLowerCase() !== 'inactivo'}
                 canDelete={hasPermission('cuentas:delete') && cuenta.EstadoNombre?.toLowerCase() !== 'inactivo'}
+                style={{ '--index': index }}
               />
             ))}
             {!loading && filteredCuentas.length === 0 && (

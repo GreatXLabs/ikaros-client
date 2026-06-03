@@ -19,7 +19,7 @@ const MAPA_ACCIONES = {
 	'Cierre de Sesion': 'Cerró sesión'
 }
 
-export function LogItem({ log }) {
+export function LogItem({ log, style }) {
 	const formatFecha = (fechaHora) => {
 		if (!fechaHora) return '—'
 		const date = new Date(fechaHora)
@@ -42,7 +42,7 @@ export function LogItem({ log }) {
 	}
 
 	return (
-		<div className="log-item">
+		<div className="log-item" style={style}>
 			<div className="main-info">
 				<p className='overline'>{log.rol}</p>
 				<p className='title'>{descripcionAccion(log.accion, log.tipoEntidad, log.entidadID)}</p>
