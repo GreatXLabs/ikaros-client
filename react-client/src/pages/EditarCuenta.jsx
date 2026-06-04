@@ -89,6 +89,10 @@ export function EditarCuenta() {
 
 	const handleSave = () => {
 		setError('')
+		if (!formData.Nombre.trim() || !formData.Apellido.trim() || !formData.Usuario.trim()) {
+			setError('Completá todos los campos obligatorios')
+			return
+		}
 		setShowSaveConfirm(true)
 	}
 
@@ -96,6 +100,7 @@ export function EditarCuenta() {
 		const selectedRole = roles.find(r => r.id.toString() === formData.RolID)
 		try {
 			const res = await api.modificarUsuario({
+				usuarioID: cuenta.UsuarioID,
 				usuario: formData.Usuario,
 				nombre: formData.Nombre,
 				apellido: formData.Apellido,

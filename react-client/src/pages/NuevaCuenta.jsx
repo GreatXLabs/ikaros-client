@@ -10,6 +10,14 @@ import { useAuth } from '../contexts/AuthContext'
 import * as api from '../services/ikarosApi'
 import './NuevaCuenta.css'
 
+function parseUsuarios(data) {
+  if (!data) return []
+  return data.split(';').map(item => {
+    const parts = item.split('~')
+    return { Usuario: parts[1] || '' }
+  }).filter(u => u.Usuario)
+}
+
 function parseRoles(data) {
 	if (!data) return []
 	const items = data.split(';')
@@ -21,8 +29,9 @@ function parseRoles(data) {
 
 export function NuevaCuenta() {
 	const navigate = useNavigate()
-	const { user } = useAuth()
+	const { user: _user } = useAuth()
 	const [roles, setRoles] = useState([])
+	const [usuariosExistentes, setUsuariosExistentes] = useState([])
 	const [formData, setFormData] = useState({
 		Nombre: '',
 		Apellido: '',
@@ -35,21 +44,27 @@ export function NuevaCuenta() {
 	const [error, setError] = useState('')
 
 	useEffect(() => {
-		const fetchRoles = async () => {
+		const fetchData = async () => {
 			try {
-				const res = await api.consultarRoles()
-				if (res.success) {
-					const parsed = parseRoles(res.data)
+				const [rolesRes, usuariosRes] = await Promise.all([
+					api.consultarRoles(),
+					api.listarUsuarios()
+				])
+				if (rolesRes.success) {
+					const parsed = parseRoles(rolesRes.data)
 					setRoles(parsed)
 					if (parsed.length > 0) {
 						setFormData(prev => ({ ...prev, RolID: parsed[0].id }))
 					}
 				}
+				if (usuariosRes.success) {
+					setUsuariosExistentes(parseUsuarios(usuariosRes.data))
+				}
 			} catch {
 				setRoles([])
 			}
 		}
-		fetchRoles()
+		fetchData()
 	}, [])
 
 	const handleChange = (e) => {
@@ -61,6 +76,10 @@ export function NuevaCuenta() {
 		setError('')
 		if (!formData.Nombre.trim() || !formData.Apellido.trim() || !formData.Usuario.trim() || !formData.Clave.trim()) {
 			setError('Completá todos los campos obligatorios')
+			return
+		}
+		if (usuariosExistentes.some(u => u.Usuario.toLowerCase() === formData.Usuario.trim().toLowerCase())) {
+			setError('El nombre de usuario ya existe')
 			return
 		}
 		setShowSaveConfirm(true)

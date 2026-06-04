@@ -10,7 +10,7 @@ const estadosColores = {
   'RETIRADO': 'retirado'
 }
 
-export function TripulanteItem({ tripulante, canEdit = false, canDelete = false, onDelete }) {
+export function TripulanteItem({ tripulante, canEdit = false, canDelete = false, onDelete, style }) {
   const navigate = useNavigate()
   const estadoClass = estadosColores[tripulante.EstadoNombre?.toUpperCase()] || 'inactivo'
   const [showMenu, setShowMenu] = useState(false)
@@ -50,7 +50,7 @@ export function TripulanteItem({ tripulante, canEdit = false, canDelete = false,
 
   return (
     <>
-      <div className="tripulante-item" onClick={handleClick} onContextMenu={handleContextMenu}>
+      <div className="tripulante-item" style={style} onClick={handleClick} onContextMenu={handleContextMenu}>
         <div className="tripulante-img-wrapper">
           {imgUrl ? (
             <img src={imgUrl} alt={`${tripulante.Nombre} ${tripulante.Apellido}`} className="tripulante-img" />
@@ -61,9 +61,9 @@ export function TripulanteItem({ tripulante, canEdit = false, canDelete = false,
         </div>
         <p className='Nombre'>{tripulante.Nombre} {tripulante.Apellido}</p>
         <div className='info'>
-          <span>{tripulante.SexoNombre}</span>
-          <span>{tripulante.Altura}cm</span>
-          <span>{tripulante.Peso}kg</span>
+          {tripulante.SexoNombre && <span>{tripulante.SexoNombre}</span>}
+          {tripulante.Altura && <span>{tripulante.Altura}cm</span>}
+          {tripulante.Peso && <span>{tripulante.Peso}kg</span>}
         </div>
       </div>
 

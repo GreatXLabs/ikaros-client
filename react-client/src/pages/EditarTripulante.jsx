@@ -187,6 +187,10 @@ export function EditarTripulante() {
 
   const handleSave = () => {
     setError('')
+    if (!formData.Nombre.trim() || !formData.Apellido.trim() || !formData.Peso || !formData.Altura || !formData.FechaDeNacimiento) {
+      setError('Completá todos los campos obligatorios')
+      return
+    }
     setShowSaveConfirm(true)
   }
 
@@ -339,7 +343,7 @@ export function EditarTripulante() {
 
             <div className="form-group">
               <label className="form-label">Fecha de nacimiento</label>
-              <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+              <input type="date" name="FechaDeNacimiento" max={new Date().toISOString().split("T")[0]} className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
             </div>
 
 

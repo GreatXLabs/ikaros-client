@@ -139,3 +139,18 @@
   font-size: 11px;
   color: rgba(255, 255, 255, 0.35);
 }
+
+.field-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.char-counter {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.char-counter.over-limit {
+  color: #f87171;
+}

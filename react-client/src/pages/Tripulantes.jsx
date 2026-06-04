@@ -147,13 +147,14 @@ export function Tripulantes() {
           <div className="tripulantes-container">
             {loading ? (
               <div className="no-results">Cargando tripulantes...</div>
-            ) : filteredTripulantes.map(tripulante => (
+            ) : filteredTripulantes.map((tripulante, index) => (
               <TripulanteItem
                 key={tripulante.TripulanteID}
                 tripulante={tripulante}
                 canEdit={hasPermission('tripulantes:edit')}
                 canDelete={hasPermission('tripulantes:delete')}
                 onDelete={handleDeleteTripulante}
+                style={{ '--index': index }}
               />
             ))}
           </div>

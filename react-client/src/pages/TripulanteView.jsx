@@ -256,11 +256,13 @@ export function TripulanteView() {
               <Infoshow label="ID" subtitle="" content={tripulante.tripulanteId.toString().padStart(3, '0')} />
               <Infoshow label="Estado" subtitle="" content={tripulante.estadoNombre} />
             </div>
-            <div className='personal-info'>
-              <Infoshow label="Altura" subtitle="" content={`${tripulante.altura} cm`} />
-              <Infoshow label="Peso" subtitle="" content={`${tripulante.peso} kg`} />
-              <Infoshow label="Sexo" subtitle="" content={tripulante.sexoNombre || '—'} />
-            </div>
+            {(tripulante.altura || tripulante.peso || tripulante.sexoNombre) && (
+              <div className='personal-info'>
+                {tripulante.altura && <Infoshow label="Altura" subtitle="" content={`${tripulante.altura} cm`} />}
+                {tripulante.peso && <Infoshow label="Peso" subtitle="" content={`${tripulante.peso} kg`} />}
+                {tripulante.sexoNombre && <Infoshow label="Sexo" subtitle="" content={tripulante.sexoNombre} />}
+              </div>
+            )}
             <div className='date-info'>
               <Infoshow label="Fecha de nacimiento" subtitle="" content={formatDate(tripulante.fechaNacimiento)} />
             </div>
@@ -337,7 +339,7 @@ export function TripulanteView() {
 
       <AsignarMisionModal
         open={showAsignarModal}
-        misiones={misionesDisponibles}
+        misiones={misionesDisponibles.filter(m => m.estadoNombre?.toUpperCase() === "PLANIFICADA" || m.estadoNombre?.toUpperCase() === "PREPARADA")}
         onSelect={handleAsignar}
         onClose={() => setShowAsignarModal(false)}
       />
