@@ -143,13 +143,20 @@ export async function subirImagenTripulante(file) {
   const formData = new FormData()
   formData.append('imagen', file)
 
-  const res = await fetch(`${BASE_URL}/tripulantes/imagen`, {
-    method: 'POST',
-    headers: token ? { Authorization: token } : {},
-    body: formData
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15000)
 
-  return res.json()
+  try {
+    const res = await fetch(`${BASE_URL}/tripulantes/imagen`, {
+      method: 'POST',
+      headers: token ? { Authorization: token } : {},
+      body: formData,
+      signal: controller.signal
+    })
+    return res.json()
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 // --- Usuarios ---

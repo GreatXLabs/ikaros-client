@@ -58,3 +58,10 @@
   gap: 12px;
   justify-content: flex-end;
 }
+
+.crop-error {
+  color: #f87171;
+  font-size: 13px;
+  margin: 0;
+  text-align: center;
+}
