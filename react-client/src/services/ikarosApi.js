@@ -20,13 +20,32 @@ async function request(endpoint, options = {}) {
 
   const res = await fetch(`${BASE_URL}${endpoint}`, { ...options, headers })
 
+  // 401 on login = wrong credentials, not session expiry — let caller handle it
+  if (res.status === 401 && endpoint.startsWith('/auth/')) {
+    return res.json()
+  }
+
   if (res.status === 401) {
     sessionStorage.removeItem('ikaros_user')
-    window.location.href = '/'
+    window.dispatchEvent(new CustomEvent('auth:expired'))
     throw new Error('Sesión expirada')
   }
 
-  return res.json()
+  const data = await res.json()
+
+  // Backend always returns 200 for non-login endpoints, even on auth failure.
+  // Detect expired/invalid token from the response body.
+  if (token && data?.success === false && !endpoint.startsWith('/auth/')) {
+    const msg = (data?.message || data?.error || '').toLowerCase()
+    const authKeywords = ['token', 'sesión', 'sesion', 'inválido', 'invalido', 'expiró', 'expiro', 'válido', 'valido', 'autorizacion', 'autorización']
+    if (authKeywords.some(kw => msg.includes(kw))) {
+      sessionStorage.removeItem('ikaros_user')
+      window.dispatchEvent(new CustomEvent('auth:expired'))
+      throw new Error('Sesión expirada')
+    }
+  }
+
+  return data
 }
 
 // --- Auth ---
@@ -35,6 +54,10 @@ export async function login(usuario, clave) {
     method: 'POST',
     body: JSON.stringify({ usuario, clave })
   })
+}
+
+export async function checkSession() {
+  return request('/auth/check')
 }
 
 // --- Roles ---

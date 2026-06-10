@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Logo } from "../components/Logo"
@@ -21,21 +21,24 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  if (user) {
-    const home = DEFAULT_ROUTES[user.RolNombre?.toUpperCase()] || '/Misiones'
-    navigate(home, { replace: true })
-  }
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (user) {
+      const home = DEFAULT_ROUTES[user.RolNombre?.toUpperCase()] || '/Misiones'
+      navigate(home, { replace: true })
+    }
+  }, [user, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     try {
-      const success = await login(username, password)
-      if (success) {
-        const home = DEFAULT_ROUTES[user?.RolNombre?.toUpperCase()] || '/Misiones'
-        navigate(home)
+      const result = await login(username, password)
+      if (result.ok) {
+        const home = DEFAULT_ROUTES[result.user.RolNombre?.toUpperCase()] || '/Misiones'
+        navigate(home, { replace: true })
       } else {
-        setError('Usuario o contraseña incorrectos')
+        setError(result.error || 'Usuario o contraseña incorrectos')
         setPassword('')
       }
     } catch {
