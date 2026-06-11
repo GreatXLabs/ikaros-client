@@ -69,7 +69,7 @@ function ContextMenuPortal({ menuRef, menuPos, items, onClose }) {
 		document.body
 	)
 }
-export function MisionItem({ mision, canEdit = false, canDelete = false, onDelete }) {
+export function MisionItem({ mision, canEdit = false, canDelete = false, onDelete, style }) {
 	const navigate = useNavigate()
 	const [showMenu, setShowMenu] = useState(false)
 	const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
@@ -92,7 +92,7 @@ export function MisionItem({ mision, canEdit = false, canDelete = false, onDelet
 	if (canDelete) menuItems.push({ label: 'Eliminar', danger: true, action: () => onDelete?.(misionId) })
 	return (
 		<>
-			<div className="mision-item" onClick={() => navigate(`/misiones/${misionId}`)} onContextMenu={handleContextMenu}>
+			<div className="mision-item" style={style} onClick={() => navigate(`/misiones/${misionId}`)} onContextMenu={handleContextMenu}>
 				<span className="mision-cell cell-id">{misionId}</span>
 				<span className="mision-cell cell-nombre">{nombre}</span>
 				<span className="mision-cell cell-fecha">

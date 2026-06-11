@@ -1,6 +1,7 @@
 package com.greatxlabs.ikaros.ikaros_gateway.controller;
 
 import com.greatxlabs.ikaros.ikaros_gateway.dto.RespuestaProtocolo;
+import com.greatxlabs.ikaros.ikaros_gateway.service.MinioService;
 import com.greatxlabs.ikaros.ikaros_gateway.service.RegistradorLogs;
 import com.greatxlabs.ikaros.ikaros_gateway.service.SesionGateway;
 import com.greatxlabs.ikaros.ikaros_gateway.socket.ClienteSocketIkaros;
@@ -8,25 +9,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tripulantes")
 public class ControladorTripulantes {
 
-	private static final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/tripulantes/";
-
 	private final ClienteSocketIkaros clienteSocket;
+	private final MinioService minioService;
 	private final RegistradorLogs registradorLogs;
 	private final SesionGateway sesionGateway;
 
-	public ControladorTripulantes(ClienteSocketIkaros clienteSocket, RegistradorLogs registradorLogs, SesionGateway sesionGateway) {
+	public ControladorTripulantes(ClienteSocketIkaros clienteSocket, MinioService minioService, RegistradorLogs registradorLogs, SesionGateway sesionGateway) {
 		this.clienteSocket = clienteSocket;
+		this.minioService = minioService;
 		this.registradorLogs = registradorLogs;
 		this.sesionGateway = sesionGateway;
 	}
@@ -95,24 +91,10 @@ public class ControladorTripulantes {
 		}
 
 		try {
-			String nombreOriginal = archivo.getOriginalFilename();
-			String extension = "";
-			if (nombreOriginal != null && nombreOriginal.contains(".")) {
-				extension = nombreOriginal.substring(nombreOriginal.lastIndexOf("."));
-			}
-			String nombreArchivo = UUID.randomUUID().toString() + extension;
-
-			Path dirPath = Paths.get(UPLOAD_DIR);
-			Files.createDirectories(dirPath);
-
-			Path filePath = dirPath.resolve(nombreArchivo);
-			archivo.transferTo(filePath.toFile());
-
-			String path = "/uploads/tripulantes/" + nombreArchivo;
+			String path = minioService.subirImagen(archivo);
 			return ResponseEntity.ok(Map.of("success", true, "path", path));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return ResponseEntity.internalServerError().body(Map.of("success", false, "message", "Error al guardar la imagen: " + e.getMessage()));
+		} catch (RuntimeException e) {
+			return ResponseEntity.internalServerError().body(Map.of("success", false, "message", "Error al subir la imagen: " + e.getMessage()));
 		}
 	}
 

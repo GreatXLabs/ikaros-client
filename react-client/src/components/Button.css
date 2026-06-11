@@ -35,3 +35,10 @@
 .button-blue:hover {
   background: linear-gradient(161.677deg, #3A5299 0%, #0D1222 100%);
 }
+
+.button-disabled,
+.button-disabled:hover {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}

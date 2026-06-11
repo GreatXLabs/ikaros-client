@@ -143,13 +143,20 @@ export async function subirImagenTripulante(file) {
   const formData = new FormData()
   formData.append('imagen', file)
 
-  const res = await fetch(`${BASE_URL}/tripulantes/imagen`, {
-    method: 'POST',
-    headers: token ? { Authorization: token } : {},
-    body: formData
-  })
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15000)
 
-  return res.json()
+  try {
+    const res = await fetch(`${BASE_URL}/tripulantes/imagen`, {
+      method: 'POST',
+      headers: token ? { Authorization: token } : {},
+      body: formData,
+      signal: controller.signal
+    })
+    return res.json()
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 // --- Usuarios ---
@@ -165,14 +172,14 @@ export async function registrarUsuario(usuario) {
 }
 
 export async function modificarUsuario(usuario) {
-  return request('/usuarios', {
+  return request(`/usuarios/${usuario.usuarioID}`, {
     method: 'PUT',
     body: JSON.stringify(usuario)
   })
 }
 
-export async function bajaUsuario(username) {
-  return request(`/usuarios/${username}`, { method: 'DELETE' })
+export async function bajaUsuario(usuarioID) {
+  return request(`/usuarios/${usuarioID}`, { method: 'DELETE' })
 }
 
 // --- Eventos ---

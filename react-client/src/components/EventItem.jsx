@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import './EventItem.css'
 
-export function EventItem({ event, canDelete = false, onDelete }) {
+export function EventItem({ event, canDelete = false, onDelete, style }) {
 	const [showMenu, setShowMenu] = useState(false)
 	const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
 	const menuRef = useRef(null)
@@ -40,7 +40,7 @@ export function EventItem({ event, canDelete = false, onDelete }) {
 
 	return (
 		<>
-			<div className={`event-item${event.estadoNombre?.toUpperCase() === "DESESTIMADO" ? " desestimado" : ""}`} onContextMenu={handleContextMenu}>
+			<div className={`event-item${event.estadoNombre?.toUpperCase() === "DESESTIMADO" ? " desestimado" : ""}`} style={style} onContextMenu={handleContextMenu}>
 				<div className="main-info">
 					<p className='overline'>{event.misionNombre}</p>
 					<p className='title'>{event.titulo}</p>

@@ -136,12 +136,13 @@ export function Eventos() {
             ) : filteredEventos.length === 0 ? (
               <div className="no-results">No hay eventos registrados</div>
             ) : (
-              filteredEventos.map(event => (
+              filteredEventos.map((event, index) => (
                 <EventItem
                   key={event.id}
                   event={event}
                   canDelete={hasPermission('eventos:delete')}
                   onDelete={handleDeleteEvent}
+                  style={{ '--index': index }}
                 />
               ))
             )}

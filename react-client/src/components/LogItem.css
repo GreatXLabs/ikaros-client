@@ -61,3 +61,12 @@
 	border-color: rgba(255, 255, 255, 0.3);
 	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.log-item {
+  animation: fadeInUp 0.25s ease-out both;
+  animation-delay: calc(var(--index, 0) * 40ms);
+}

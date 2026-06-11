@@ -44,6 +44,7 @@ export function ImageCropModal({ imageSrc, onClose, onCropComplete }) {
   const [zoom, setZoom] = useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null)
   const [processing, setProcessing] = useState(false)
+  const [cropError, setCropError] = useState('')
 
   const onCropChange = useCallback((_, croppedPixels) => {
     setCroppedAreaPixels(croppedPixels)
@@ -52,11 +53,13 @@ export function ImageCropModal({ imageSrc, onClose, onCropComplete }) {
   const handleConfirm = async () => {
     if (!croppedAreaPixels) return
     setProcessing(true)
+    setCropError('')
     try {
       const blob = await getCroppedImg(imageSrc, croppedAreaPixels)
       const file = new File([blob], 'tripulante.jpg', { type: 'image/jpeg' })
       onCropComplete(file)
-    } catch {
+    } catch (e) {
+      setCropError('Error al procesar la imagen: ' + (e.message || 'desconocido'))
       setProcessing(false)
     }
   }
@@ -88,6 +91,7 @@ export function ImageCropModal({ imageSrc, onClose, onCropComplete }) {
             onChange={e => setZoom(Number(e.target.value))}
           />
         </div>
+        {cropError && <p className="crop-error">{cropError}</p>}
         <div className="crop-actions">
           <Button label="Cancelar" color="red" onClick={onClose} />
           <Button

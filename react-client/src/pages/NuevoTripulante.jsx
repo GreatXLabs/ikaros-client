@@ -38,6 +38,8 @@ export function NuevoTripulante() {
   const [error, setError] = useState('')
   const [cropImage, setCropImage] = useState(null)
   const [previewUrl, setPreviewUrl] = useState(null)
+  const [uploading, setUploading] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     const fetchAptitudes = async () => {
@@ -97,6 +99,7 @@ export function NuevoTripulante() {
 
   const handleCropComplete = async (croppedFile) => {
     setCropImage(null)
+    setUploading(true)
     try {
       const res = await subirImagenTripulante(croppedFile)
       if (res.success) {
@@ -107,6 +110,8 @@ export function NuevoTripulante() {
       }
     } catch {
       setError('Error al subir la imagen')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -125,6 +130,7 @@ export function NuevoTripulante() {
   }
 
   const confirmSave = async () => {
+    setSaving(true)
     try {
       const res = await registrarTripulante({
         nombre: formData.Nombre,
@@ -153,6 +159,8 @@ export function NuevoTripulante() {
       }
     } catch {
       setError('Error de conexión con el servidor')
+    } finally {
+      setSaving(false)
     }
     setShowSaveConfirm(false)
   }
@@ -182,7 +190,7 @@ export function NuevoTripulante() {
             </Breadcrumb>
             <div className="action-buttons">
               <Button label="Cancelar" color="red" onClick={handleCancel} />
-              <Button label="Crear" color="blue" onClick={handleCreate} />
+              <Button label={saving ? 'Guardando...' : 'Crear'} color="blue" onClick={handleCreate} disabled={saving} />
             </div>
           </div>
 
@@ -195,7 +203,11 @@ export function NuevoTripulante() {
               <div className="form-group image-group">
                 <label className="form-label">Foto</label>
                 <div className="image-upload-area">
-                  {previewUrl ? (
+                  {uploading ? (
+                    <div className="image-upload-btn uploading">
+                      <span>Subiendo imagen...</span>
+                    </div>
+                  ) : previewUrl ? (
                     <div className="image-preview-container">
                       <img src={previewUrl} alt="Preview" className="image-preview" />
                       <div className="image-preview-actions">
@@ -246,7 +258,7 @@ export function NuevoTripulante() {
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha de nacimiento</label>
-                <input type="date" name="FechaDeNacimiento" className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+                <input type="date" name="FechaDeNacimiento" max={new Date().toISOString().split("T")[0]} className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
               </div>
             </div>
 

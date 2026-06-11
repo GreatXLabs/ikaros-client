@@ -31,3 +31,4 @@ ikaros-gateway/uploads/
 
 # ikaros-server-local copy
 ikaros-server-local/
+.env
