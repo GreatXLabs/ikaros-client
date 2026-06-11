@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import { login as apiLogin } from '../services/ikarosApi'
+import { login as apiLogin, checkSession } from '../services/ikarosApi'
 
 const AuthContext = createContext(null)
 
@@ -35,6 +35,25 @@ export function AuthProvider({ children }) {
     window.addEventListener('auth:expired', handleExpired)
     return () => window.removeEventListener('auth:expired', handleExpired)
   }, [])
+
+  // Proactively check session every 5 minutes while logged in
+  useEffect(() => {
+    if (!user?.token) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await checkSession()
+        if (!res.success) {
+          sessionStorage.removeItem('ikaros_user')
+          setUser(null)
+        }
+      } catch {
+        // Network error — ignore, will retry next interval
+      }
+    }, 5 * 60 * 1000)
+
+    return () => clearInterval(interval)
+  }, [user?.token])
 
   useEffect(() => {
     if (user) {
