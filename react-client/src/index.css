@@ -10,6 +10,11 @@
   box-sizing: border-box;
 }
 
+div {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
 #root{
   --BG: rgba(0, 0, 0, 0.7);
   --IkBorder: 1px solid rgba(255, 255, 255, 0.2);
