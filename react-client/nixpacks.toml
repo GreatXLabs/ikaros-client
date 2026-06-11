@@ -1,0 +1,6 @@
+[phases.setup]
+
+nixPkgs = ["nodejs_22"]
+
+[phases.start]
+cmd = "npx -y serve -s dist -l ${PORT:-3000}"
