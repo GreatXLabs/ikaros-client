@@ -61,7 +61,25 @@ export function Landing() {
     <div className="separator"></div>
       <div className="section-container project-info" id='proyecto'>
             <h2>¿Que es Ikaros?</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Ikaros es un sistema de registro y relevo de información para misiones espaciales. Centraliza el flujo de eventos a lo largo de toda la misión, permitiendo que cada área operativa acceda a la información que necesita en el momento justo, con los permisos correspondientes a su función. De esta forma, el equipo puede coordinar tareas, dar seguimiento a lo que ocurre y mantener trazabilidad de cada evento sin depender de canales dispersos o información descentralizada.</p>
+
+      </div>
+
+      <div className="section-container project-info" id='proyecto'>
+            <h2>Cómo funciona.</h2>
+            <p>
+              Ikaros tiene una arquitectura cliente-servidor con tres capas. El cliente web está construido en React, y se comunica vía HTTP con un gateway en Java Spring Boot, que actúa de intermediario. Este gateway traduce cada petición HTTP en un mensaje de texto y lo envía al servidor de negocio a través de un socket TCP, usando un protocolo de aplicación propio (formato OPERACION|token|param1|param2|...).
+              El servidor —escrito en Java nativo, sin frameworks— es el corazón del sistema: valida sesiones y permisos por rol, procesa cada operación (registrar tripulantes, gestionar misiones, registrar eventos, etc.) y devuelve una respuesta en el mismo formato de texto.
+            </p>
+
+            <div className="stack">
+              <p>
+                  Cliente web: React
+                  Gateway: Java + Spring Boot (puente HTTP y socket TCP)
+                  Servidor de negocio: Java nativo, comunicación por sockets TCP
+                  Persistencia (v1): MariaDB
+              </p>
+            </div>
 
       </div>
 
