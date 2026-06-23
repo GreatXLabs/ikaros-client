@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Background } from '../components/Background'
 import { Logo } from "../components/Logo"
 import { useAuth } from '../contexts/AuthContext'
 import './Login.css'
@@ -50,8 +49,8 @@ export function Login() {
 
   return (
     <>
-      <GalaxyBackground />
-      
+      <GalaxyBackground style={{ zIndex: -10000 }} />
+
       <div className="login-wrapper">
         <div className="login-panel">
           <div className="logo-container">
