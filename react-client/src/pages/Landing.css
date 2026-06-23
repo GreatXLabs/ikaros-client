@@ -1,15 +1,15 @@
 .landing-page-wrapper{
-  padding: 0 150px;
+  padding: 0 clamp(20px, 6vw, 150px);
 }
 
 
 h2{
   font-family: 'Funnel Display';
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 3.5vw, 2.8rem);
 }
 
 p{
-  font-size: 1.25rem;
+  font-size: clamp(0.9rem, 1.3vw, 1.25rem);
 }
 .header-landing {
   display: flex;
@@ -18,7 +18,7 @@ p{
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  padding: 60px 0;
+  padding: clamp(30px, 5vh, 60px) 0;
 
   position: relative;
 }
@@ -27,7 +27,7 @@ p{
   background: none;
   border: none;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 1.25rem;
+  font-size: clamp(0.85rem, 1.1vw, 1.25rem);
   font-weight: 200;
   padding: 6px 14px;
   border-radius: 6px;
@@ -85,7 +85,7 @@ p{
 
 .hero{
   flex: 1;
-  padding: 50px 0;
+  padding: clamp(20px, 4vh, 50px) 0;
   display: flex;
   flex-direction: row;
   align-items:end;
@@ -120,7 +120,7 @@ p{
 }
 
 .section-container p{
-  width: 80%;
+  width: clamp(90%, 65vw, 80%);
 }
 
 
