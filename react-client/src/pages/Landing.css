@@ -130,8 +130,7 @@ p{
 .section-container .stack p{
   font-family: 'Funnel Display';
   font-size: clamp(1.3rem, 2.8vw, 1.8rem);
-  white-space: pre-wrap;
-  overflow-wrap: normal;
+  white-space: pre-line;
 }
 
 
