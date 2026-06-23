@@ -1,5 +1,6 @@
 .landing-page-wrapper{
   padding: 0 clamp(20px, 6vw, 150px);
+  overflow-x: hidden;
 }
 
 
