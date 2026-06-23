@@ -1,0 +1,137 @@
+.landing-page-wrapper{
+  padding: 0 150px;
+}
+
+
+h2{
+  font-family: 'Funnel Display';
+  font-size: 2.5rem;
+}
+
+p{
+  font-size: 1.25rem;
+}
+.header-landing {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 60px 0;
+
+  position: relative;
+}
+
+.landing-nav-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.25rem;
+  font-weight: 200;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+}
+
+.landing-nav-btn:hover {
+  color: #fff;
+  font-weight:400;
+  text-decoration: underline;
+}
+
+
+.landing-wrapper {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  animation: fadeIn 1s ease-out;
+}
+
+.landing-logo svg {
+  width: 200px !important;
+  height: auto !important;
+}
+
+.landing-nav{
+  display: flex;
+  justify-content: space-between;
+  width: 30%;
+}
+
+.login-container{
+  justify-content: right;
+}
+
+.landing-view {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+}
+
+.hero{
+  flex: 1;
+  padding: 50px 0;
+  display: flex;
+  flex-direction: row;
+  align-items:end;
+  justify-content: start;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.hero h1{
+  font-size: clamp(3.5rem, 8vw, 9rem);
+  max-width: 100%;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+}
+.separator {
+  position: relative;
+  height: 2px;
+  width: 100%;
+  margin: 50px 0;
+  background-color: white;
+  mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, white 20%, white 80%, transparent);
+  filter: blur(5px);
+
+}
+
+
+.section-container{
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+.section-container p{
+  width: 80%;
+}
+
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

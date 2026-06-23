@@ -13,8 +13,11 @@ import { NuevoTripulante } from './pages/NuevoTripulante'
 import { EditarTripulante } from './pages/EditarTripulante'
 import { NuevaCuenta } from './pages/NuevaCuenta'
 import { EditarCuenta } from './pages/EditarCuenta'
+import { Landing } from './pages/Landing'
+
 import { ChakraProvider } from '@chakra-ui/react'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+
 
 const ROUTE_PERMISSIONS = {
   '/Logs': 'logs:view',
@@ -56,7 +59,8 @@ function App() {
       <Router>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Login />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/Login" element={<Login />} />
             <Route path="/Logs" element={<RequireAuth><Logs /></RequireAuth>} />
             <Route path="/Misiones" element={<RequireAuth><Misiones /></RequireAuth>} />
             <Route path="/Misiones/Nueva" element={<RequireAuth><NuevaMision /></RequireAuth>} />
@@ -70,6 +74,7 @@ function App() {
             <Route path="/Cuentas" element={<RequireAuth><Cuentas /></RequireAuth>} />
             <Route path="/Cuentas/Nueva" element={<RequireAuth><NuevaCuenta /></RequireAuth>} />
             <Route path="/Cuentas/:id/Editar" element={<RequireAuth><EditarCuenta /></RequireAuth>} />
+            
           </Routes>
         </AuthProvider>
       </Router>

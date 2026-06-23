@@ -4,6 +4,7 @@ import { Background } from '../components/Background'
 import { Logo } from "../components/Logo"
 import { useAuth } from '../contexts/AuthContext'
 import './Login.css'
+import GalaxyBackground from '../components/GalaxyBackground'
 import { Input } from '@chakra-ui/react'
 
 const DEFAULT_ROUTES = {
@@ -49,7 +50,8 @@ export function Login() {
 
   return (
     <>
-      <Background />
+      <GalaxyBackground />
+      
       <div className="login-wrapper">
         <div className="login-panel">
           <div className="logo-container">
