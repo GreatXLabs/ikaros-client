@@ -1,0 +1,7 @@
+[phases.setup]
+
+[phases.build]
+cmd = "cd react-client && npm install && npm run build"
+
+[phases.start]
+cmd = "npx -y serve -s react-client/dist -l ${PORT:-3000}"
