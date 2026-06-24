@@ -227,7 +227,7 @@ p{
   background: rgba(36, 36, 36, 0.25);
   border: 1px solid rgba(153, 153, 153, 0.15);
   border-radius: 20px;
-  padding: 20px 16px;
+  padding: 20px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -244,8 +244,8 @@ p{
 }
 
 .team-avatar {
-  width: 88px;
-  height: 88px;
+  width: 188px;
+  height: 188px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
@@ -256,8 +256,8 @@ p{
 }
 
 .team-avatar svg {
-  width: 36px;
-  height: 36px;
+  width: 76px;
+  height: 76px;
 }
 
 .team-card-body {
@@ -275,12 +275,45 @@ p{
 }
 
 .team-desc {
-  font-size: clamp(0.8rem, 1vw, 0.9rem);
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
   color: rgba(255, 255, 255, 0.65);
   line-height: 1.5;
   width: 100% !important;
   margin-top: 4px;
   text-align: justify;
+}
+
+.team-links {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.team-link {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(153, 153, 153, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.55);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.team-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.team-link svg {
+  width: 16px;
+  height: 16px;
 }
 
 @keyframes fadeIn {
