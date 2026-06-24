@@ -8,9 +8,14 @@ h2{
   font-family: 'Funnel Display';
   font-size: clamp(1.3rem, 2.8vw, 2.2rem);
 }
+h3{
+  font-family: 'Funnel Display';
+  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+  
+}
 
 p{
-  font-size: clamp(0.85rem, 1.1vw, 1.2rem);
+  font-size: clamp(0.85rem, 1.1vw, 1.3rem);
 }
 .header-landing {
   display: flex;
@@ -127,19 +132,64 @@ p{
   width: clamp(80%, 65vw, 90%);
 }
 
-.section-container .stack ul{
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.section-container .stack{
+  background: rgba(36, 36, 36, 0.2);
+  border: 1px solid rgba(153, 153, 153, 0.2);
+  border-radius: 20px;
+  padding: 24px;
+  margin: 20px 0 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 2px;
 }
 
-.section-container .stack li{
-  font-family: 'Funnel Display';
-  font-size: clamp(1.3rem, 2.8vw, 1.8rem);
+.stack-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  transition: background-color 0.2s ease;
 }
+
+.stack-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.stack-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.stack-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.stack-label {
+  font-family: 'Funnel Display';
+  font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stack-desc {
+  font-family: 'Funnel Display';
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+
+
 
 
 

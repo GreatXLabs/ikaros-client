@@ -58,7 +58,7 @@ export function Landing() {
         </div>
       </div>
 
-    <div className="separator"></div>
+      <div className="separator"></div>
       <div className="section-container project-info" id='proyecto'>
             <h2>¿Que es Ikaros?</h2>
             <p>Ikaros es un sistema de registro y relevo de información para misiones espaciales. Centraliza el flujo de eventos a lo largo de toda la misión, permitiendo que cada área operativa acceda a la información que necesita en el momento justo, con los permisos correspondientes a su función. De esta forma, el equipo puede coordinar tareas, dar seguimiento a lo que ocurre y mantener trazabilidad de cada evento sin depender de canales dispersos o información descentralizada.</p>
@@ -73,15 +73,54 @@ export function Landing() {
             </p>
 
             <div className="stack">
-              <ul>
-                <li>Cliente web: React</li>
-                <li>Gateway: Java + Spring Boot (puente HTTP y socket TCP)</li>
-                <li>Servidor de negocio: Java nativo, comunicación por sockets TCP</li>
-                <li>Persistencia (v1): MariaDB</li>
-              </ul>
+              <div className="stack-item">
+                <div className="stack-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                </div>
+                <div className="stack-info">
+                  <span className="stack-label">Cliente web</span>
+                  <span className="stack-desc">React</span>
+                </div>
+              </div>
+              <div className="stack-item">
+                <div className="stack-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </div>
+                <div className="stack-info">
+                  <span className="stack-label">Gateway</span>
+                  <span className="stack-desc">Java + Spring Boot · puente HTTP ↔ socket TCP</span>
+                </div>
+              </div>
+              <div className="stack-item">
+                <div className="stack-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/></svg>
+                </div>
+                <div className="stack-info">
+                  <span className="stack-label">Servidor de negocio</span>
+                  <span className="stack-desc">Java nativo · comunicación por sockets TCP</span>
+                </div>
+              </div>
+              <div className="stack-item">
+                <div className="stack-icon">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+                </div>
+                <div className="stack-info">
+                  <span className="stack-label">Persistencia (v1)</span>
+                  <span className="stack-desc">MariaDB</span>
+                </div>
+              </div>
             </div>
 
+            <h3>Evolución del proyecto</h3>
+            <p>
+              La primera versión del servidor procesa una conexión a la vez —acepta un cliente, atiende sus solicitudes, y solo entonces pasa al siguiente— y usa una única conexión a la base de datos, compartida y sin sincronización. Funciona, pero no escala: dos clientes en simultáneo pueden generar resultados inconsistentes.
+              Por eso el equipo está migrando a una segunda versión con concurrencia real, donde cada conexión se atiende en su propio hilo (o mediante un thread pool), y la persistencia se mueve de MariaDB a archivos sincronizados entre sí, eliminando la dependencia de un motor de base de datos externo.
+            </p>
+
+
       </div>
+      <div className="separator"></div>
+
 
       <footer>
 
