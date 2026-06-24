@@ -419,10 +419,22 @@ p{
   transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-.reveal.visible {
+.reveal.visible,
+.reveal-card.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+.reveal-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-card:nth-child(1) { transition-delay: 0s; }
+.reveal-card:nth-child(2) { transition-delay: 0.1s; }
+.reveal-card:nth-child(3) { transition-delay: 0.2s; }
+.reveal-card:nth-child(4) { transition-delay: 0.3s; }
 
 .stack-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

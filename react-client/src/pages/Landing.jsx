@@ -29,7 +29,7 @@ export function Landing() {
 
   // Scroll-triggered reveal animations
   useEffect(() => {
-    const els = document.querySelectorAll('.reveal')
+    const els = document.querySelectorAll('.reveal, .reveal-card')
     if (!els.length) return
 
     const observer = new IntersectionObserver(
@@ -160,7 +160,7 @@ export function Landing() {
       <div className="section-container team-section reveal" id='equipo'>
             <h2>Conoce al equipo</h2>
             <div className="team-grid">
-              <div className="team-card">
+              <div className="team-card reveal-card">
                 <div className="team-avatar">
                   <img src="/Imgs/team/GaelSchenone.png" alt="Gael Schenone" className="team-img" />
                 </div>
@@ -183,7 +183,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="team-card">
+              <div className="team-card reveal-card">
                 <div className="team-avatar">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -209,7 +209,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="team-card">
+              <div className="team-card reveal-card">
                 <div className="team-avatar">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -235,7 +235,7 @@ export function Landing() {
                 </div>
               </div>
 
-              <div className="team-card">
+              <div className="team-card reveal-card">
                 <div className="team-avatar">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
