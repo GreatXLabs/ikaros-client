@@ -103,7 +103,7 @@ p{
 }
 
 .hero h1{
-  font-size: clamp(2.5rem, 6vw, 7rem);
+  font-size: clamp(2.5rem, 6vw, 8rem);
   max-width: 100%;
   overflow-wrap: break-word;
   overflow-x: hidden;
@@ -321,6 +321,77 @@ p{
 .team-link svg {
   width: 16px;
   height: 16px;
+}
+
+/* --- Footer --- */
+.landing-footer {
+  margin-top: 60px;
+  padding: 40px 0 0 0;
+  border-top: 1px solid rgba(153, 153, 153, 0.15);
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  padding-bottom: 30px;
+}
+
+.footer-brand {
+  flex: 1;
+  max-width: 320px;
+}
+
+.footer-brand .svg-logo {
+  width: 140px !important;
+}
+
+.footer-tagline {
+  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 12px;
+  line-height: 1.6;
+  width: 100% !important;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 140px;
+}
+
+.footer-heading {
+  font-family: 'Funnel Display';
+  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: clamp(0.8rem, 0.95vw, 0.9rem);
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid rgba(153, 153, 153, 0.08);
+  font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+  color: rgba(255, 255, 255, 0.3);
 }
 
 @keyframes fadeIn {
