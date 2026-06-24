@@ -23,6 +23,20 @@ public class ControladorAutenticacion {
 		this.sesionGateway = sesionGateway;
 	}
 
+	@GetMapping("/check")
+	public ResponseEntity<Map<String, Object>> verificarSesion(@RequestHeader("Authorization") String token) {
+		// Use CONSULTAR_ROLES as a lightweight token validation with the main server
+		String solicitud = "CONSULTAR_ROLES|" + token;
+		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
+
+		if (respuesta.esExitosa()) {
+			return ResponseEntity.ok(Map.of("success", true));
+		}
+
+		sesionGateway.eliminar(token);
+		return ResponseEntity.status(401).body(respuesta.aCuerpoRespuesta());
+	}
+
 	@PostMapping("/login")
 	public ResponseEntity<Map<String, Object>> iniciarSesion(@RequestBody Map<String, String> cuerpo) {
 		String usuario = cuerpo.get("usuario");

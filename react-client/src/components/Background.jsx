@@ -17,8 +17,8 @@ export function Background() {
   }, []);
 
   return (
-    <div className="background-wrapper">
-      <div 
+    <span className="background-wrapper">
+      <span 
         className="background"
         style={{ 
           transform: `translate(${position.x * 0.5}px, ${position.y * 0.5}px)`
@@ -32,8 +32,8 @@ export function Background() {
               transform: `translate(calc(48% + ${position.x * -1.5}px), calc(40px + ${position.y * -1.5}px))`
             }}
           />
-        </div>
-      </div>
+        </span>
+      </span>
 
   );
 }
