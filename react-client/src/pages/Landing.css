@@ -436,6 +436,37 @@ p{
 .reveal-card:nth-child(3) { transition-delay: 0.2s; }
 .reveal-card:nth-child(4) { transition-delay: 0.3s; }
 
+/* Stack slide reveal from alternating sides */
+.reveal-slide {
+  opacity: 0;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-slide.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reveal-slide:nth-child(1) {
+  transform: translateX(-40px);
+  transition-delay: 0s;
+}
+
+.reveal-slide:nth-child(2) {
+  transform: translateX(40px);
+  transition-delay: 0.1s;
+}
+
+.reveal-slide:nth-child(3) {
+  transform: translateX(-40px);
+  transition-delay: 0.2s;
+}
+
+.reveal-slide:nth-child(4) {
+  transform: translateX(40px);
+  transition-delay: 0.3s;
+}
+
 .stack-item {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
