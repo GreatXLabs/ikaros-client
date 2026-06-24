@@ -136,15 +136,12 @@ export function Landing() {
             <div className="team-grid">
               <div className="team-card">
                 <div className="team-avatar">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <img src="/Imgs/team/GaelSchenone.png" alt="Gael Schenone" className="team-img" />
                 </div>
                 <div className="team-card-body">
                   <span className="team-name">Gael Schenone</span>
                   <p className="team-desc">
-                    Desarrollo del cliente web React, diseño de UI/UX, integración con el gateway y mantenimiento del repositorio.
+                    Desarrollo del cliente en React JS y Springboot, diseño de UI/UX en figma.
                   </p>
                   <div className="team-links">
                     <a href="#" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
