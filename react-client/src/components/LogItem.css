@@ -62,9 +62,156 @@
 	box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
+.log-item.has-details {
+	border-left: 3px solid rgba(100, 180, 255, 0.3);
+}
+
+.log-modal-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	animation: fadeIn 0.15s ease-out;
+}
+
+.log-modal {
+	background-color: #1a1a2e;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 12px;
+	padding: 32px;
+	max-width: 560px;
+	width: 90%;
+	max-height: 80vh;
+	overflow-y: auto;
+	position: relative;
+	animation: fadeInUp 0.2s ease-out;
+}
+
+.log-modal-close {
+	position: absolute;
+	top: 12px;
+	right: 16px;
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, 0.5);
+	font-size: 24px;
+	cursor: pointer;
+	transition: color 0.15s;
+}
+
+.log-modal-close:hover {
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.log-modal-title {
+	font-size: 18px;
+	font-weight: 400;
+	margin: 0 0 20px 0;
+	color: #fff;
+	padding-right: 30px;
+}
+
+.log-modal-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-bottom: 20px;
+	padding: 16px;
+	background-color: rgba(255, 255, 255, 0.05);
+	border-radius: 8px;
+}
+
+.log-modal-meta-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.log-modal-meta-item .label {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.5);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.log-modal-meta-item .value {
+	font-size: 14px;
+	color: rgba(255, 255, 255, 0.9);
+}
+
+.log-modal-detalles h3 {
+	font-size: 14px;
+	font-weight: 400;
+	color: rgba(255, 255, 255, 0.6);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin: 0 0 12px 0;
+}
+
+.log-modal-detalle {
+	padding: 10px 12px;
+	background-color: rgba(255, 255, 255, 0.03);
+	border-radius: 6px;
+	margin-bottom: 6px;
+}
+
+.log-modal-detalle.detalle-diff {
+	background-color: rgba(255, 200, 50, 0.05);
+	border: 1px solid rgba(255, 200, 50, 0.1);
+}
+
+.detalle-campo {
+	display: block;
+	font-size: 11px;
+	color: rgba(255, 255, 255, 0.5);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	margin-bottom: 4px;
+}
+
+.detalle-diff-values {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 13px;
+}
+
+.detalle-old {
+	color: rgba(255, 100, 100, 0.8);
+	text-decoration: line-through;
+}
+
+.detalle-arrow {
+	color: rgba(255, 255, 255, 0.3);
+	font-size: 16px;
+}
+
+.detalle-new {
+	color: rgba(100, 255, 100, 0.9);
+}
+
+.detalle-valor {
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.85);
+}
+
+.log-modal-no-detalles {
+	color: rgba(255, 255, 255, 0.3);
+	font-size: 13px;
+	font-style: italic;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .log-item {
   animation: fadeInUp 0.25s ease-out both;

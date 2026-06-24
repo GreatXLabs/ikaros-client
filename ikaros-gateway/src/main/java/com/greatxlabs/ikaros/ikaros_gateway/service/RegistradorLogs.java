@@ -42,7 +42,11 @@ public class RegistradorLogs {
 	}
 
 	public void registrar(int usuarioID, int accionID, int tipoEntidadID, int entidadID) {
-		String solicitud = "REGISTRAR_LOG|log|" + usuarioID + "|" + accionID + "|" + tipoEntidadID + "|" + entidadID;
+		registrar(usuarioID, accionID, tipoEntidadID, entidadID, "");
+	}
+
+	public void registrar(int usuarioID, int accionID, int tipoEntidadID, int entidadID, String detalles) {
+		String solicitud = "REGISTRAR_LOG|log|" + usuarioID + "|" + accionID + "|" + tipoEntidadID + "|" + entidadID + "|" + (detalles != null ? detalles : "");
 		try {
 			String respuesta = clienteSocket.enviarSolicitud(solicitud);
 			if (respuesta == null || !respuesta.startsWith("OK")) {

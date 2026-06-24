@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { CuentaItem } from '../components/CuentaItem'
-import { EllipsisMenu } from '../components/EllipsisMenu'
+import { Pagination } from '../components/Pagination'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
 import * as api from '../services/ikarosApi'
@@ -41,6 +41,9 @@ export function Cuentas() {
   const { hasPermission } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRol, setSelectedRol] = useState('')
+  const [sortBy, setSortBy] = useState('nombre-asc')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [cuentaToDelete, setCuentaToDelete] = useState(null)
   const [cuentasData, setCuentasData] = useState([])
@@ -77,23 +80,36 @@ export function Cuentas() {
 
   const visibleCuentas = cuentasData.filter(c => c.RolNombre?.toUpperCase() !== 'JEFE')
 
-  const filteredCuentas = visibleCuentas.filter(cuenta => {
-    const matchesSearch =
-      cuenta.Usuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cuenta.UsuarioID?.toString().includes(searchTerm)
+  const processedCuentas = useMemo(() => {
+    let result = visibleCuentas.filter(cuenta => {
+      const matchesSearch =
+        cuenta.Usuario?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cuenta.UsuarioID?.toString().includes(searchTerm)
 
-    const matchesRol = selectedRol === '' || cuenta.RolNombre === selectedRol
+      const matchesRol = selectedRol === '' || cuenta.RolNombre === selectedRol
 
-    return matchesSearch && matchesRol
-  })
-
-  const ellipsisItems = []
-  if (hasPermission('cuentas:create')) {
-    ellipsisItems.push({
-      label: 'Crear cuenta',
-      onClick: () => navigate('/Cuentas/Nueva')
+      return matchesSearch && matchesRol
     })
-  }
+
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'usuario-asc': return a.Usuario.localeCompare(b.Usuario)
+        case 'usuario-desc': return b.Usuario.localeCompare(a.Usuario)
+        case 'rol': return a.RolNombre.localeCompare(b.RolNombre)
+        case 'estado': return a.EstadoNombre.localeCompare(b.EstadoNombre)
+        default: return a.Usuario.localeCompare(b.Usuario)
+      }
+    })
+
+    return result
+  }, [visibleCuentas, searchTerm, selectedRol, sortBy])
+
+  const totalPages = Math.max(1, Math.ceil(processedCuentas.length / pageSize))
+  const paginatedCuentas = processedCuentas.slice((page - 1) * pageSize, page * pageSize)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm, selectedRol, sortBy])
 
   const handleDeleteCuenta = (usuarioId) => {
     setCuentaToDelete(usuarioId)
@@ -138,6 +154,16 @@ export function Cuentas() {
             <div className="filters-container">
               <select
                 className="filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="usuario-asc">Usuario A-Z</option>
+                <option value="usuario-desc">Usuario Z-A</option>
+                <option value="rol">Por rol</option>
+                <option value="estado">Por estado</option>
+              </select>
+              <select
+                className="filter-select"
                 value={selectedRol}
                 onChange={(e) => setSelectedRol(e.target.value)}
               >
@@ -147,7 +173,11 @@ export function Cuentas() {
                 ))}
               </select>
 
-              {ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
+              {hasPermission('cuentas:create') && (
+                <button className="add-event-btn" onClick={() => navigate('/Cuentas/Nueva')}>
+                  + Cuenta
+                </button>
+              )}
             </div>
           </div>
 
@@ -161,7 +191,7 @@ export function Cuentas() {
             </div>
             {loading ? (
               <div className="no-results">Cargando cuentas...</div>
-            ) : filteredCuentas.map((cuenta, index) => (
+            ) : paginatedCuentas.map((cuenta, index) => (
               <CuentaItem
                 key={cuenta.UsuarioID}
                 cuenta={cuenta}
@@ -171,12 +201,20 @@ export function Cuentas() {
                 style={{ '--index': index }}
               />
             ))}
-            {!loading && filteredCuentas.length === 0 && (
+            {!loading && processedCuentas.length === 0 && (
               <div className="no-results">
                 No se encontraron cuentas que coincidan con los filtros
               </div>
             )}
           </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       </div>
 

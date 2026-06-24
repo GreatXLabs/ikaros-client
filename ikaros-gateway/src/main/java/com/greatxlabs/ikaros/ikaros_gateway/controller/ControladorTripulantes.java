@@ -106,7 +106,8 @@ public class ControladorTripulantes {
 		if (respuesta.esExitosa()) {
 			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
 			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_ALTA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, 0);
+				String detalles = "nombre=" + cuerpo.getOrDefault("nombre", "") + "|apellido=" + cuerpo.getOrDefault("apellido", "") + "|sexo=" + cuerpo.getOrDefault("sexo", "M") + "|fechaNacimiento=" + cuerpo.get("fechaNacimiento") + "|peso=" + cuerpo.get("peso") + "|altura=" + cuerpo.get("altura");
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_ALTA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, 0, detalles);
 			}
 		}
 
@@ -115,13 +116,41 @@ public class ControladorTripulantes {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> modificarTripulante(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
+		// Fetch old values for diff
+		String rawVieja = clienteSocket.enviarSolicitud("CONSULTAR_TRIPULANTE|" + token + "|" + id);
+		Map<String, String> vieja = new java.util.HashMap<>();
+		if (rawVieja != null && rawVieja.startsWith("OK")) {
+			String data = rawVieja.substring(rawVieja.indexOf('|') + 1);
+			String[] parts = data.split("\\|");
+			if (parts.length >= 8) {
+				vieja.put("nombre", parts[1] != null ? parts[1] : "");
+				vieja.put("apellido", parts[2] != null ? parts[2] : "");
+				vieja.put("sexo", parts[3] != null ? parts[3] : "");
+				vieja.put("fechaNacimiento", parts[4] != null ? parts[4] : "");
+				vieja.put("peso", parts[5] != null ? parts[5] : "");
+				vieja.put("altura", parts[6] != null ? parts[6] : "");
+				vieja.put("estado", parts[7] != null ? parts[7] : "");
+			}
+		}
+
 		String solicitud = "MODIFICAR_TRIPULANTE|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "ACTIVO") + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + cuerpo.getOrDefault("nombre", "") + "|" + cuerpo.getOrDefault("apellido", "") + "|" + cuerpo.getOrDefault("imagen", "");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		if (respuesta.esExitosa()) {
 			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
 			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id);
+				StringBuilder detalles = new StringBuilder();
+				String[][] campos = {{"estado", "Estado"}, {"sexo", "Sexo"}, {"fechaNacimiento", "Fecha nacimiento"}, {"peso", "Peso"}, {"altura", "Altura"}, {"nombre", "Nombre"}, {"apellido", "Apellido"}};
+				String[] keys = {"estado", "sexo", "fechaNacimiento", "peso", "altura", "nombre", "apellido"};
+				for (int i = 0; i < keys.length; i++) {
+					String oldVal = vieja.getOrDefault(keys[i], "");
+					String newVal = cuerpo.getOrDefault(keys[i], "");
+					if (!oldVal.equals(newVal)) {
+						if (detalles.length() > 0) detalles.append("|");
+						detalles.append(campos[i][1]).append(":").append(oldVal).append("->").append(newVal);
+					}
+				}
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id, detalles.toString());
 			}
 		}
 
@@ -136,7 +165,7 @@ public class ControladorTripulantes {
 		if (respuesta.esExitosa()) {
 			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
 			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_BAJA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id);
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_BAJA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id, "tripulanteID=" + id);
 			}
 		}
 

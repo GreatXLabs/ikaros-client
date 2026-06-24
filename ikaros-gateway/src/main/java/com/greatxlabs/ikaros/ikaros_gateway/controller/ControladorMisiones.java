@@ -52,7 +52,8 @@ public class ControladorMisiones {
 		if (respuesta.esExitosa()) {
 			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
 			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_CREAR_MISION, RegistradorLogs.ENT_MISION, 0);
+				String detalles = "nombre=" + cuerpo.get("nombre") + "|descripcion=" + cuerpo.get("descripcion") + "|fechaInicio=" + cuerpo.get("fechaInicio") + "|fechaFin=" + cuerpo.get("fechaFin");
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_CREAR_MISION, RegistradorLogs.ENT_MISION, 0, detalles);
 			}
 		}
 
@@ -61,13 +62,38 @@ public class ControladorMisiones {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> modificarMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
+		// Fetch old values for diff
+		String rawVieja = clienteSocket.enviarSolicitud("CONSULTAR_MISION|" + token + "|" + id);
+		Map<String, String> vieja = new java.util.HashMap<>();
+		if (rawVieja != null && rawVieja.startsWith("OK")) {
+			String data = rawVieja.substring(rawVieja.indexOf('|') + 1);
+			String[] parts = data.split("\\|");
+			if (parts.length >= 8) {
+				vieja.put("nombre", parts[1] != null ? parts[1] : "");
+				vieja.put("descripcion", parts[2] != null ? parts[2] : "");
+				vieja.put("fechaInicio", parts[4] != null ? parts[4] : "");
+				vieja.put("fechaFin", parts[5] != null ? parts[5] : "");
+			}
+		}
+
 		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		if (respuesta.esExitosa()) {
 			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
 			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_MISION, RegistradorLogs.ENT_MISION, id);
+				StringBuilder detalles = new StringBuilder();
+				String[][] campos = {{"nombre", "Nombre"}, {"descripcion", "Descripción"}, {"fechaInicio", "Fecha inicio"}, {"fechaFin", "Fecha fin"}};
+				String[] keys = {"nombre", "descripcion", "fechaInicio", "fechaFin"};
+				for (int i = 0; i < keys.length; i++) {
+					String oldVal = vieja.getOrDefault(keys[i], "");
+					String newVal = cuerpo.getOrDefault(keys[i], "");
+					if (!oldVal.equals(newVal)) {
+						if (detalles.length() > 0) detalles.append("|");
+						detalles.append(campos[i][1]).append(":").append(oldVal).append("->").append(newVal);
+					}
+				}
+				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_MISION, RegistradorLogs.ENT_MISION, id, detalles.toString());
 			}
 		}
 
@@ -86,7 +112,10 @@ public class ControladorMisiones {
 			if (usuarioID != null) {
 				String estado = cuerpo.get("estado");
 				int accionID = "FINALIZADA".equalsIgnoreCase(estado) ? RegistradorLogs.ACC_FINALIZAR_MISION : RegistradorLogs.ACC_CANCELAR_MISION;
-				registradorLogs.registrar(usuarioID, accionID, RegistradorLogs.ENT_MISION, id);
+				String detalles = "Estado:" + estado;
+				if (retrasoInicio != null && !retrasoInicio.isEmpty()) detalles += "|retrasoInicio=" + retrasoInicio;
+				if (retrasoFin != null && !retrasoFin.isEmpty()) detalles += "|retrasoFin=" + retrasoFin;
+				registradorLogs.registrar(usuarioID, accionID, RegistradorLogs.ENT_MISION, id, detalles);
 			}
 		}
 

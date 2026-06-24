@@ -53,7 +53,7 @@ public class ControladorAutenticacion {
 			int usuarioID = partes.length > 2 ? Integer.parseInt(partes[2]) : 0;
 
 			sesionGateway.registrar(token, usuarioID, rol);
-			registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_INICIO_SESION, RegistradorLogs.ENT_USUARIO, usuarioID);
+			registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_INICIO_SESION, RegistradorLogs.ENT_USUARIO, usuarioID, "usuario=" + usuario);
 
 			return ResponseEntity.ok(Map.of("success", true, "token", token, "rol", rol));
 		}

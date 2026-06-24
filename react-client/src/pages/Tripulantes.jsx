@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
-import { EllipsisMenu } from '../components/EllipsisMenu'
+import { Pagination } from '../components/Pagination'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
 import { listarTripulantes, bajaTripulante, listarEstadosTripulantes } from '../services/ikarosApi'
@@ -33,6 +33,9 @@ export function Tripulantes() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedEstado, setSelectedEstado] = useState('')
   const [selectedSexo, setSelectedSexo] = useState('')
+  const [sortBy, setSortBy] = useState('nombre-asc')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [tripulantesData, setTripulantesData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -71,25 +74,40 @@ export function Tripulantes() {
     } catch {}
   }
 
-  const filteredTripulantes = tripulantesData.filter(tripulante => {
-    const matchesSearch =
-      tripulante.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tripulante.Apellido.toLowerCase().includes(searchTerm.toLowerCase())
+  const processedTripulantes = useMemo(() => {
+    let result = tripulantesData.filter(tripulante => {
+      const matchesSearch =
+        tripulante.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tripulante.Apellido.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesEstado = selectedEstado === '' || tripulante.EstadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
+      const matchesEstado = selectedEstado === '' || tripulante.EstadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
 
-    const matchesSexo = selectedSexo === '' || tripulante.SexoNombre.toUpperCase().startsWith(selectedSexo)
+      const matchesSexo = selectedSexo === '' || tripulante.SexoNombre.toUpperCase().startsWith(selectedSexo)
 
-    return matchesSearch && matchesEstado && matchesSexo
-  })
-
-  const ellipsisItems = []
-  if (hasPermission('tripulantes:create')) {
-    ellipsisItems.push({
-      label: 'Crear tripulante',
-      onClick: () => navigate('/Tripulantes/Nuevo')
+      return matchesSearch && matchesEstado && matchesSexo
     })
-  }
+
+    result.sort((a, b) => {
+      const nameA = `${a.Apellido} ${a.Nombre}`.toLowerCase()
+      const nameB = `${b.Apellido} ${b.Nombre}`.toLowerCase()
+      switch (sortBy) {
+        case 'nombre-asc': return nameA.localeCompare(nameB)
+        case 'nombre-desc': return nameB.localeCompare(nameA)
+        case 'estado': return a.EstadoNombre.localeCompare(b.EstadoNombre)
+        case 'sexo': return a.SexoNombre.localeCompare(b.SexoNombre)
+        default: return nameA.localeCompare(nameB)
+      }
+    })
+
+    return result
+  }, [tripulantesData, searchTerm, selectedEstado, selectedSexo, sortBy, estados])
+
+  const totalPages = Math.max(1, Math.ceil(processedTripulantes.length / pageSize))
+  const paginatedTripulantes = processedTripulantes.slice((page - 1) * pageSize, page * pageSize)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm, selectedEstado, selectedSexo, sortBy])
 
   const handleDeleteTripulante = (tripulanteId) => {
     setDeleteTarget(tripulanteId)
@@ -122,6 +140,16 @@ export function Tripulantes() {
             <div className="filters-container">
               <select
                 className="filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="nombre-asc">Nombre A-Z</option>
+                <option value="nombre-desc">Nombre Z-A</option>
+                <option value="estado">Por estado</option>
+                <option value="sexo">Por sexo</option>
+              </select>
+              <select
+                className="filter-select"
                 value={selectedEstado}
                 onChange={(e) => setSelectedEstado(e.target.value)}
               >
@@ -141,13 +169,17 @@ export function Tripulantes() {
                 ))}
               </select>
 
-              {ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
+              {hasPermission('tripulantes:create') && (
+                <button className="add-event-btn" onClick={() => navigate('/Tripulantes/Nuevo')}>
+                  + Tripulante
+                </button>
+              )}
             </div>
           </div>
           <div className="tripulantes-container">
             {loading ? (
               <div className="no-results">Cargando tripulantes...</div>
-            ) : filteredTripulantes.map((tripulante, index) => (
+            ) : paginatedTripulantes.map((tripulante, index) => (
               <TripulanteItem
                 key={tripulante.TripulanteID}
                 tripulante={tripulante}
@@ -158,6 +190,14 @@ export function Tripulantes() {
               />
             ))}
           </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       </div>
 

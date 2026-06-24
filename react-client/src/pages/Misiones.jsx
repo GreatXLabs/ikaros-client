@@ -1,11 +1,10 @@
-
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { MisionItem } from '../components/MisionItem'
 import { DateRangeFilter } from '../components/DateRangeFilter'
-import { EllipsisMenu } from '../components/EllipsisMenu'
+import { Pagination } from '../components/Pagination'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
 import { listarMisiones, actualizarEstadoMision, listarEstadosMisiones } from '../services/ikarosApi'
@@ -36,6 +35,9 @@ export function Misiones() {
   const [dateRange, setDateRange] = useState([
     { startDate: null, endDate: null, key: 'selection' }
   ])
+  const [sortBy, setSortBy] = useState('fecha-desc')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [misionesData, setMisionesData] = useState([])
   const [loading, setLoading] = useState(true)
@@ -70,38 +72,52 @@ export function Misiones() {
     } catch {}
   }
 
-  const filteredMisiones = misionesData.filter(mision => {
-    const matchesSearch =
-      mision.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      mision.misionId.toString().includes(searchTerm)
+  const processedMisiones = useMemo(() => {
+    let result = misionesData.filter(mision => {
+      const matchesSearch =
+        mision.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        mision.misionId.toString().includes(searchTerm)
 
-    const matchesEstado = selectedEstado === '' || mision.estadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
+      const matchesEstado = selectedEstado === '' || mision.estadoNombre === estados.find(e => e.id.toString() === selectedEstado)?.nombre
 
-    const rangeStart = dateRange[0].startDate
-    const rangeEnd = dateRange[0].endDate
-    let matchesDate = true
-    if (rangeStart || rangeEnd) {
-      const dayStart = rangeStart ? new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate()) : null
-      const dayEnd = rangeEnd ? new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate(), 23, 59, 59, 999) : null
-      const misionStart = mision.fechaInicioEstimada ? new Date(mision.fechaInicioEstimada) : null
-      const misionEnd = mision.fechaFinEstimada ? new Date(mision.fechaFinEstimada) : null
-      if (misionStart && misionEnd) {
-        matchesDate = (!dayStart || misionEnd >= dayStart) && (!dayEnd || misionStart <= dayEnd)
-      } else if (misionStart) {
-        matchesDate = (!dayStart || misionStart >= dayStart) && (!dayEnd || misionStart <= dayEnd)
+      const rangeStart = dateRange[0].startDate
+      const rangeEnd = dateRange[0].endDate
+      let matchesDate = true
+      if (rangeStart || rangeEnd) {
+        const dayStart = rangeStart ? new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate()) : null
+        const dayEnd = rangeEnd ? new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate(), 23, 59, 59, 999) : null
+        const misionStart = mision.fechaInicioEstimada ? new Date(mision.fechaInicioEstimada) : null
+        const misionEnd = mision.fechaFinEstimada ? new Date(mision.fechaFinEstimada) : null
+        if (misionStart && misionEnd) {
+          matchesDate = (!dayStart || misionEnd >= dayStart) && (!dayEnd || misionStart <= dayEnd)
+        } else if (misionStart) {
+          matchesDate = (!dayStart || misionStart >= dayStart) && (!dayEnd || misionStart <= dayEnd)
+        }
       }
-    }
 
-    return matchesSearch && matchesEstado && matchesDate
-  })
-
-  const ellipsisItems = []
-  if (hasPermission('misiones:create')) {
-    ellipsisItems.push({
-      label: 'Crear misión',
-      onClick: () => navigate('/Misiones/Nueva')
+      return matchesSearch && matchesEstado && matchesDate
     })
-  }
+
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case 'nombre-asc': return a.nombre.localeCompare(b.nombre)
+        case 'nombre-desc': return b.nombre.localeCompare(a.nombre)
+        case 'fecha-asc': return new Date(a.fechaInicioEstimada || 0).getTime() - new Date(b.fechaInicioEstimada || 0).getTime()
+        case 'fecha-desc': return new Date(b.fechaInicioEstimada || 0).getTime() - new Date(a.fechaInicioEstimada || 0).getTime()
+        case 'estado': return a.estadoNombre.localeCompare(b.estadoNombre)
+        default: return new Date(b.fechaInicioEstimada || 0).getTime() - new Date(a.fechaInicioEstimada || 0).getTime()
+      }
+    })
+
+    return result
+  }, [misionesData, searchTerm, selectedEstado, dateRange, sortBy, estados])
+
+  const totalPages = Math.max(1, Math.ceil(processedMisiones.length / pageSize))
+  const paginatedMisiones = processedMisiones.slice((page - 1) * pageSize, page * pageSize)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm, selectedEstado, dateRange, sortBy])
 
   const handleDeleteMision = (misionId) => {
     setDeleteTarget(misionId)
@@ -134,6 +150,17 @@ export function Misiones() {
             <div className="filters-container">
               <select
                 className="filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="fecha-desc">Más reciente</option>
+                <option value="fecha-asc">Más antiguo</option>
+                <option value="nombre-asc">Nombre A-Z</option>
+                <option value="nombre-desc">Nombre Z-A</option>
+                <option value="estado">Por estado</option>
+              </select>
+              <select
+                className="filter-select"
                 value={selectedEstado}
                 onChange={(e) => setSelectedEstado(e.target.value)}
               >
@@ -148,7 +175,11 @@ export function Misiones() {
                 onDateChange={setDateRange}
               />
 
-              {ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
+              {hasPermission('misiones:create') && (
+                <button className="add-event-btn" onClick={() => navigate('/Misiones/Nueva')}>
+                  + Misión
+                </button>
+              )}
             </div>
           </div>
 
@@ -162,7 +193,7 @@ export function Misiones() {
             </div>
             {loading ? (
               <div className="no-results">Cargando misiones...</div>
-            ) : filteredMisiones.map((mision, index) => (
+            ) : paginatedMisiones.map((mision, index) => (
               <MisionItem
                 key={mision.misionId}
                 mision={mision}
@@ -172,12 +203,20 @@ export function Misiones() {
                 style={{ '--index': index }}
               />
             ))}
-            {!loading && filteredMisiones.length === 0 && (
+            {!loading && processedMisiones.length === 0 && (
               <div className="no-results">
                 No se encontraron misiones que coincidan con los filtros
               </div>
             )}
           </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       </div>
 

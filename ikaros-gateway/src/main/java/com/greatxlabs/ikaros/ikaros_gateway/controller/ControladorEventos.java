@@ -45,7 +45,8 @@ public class ControladorEventos {
         if (respuesta.esExitosa()) {
             Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
             if (usuarioID != null) {
-                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_REGISTRAR_EVENTO, RegistradorLogs.ENT_EVENTO, 0);
+                String detalles = "titulo=" + cuerpo.get("titulo") + "|descripcion=" + cuerpo.get("descripcion") + "|misionID=" + cuerpo.get("misionID");
+                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_REGISTRAR_EVENTO, RegistradorLogs.ENT_EVENTO, 0, detalles);
             }
         }
 
@@ -60,7 +61,7 @@ public class ControladorEventos {
         if (respuesta.esExitosa()) {
             Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
             if (usuarioID != null) {
-                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_DESESTIMAR_EVENTO, RegistradorLogs.ENT_EVENTO, id);
+                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_DESESTIMAR_EVENTO, RegistradorLogs.ENT_EVENTO, id, "eventoID=" + id);
             }
         }
 

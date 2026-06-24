@@ -293,7 +293,7 @@ export function Landing() {
 
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Ikaros. Todos los derechos reservados.</span>
-          <span>Hecho por GreatXLabs</span>s
+          <span>Hecho por GreatXLabs</span>
         </div>
       </footer>
     </div>
