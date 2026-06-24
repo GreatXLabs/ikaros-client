@@ -65,7 +65,6 @@ p{
   align-items: center;
   gap: 1.5rem;
   text-align: center;
-  animation: fadeIn 1s ease-out;
 }
 
 .landing-logo svg {
@@ -107,6 +106,8 @@ p{
   max-width: 100%;
   overflow-wrap: break-word;
   overflow-x: hidden;
+  animation: fadeIn 1.2s ease-out 0.2s forwards;
+  opacity: 0;
 }
 .separator {
   position: relative;
@@ -394,13 +395,122 @@ p{
   color: rgba(255, 255, 255, 0.3);
 }
 
-@keyframes fadeIn {
+/* --- Animations --- */
+.landing-view {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+.separator {
+  animation: separatorGrow 1.2s ease-out forwards;
+  transform-origin: center;
+  scale: 0 1;
+}
+
+@keyframes separatorGrow {
+  0% { scale: 0 1; opacity: 0; }
+  60% { scale: 1 1; opacity: 0.6; }
+  100% { scale: 1 1; opacity: 1; }
+}
+
+.section-container {
+  animation: slideUp 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.section-container:nth-child(odd) {
+  animation-delay: 0.1s;
+}
+
+.section-container:nth-child(even) {
+  animation-delay: 0.2s;
+}
+
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.stack-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stack-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(4px);
+}
+
+.stack-item .stack-icon {
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.stack-item:hover .stack-icon {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.team-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(153, 153, 153, 0.4);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.team-card .team-avatar {
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.team-card:hover .team-avatar {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.team-link {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.team-link:hover {
+  transform: translateY(-3px) scale(1.1);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.landing-nav-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-nav-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.05);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.25s ease;
+  border-radius: 6px;
+}
+
+.landing-nav-btn:hover::after {
+  transform: scaleY(1);
+}
+
+.landing-footer {
+  animation: slideUp 0.8s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
