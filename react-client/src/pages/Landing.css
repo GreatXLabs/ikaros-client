@@ -347,7 +347,7 @@ p{
 }
 
 .footer-tagline {
-  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
   color: rgba(255, 255, 255, 0.45);
   margin-top: 12px;
   line-height: 1.6;
@@ -363,7 +363,7 @@ p{
 
 .footer-heading {
   font-family: 'Funnel Display';
-  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
   color: rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -373,7 +373,7 @@ p{
 .footer-links a {
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
-  font-size: clamp(0.8rem, 0.95vw, 0.9rem);
+  font-size: clamp(0.9rem, 1.05vw, 1rem);
   transition: color 0.2s ease;
   display: flex;
   align-items: center;
@@ -390,7 +390,7 @@ p{
   align-items: center;
   padding: 20px 0;
   border-top: 1px solid rgba(153, 153, 153, 0.08);
-  font-size: clamp(0.7rem, 0.8vw, 0.8rem);
+  font-size: clamp(0.8rem, 0.9vw, 0.85rem);
   color: rgba(255, 255, 255, 0.3);
 }
 
