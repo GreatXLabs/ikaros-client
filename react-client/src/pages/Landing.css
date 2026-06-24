@@ -218,8 +218,8 @@ p{
 
 .team-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
   margin: 10px 0 20px 0;
 }
 
@@ -227,11 +227,11 @@ p{
   background: rgba(36, 36, 36, 0.25);
   border: 1px solid rgba(153, 153, 153, 0.15);
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   text-align: center;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -244,9 +244,9 @@ p{
 }
 
 .team-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
+  width: 88px;
+  height: 88px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   border: 1.5px solid rgba(255, 255, 255, 0.12);
   display: flex;
@@ -255,18 +255,16 @@ p{
   flex-shrink: 0;
 }
 
-.team-initials {
-  font-family: 'Funnel Display';
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 0.05em;
+.team-avatar svg {
+  width: 36px;
+  height: 36px;
 }
 
 .team-card-body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
 }
 
 .team-name {
@@ -276,19 +274,13 @@ p{
   font-weight: 500;
 }
 
-.team-role {
-  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
 .team-desc {
   font-size: clamp(0.8rem, 1vw, 0.9rem);
   color: rgba(255, 255, 255, 0.65);
   line-height: 1.5;
   width: 100% !important;
   margin-top: 4px;
+  text-align: justify;
 }
 
 @keyframes fadeIn {

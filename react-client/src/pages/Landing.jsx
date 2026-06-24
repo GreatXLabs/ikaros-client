@@ -136,11 +136,13 @@ export function Landing() {
             <div className="team-grid">
               <div className="team-card">
                 <div className="team-avatar">
-                  <span className="team-initials">GS</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
                 </div>
                 <div className="team-card-body">
                   <span className="team-name">Gael Schenone</span>
-                  <span className="team-role">Full-Stack Developer</span>
                   <p className="team-desc">
                     Desarrollo del cliente web React, diseño de UI/UX, integración con el gateway y mantenimiento del repositorio.
                   </p>
@@ -149,11 +151,13 @@ export function Landing() {
 
               <div className="team-card">
                 <div className="team-avatar">
-                  <span className="team-initials">?</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
                 </div>
                 <div className="team-card-body">
                   <span className="team-name">Nombre del integrante</span>
-                  <span className="team-role">Rol</span>
                   <p className="team-desc">
                     Descripción de su rol en el proyecto.
                   </p>
@@ -162,11 +166,28 @@ export function Landing() {
 
               <div className="team-card">
                 <div className="team-avatar">
-                  <span className="team-initials">?</span>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
                 </div>
                 <div className="team-card-body">
                   <span className="team-name">Nombre del integrante</span>
-                  <span className="team-role">Rol</span>
+                  <p className="team-desc">
+                    Descripción de su rol en el proyecto.
+                  </p>
+                </div>
+              </div>
+
+              <div className="team-card">
+                <div className="team-avatar">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </div>
+                <div className="team-card-body">
+                  <span className="team-name">Nombre del integrante</span>
                   <p className="team-desc">
                     Descripción de su rol en el proyecto.
                   </p>
