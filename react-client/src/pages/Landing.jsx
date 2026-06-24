@@ -73,12 +73,12 @@ export function Landing() {
             </p>
 
             <div className="stack">
-              <p>
-                  Cliente web: React
-                  Gateway: Java + Spring Boot (puente HTTP y socket TCP)
-                  Servidor de negocio: Java nativo, comunicación por sockets TCP
-                  Persistencia (v1): MariaDB
-              </p>
+              <ul>
+                <li>Cliente web: React</li>
+                <li>Gateway: Java + Spring Boot (puente HTTP y socket TCP)</li>
+                <li>Servidor de negocio: Java nativo, comunicación por sockets TCP</li>
+                <li>Persistencia (v1): MariaDB</li>
+              </ul>
             </div>
 
       </div>
