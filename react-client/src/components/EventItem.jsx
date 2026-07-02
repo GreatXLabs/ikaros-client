@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import './EventItem.css'
 
 export function EventItem({ event, canDelete = false, onDelete, style }) {
-	console.log(`[EventItem] id=${event.id} titulo="${event.titulo}" estado="${event.estadoNombre}"`)
 	const [showMenu, setShowMenu] = useState(false)
 	const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
 	const menuRef = useRef(null)

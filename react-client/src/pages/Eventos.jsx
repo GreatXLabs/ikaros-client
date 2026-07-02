@@ -22,9 +22,9 @@ function parseMisionesForFilter(data) {
 function parseEventos(data) {
   if (!data) return []
   const items = data.split(';')
-  const parsed = items.map((item, index) => {
+  return items.map((item, index) => {
     const parts = item.split('~')
-    const evento = {
+    return {
       id: parseInt(parts[0]) || index + 1,
       misionNombre: parts[1] || '',
       titulo: parts[2] || '',
@@ -32,11 +32,7 @@ function parseEventos(data) {
       descripcion: parts[4] || '',
       estadoNombre: parts[5] || ''
     }
-    console.log(`[parseEventos] id=${evento.id} estadoNombre="${evento.estadoNombre}"`)
-    return evento
   }).filter(e => e.id)
-  console.log('[parseEventos] total eventos:', parsed.length)
-  return parsed
 }
 
 export function Eventos() {
@@ -66,17 +62,13 @@ export function Eventos() {
         listarTodosEventos(),
         listarMisiones()
       ])
-      console.log('[Eventos] eventosRes:', eventosRes)
       if (misionesRes.success) {
         setMisionesList(parseMisionesForFilter(misionesRes.data))
       }
       if (eventosRes.success) {
-        const parsed = parseEventos(eventosRes.data)
-        console.log('[Eventos] eventos parseados:', parsed.map(e => ({ id: e.id, estado: e.estadoNombre })))
-        setEventosData(parsed)
+        setEventosData(parseEventos(eventosRes.data))
       }
-    } catch (err) {
-      console.error('[Eventos] error cargando:', err)
+    } catch {
       setEventosData([])
     }
     setLoading(false)
