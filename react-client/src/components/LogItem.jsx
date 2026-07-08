@@ -72,7 +72,7 @@ function LogDetailModal({ log, onClose }) {
 			<div className="log-modal" onClick={e => e.stopPropagation()}>
 				<button className="log-modal-close" onClick={onClose}>×</button>
 
-				<h2 className="log-modal-title">{log.descripcion || descripcionAccion(log.accion, log.tipoEntidad, log.entidadID)}</h2>
+				<h2 className="log-modal-title">{descripcionAccion(log.accion, log.tipoEntidad, log.entidadID)}</h2>
 
 				<div className="log-modal-meta">
 					<div className="log-modal-meta-item">
@@ -150,7 +150,7 @@ export function LogItem({ log, style }) {
 			<div className={`log-item${hasDetails ? ' has-details' : ''}`} style={style} onClick={() => setShowModal(true)}>
 				<div className="main-info">
 					<p className='overline'>{log.rol}</p>
-					<p className='title'>{log.descripcion || descripcionAccion(log.accion, log.tipoEntidad, log.entidadID)}</p>
+					<p className='title'>{descripcionAccion(log.accion, log.tipoEntidad, log.entidadID)}</p>
 					<p className='actor'>{log.usuario}</p>
 				</div>
 				<div className="time-stamp">
