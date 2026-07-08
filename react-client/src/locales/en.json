@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "proyecto": "Project",
+    "comoFunciona": "How It Works",
+    "equipo": "Team"
+  },
+  "hero": {
+    "title": "Born looking at the sky."
+  },
+  "proyecto": {
+    "titulo": "What is Ikaros?",
+    "descripcion": "Ikaros is an information recording and handover system for space missions. It centralizes the flow of events throughout the mission, allowing each operational area to access the information they need at the right time, with permissions according to their role. This way, the team can coordinate tasks, track what happens, and maintain traceability of each event without relying on scattered channels or decentralized information."
+  },
+  "comoFunciona": {
+    "titulo": "How it works.",
+    "descripcion": "Ikaros has a three-layer client-server architecture. The web client is built in React and communicates via HTTP with a Java Spring Boot gateway, which acts as an intermediary. This gateway translates each HTTP request into a text message and sends it to the business server through a TCP socket, using its own application protocol (format: OPERATION|token|param1|param2|...). The server —written in native Java, without frameworks— is the core of the system: it validates sessions and role-based permissions, processes each operation (register crew members, manage missions, log events, etc.) and returns a response in the same text format."
+  },
+  "stack": {
+    "cliente": "Web Client",
+    "clienteDesc": "React",
+    "gateway": "Gateway",
+    "gatewayDesc": "Java + Spring Boot · HTTP ↔ TCP socket bridge",
+    "servidor": "Business Server",
+    "servidorDesc": "Native Java · TCP socket communication",
+    "persistencia": "Persistence",
+    "persistenciaDesc": "Synchronized files"
+  },
+  "funcionalidades": {
+    "titulo": "Features",
+    "tripulantes": "Crew Members",
+    "tripulantesDesc": "Registration, updates, skill assignment and status management",
+    "misiones": "Missions",
+    "misionesDesc": "Full lifecycle: create, prepare, start and finish",
+    "eventos": "Events",
+    "eventosDesc": "Incident logging and tracking associated with each mission",
+    "roles": "Roles",
+    "rolesDesc": "Granular permissions by area: coordinator, assigner, registrar, HR",
+    "logs": "Logs",
+    "logsDesc": "Full audit trail with change details, filters and sorting",
+    "cuentas": "Accounts",
+    "cuentasDesc": "User management with role-based access control"
+  },
+  "evolucion": {
+    "titulo": "Project Evolution",
+    "parrafo1": "The first version of the server processed one connection at a time: it accepted a client, handled their requests, and only then moved on to the next one. The database was MariaDB, which handled all synchronization at the data level, but the server itself was not designed to handle multiple clients in parallel.",
+    "parrafo2": "The goal of the second version was to learn how to handle concurrency in Java. We rewrote the server so each client is served in its own thread using a thread pool, coordinating access to shared resources with semaphores and locks. As part of the learning process, we also built our own persistence from scratch: instead of relying on MariaDB, we built a synchronized file system that allowed us to deeply understand how concurrency is handled at the data level."
+  },
+  "equipo": {
+    "titulo": "Meet the team",
+    "gael": "UX/UI Designer · Frontend Developer",
+    "luca": "Team Leader · Backend Developer",
+    "emiliano": "Database Administrator · Backend Developer",
+    "juan": "QA Tester · Technical Writer"
+  },
+  "login": "Sign In",
+  "loginEs": "Iniciar Sesión",
+  "idioma": "EN | ES",
+  "footer": {
+    "navegacion": "Navigation",
+    "links": "Links",
+    "derechos": "All rights reserved.",
+    "hecho": "Made by GreatXLabs"
+  }
+}

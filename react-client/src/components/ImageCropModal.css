@@ -9,7 +9,8 @@
 }
 
 .crop-modal {
-  background: #1a1a2e;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 24px;
   width: 420px;

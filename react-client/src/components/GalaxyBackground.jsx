@@ -135,5 +135,5 @@ export default function GalaxyBG({style,className}){
     requestAnimationFrame(anim)
     return()=>{ro.disconnect();r.dispose();wkm.terminate();r.domElement.remove();window.removeEventListener('mousemove',onMouse)}
   },[])
-  return<div ref={ref} style={{position:'fixed',inset:0,overflow:'hidden',...style}} className={className}/>
+  return<div ref={ref} style={{position:'fixed',inset:0,overflow:'hidden',pointerEvents:'none',...style}} className={className}/>
 }
