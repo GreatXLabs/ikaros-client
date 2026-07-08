@@ -49,6 +49,7 @@ export function Cuentas() {
   const [cuentasData, setCuentasData] = useState([])
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   const loadCuentas = async () => {
     try {
@@ -119,14 +120,18 @@ export function Cuentas() {
   const confirmDelete = async () => {
     if (cuentaToDelete) {
       try {
-        await api.bajaUsuario(cuentaToDelete)
-        setCuentasData(prev =>
-          prev.map(c =>
-            c.UsuarioID === cuentaToDelete
-              ? { ...c, EstadoNombre: 'Inactivo' }
-              : c
+        const res = await api.bajaUsuario(cuentaToDelete)
+        if (res?.success) {
+          setCuentasData(prev =>
+            prev.map(c =>
+              c.UsuarioID === cuentaToDelete
+                ? { ...c, EstadoNombre: 'Inactivo' }
+                : c
+            )
           )
-        )
+        } else {
+          setError(res?.message || 'Error al dar de baja la cuenta')
+        }
       } catch {
         loadCuentas()
       }
@@ -180,6 +185,8 @@ export function Cuentas() {
               )}
             </div>
           </div>
+
+          {error && <div className="form-error">{error}</div>}
 
           <div className="cuentas-list">
             <div className="cuenta-list-header">

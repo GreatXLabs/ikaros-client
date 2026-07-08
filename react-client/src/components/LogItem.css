@@ -63,7 +63,7 @@
 }
 
 .log-item.has-details {
-	border-left: 3px solid rgba(100, 180, 255, 0.3);
+	border-left: 3px solid rgba(255, 255, 255, 0.15);
 }
 
 .log-modal-overlay {

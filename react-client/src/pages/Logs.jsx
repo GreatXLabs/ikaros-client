@@ -20,7 +20,7 @@ function parseLogs(data) {
 			tipoEntidad: parts[4] || '',
 			entidadID: parts[5] || '',
 			fechaHora: parts[6] || '',
-			detalles: parts[7] || ''
+			descripcion: parts[7] || ''
 		}
 	}).filter(l => l.id)
 }
@@ -75,7 +75,8 @@ export function Logs() {
 				log.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
 				log.accion.toLowerCase().includes(searchTerm.toLowerCase()) ||
 				log.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-				log.entidadID.toString().includes(searchTerm)
+				log.entidadID.toString().includes(searchTerm) ||
+			log.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
 
 			const start = dateRange[0].startDate
 			const end = dateRange[0].endDate
