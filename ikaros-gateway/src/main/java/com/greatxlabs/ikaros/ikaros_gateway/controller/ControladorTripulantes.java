@@ -2,8 +2,6 @@ package com.greatxlabs.ikaros.ikaros_gateway.controller;
 
 import com.greatxlabs.ikaros.ikaros_gateway.dto.RespuestaProtocolo;
 import com.greatxlabs.ikaros.ikaros_gateway.service.MinioService;
-import com.greatxlabs.ikaros.ikaros_gateway.service.RegistradorLogs;
-import com.greatxlabs.ikaros.ikaros_gateway.service.SesionGateway;
 import com.greatxlabs.ikaros.ikaros_gateway.socket.ClienteSocketIkaros;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,14 +15,10 @@ public class ControladorTripulantes {
 
 	private final ClienteSocketIkaros clienteSocket;
 	private final MinioService minioService;
-	private final RegistradorLogs registradorLogs;
-	private final SesionGateway sesionGateway;
 
-	public ControladorTripulantes(ClienteSocketIkaros clienteSocket, MinioService minioService, RegistradorLogs registradorLogs, SesionGateway sesionGateway) {
+	public ControladorTripulantes(ClienteSocketIkaros clienteSocket, MinioService minioService) {
 		this.clienteSocket = clienteSocket;
 		this.minioService = minioService;
-		this.registradorLogs = registradorLogs;
-		this.sesionGateway = sesionGateway;
 	}
 
 	@GetMapping
@@ -103,13 +97,6 @@ public class ControladorTripulantes {
 		String solicitud = "REGISTRAR_TRIPULANTE|" + token + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + cuerpo.getOrDefault("nombre", "") + "|" + cuerpo.getOrDefault("apellido", "") + "|" + cuerpo.getOrDefault("imagen", "");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
-		if (respuesta.esExitosa()) {
-			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_ALTA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, 0);
-			}
-		}
-
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
 
@@ -118,13 +105,6 @@ public class ControladorTripulantes {
 		String solicitud = "MODIFICAR_TRIPULANTE|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "ACTIVO") + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + cuerpo.getOrDefault("nombre", "") + "|" + cuerpo.getOrDefault("apellido", "") + "|" + cuerpo.getOrDefault("imagen", "");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
-		if (respuesta.esExitosa()) {
-			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id);
-			}
-		}
-
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}
 
@@ -132,13 +112,6 @@ public class ControladorTripulantes {
 	public ResponseEntity<Map<String, Object>> darDeBajaTripulante(@PathVariable int id, @RequestHeader("Authorization") String token) {
 		String solicitud = "BAJA_TRIPULANTE|" + token + "|" + id;
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
-
-		if (respuesta.esExitosa()) {
-			Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-			if (usuarioID != null) {
-				registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_BAJA_TRIPULANTE, RegistradorLogs.ENT_TRIPULANTE, id);
-			}
-		}
 
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
 	}

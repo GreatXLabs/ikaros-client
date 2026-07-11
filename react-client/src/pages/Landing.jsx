@@ -1,20 +1,25 @@
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../contexts/AuthContext'
 import { Logo } from '../components/Logo'
 import GalaxyBackground from '../components/GalaxyBackground'
 import './Landing.css'
 
-const NAV_ITEMS = [
-  { label: 'Proyecto', id: 'proyecto' },
-  { label: 'Cómo Funciona', id: 'como-funciona' },
-  { label: 'Equipo', id: 'equipo' },
-  { label: 'Capturas', id: 'capturas' },
-]
-
 export function Landing() {
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { t, i18n } = useTranslation()
+
+  const toggleLang = () => {
+    i18n.changeLanguage(i18n.language === 'es' ? 'en' : 'es')
+  }
+
+  const NAV_ITEMS = useMemo(() => [
+    { label: t('nav.proyecto'), id: 'proyecto' },
+    { label: t('nav.comoFunciona'), id: 'como-funciona' },
+    { label: t('nav.equipo'), id: 'equipo' }
+  ], [t])
 
   useEffect(() => {
     if (user) {
@@ -22,12 +27,10 @@ export function Landing() {
     }
   }, [user, navigate])
 
-  // Scroll to top on mount/reload
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
 
-  // Scroll-triggered reveal animations
   useEffect(() => {
     const els = document.querySelectorAll('.reveal, .reveal-card')
     if (!els.length) return
@@ -72,31 +75,30 @@ export function Landing() {
           <Logo/>
 
           <div className="landing-nav login-container">
-              <button className="landing-nav-btn login-btn" onClick={() => navigate('/login')}>
-                Iniciar Sesión
+              <button className="lang-toggle" onClick={toggleLang}>
+                {i18n.language === 'es' ? 'EN' : 'ES'}
               </button>
-
+              <button className="landing-nav-btn login-btn" onClick={() => navigate('/login')}>
+                {t('login')}
+              </button>
           </div>
         </header>
 
         <div className="hero">
-          <h1>Nacimos mirando al cielo.</h1>
+          <h1>{t('hero.title')}</h1>
         </div>
       </div>
 
       <div className="separator"></div>
       <div className="section-container project-info reveal" id='proyecto'>
-            <h2>¿Que es Ikaros?</h2>
-            <p>Ikaros es un sistema de registro y relevo de información para misiones espaciales. Centraliza el flujo de eventos a lo largo de toda la misión, permitiendo que cada área operativa acceda a la información que necesita en el momento justo, con los permisos correspondientes a su función. De esta forma, el equipo puede coordinar tareas, dar seguimiento a lo que ocurre y mantener trazabilidad de cada evento sin depender de canales dispersos o información descentralizada.</p>
+            <h2>{t('proyecto.titulo')}</h2>
+            <p>{t('proyecto.descripcion')}</p>
 
       </div>
 
       <div className="section-container project-info reveal" id='como-funciona'>
-            <h2>Cómo funciona.</h2>
-            <p>
-              Ikaros tiene una arquitectura cliente-servidor con tres capas. El cliente web está construido en React, y se comunica vía HTTP con un gateway en Java Spring Boot, que actúa de intermediario. Este gateway traduce cada petición HTTP en un mensaje de texto y lo envía al servidor de negocio a través de un socket TCP, usando un protocolo de aplicación propio (formato OPERACION|token|param1|param2|...).
-              El servidor —escrito en Java nativo, sin frameworks— es el corazón del sistema: valida sesiones y permisos por rol, procesa cada operación (registrar tripulantes, gestionar misiones, registrar eventos, etc.) y devuelve una respuesta en el mismo formato de texto.
-            </p>
+            <h2>{t('comoFunciona.titulo')}</h2>
+            <p>{t('comoFunciona.descripcion')}</p>
 
             <div className="stack">
               <div className="stack-item">
@@ -106,8 +108,8 @@ export function Landing() {
                   </svg>
                 </div>
                 <div className="stack-info">
-                  <span className="stack-label">Cliente web</span>
-                  <span className="stack-desc">React</span>
+                  <span className="stack-label">{t('stack.cliente')}</span>
+                  <span className="stack-desc">{t('stack.clienteDesc')}</span>
                 </div>
               </div>
               <div className="stack-item">
@@ -118,8 +120,8 @@ export function Landing() {
                   
                 </div>
                 <div className="stack-info">
-                  <span className="stack-label">Gateway</span>
-                  <span className="stack-desc">Java + Spring Boot · puente HTTP ↔ socket TCP</span>
+                  <span className="stack-label">{t('stack.gateway')}</span>
+                  <span className="stack-desc">{t('stack.gatewayDesc')}</span>
                 </div>
               </div>
               <div className="stack-item">
@@ -130,35 +132,104 @@ export function Landing() {
                   </svg>
                 </div>
                 <div className="stack-info">
-                  <span className="stack-label">Servidor de negocio</span>
-                  <span className="stack-desc">Java nativo · comunicación por sockets TCP</span>
+                  <span className="stack-label">{t('stack.servidor')}</span>
+                  <span className="stack-desc">{t('stack.servidorDesc')}</span>
                 </div>
               </div>
               <div className="stack-item">
                 <div className="stack-icon">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M23.157 4.412c-.676.284-.79.31-1.673.372-.65.045-.757.057-1.212.209-.75.246-1.395.75-2.02 1.59-.296.398-1.249 1.913-1.249 1.988 0 .057-.65.998-.915 1.32-.574.713-1.08 1.079-2.14 1.59-.77.36-1.224.524-4.102 1.477-1.073.353-2.133.738-2.367.864-.852.449-1.515 1.036-2.203 1.938-1.003 1.32-.972 1.313-3.042.947a12.264 12.264 0 00-.675-.063c-.644-.05-1.023.044-1.332.334L0 17.193l.177.088c.094.05.353.234.561.398.215.17.461.347.55.391.088.044.17.088.183.101.012.013-.089.17-.228.353-.435.581-.593.871-.574 1.048.019.164.032.17.43.17.517-.006.826-.056 1.261-.208.65-.233 2.058-.94 2.784-1.4.776-.5 1.717-.998 1.956-1.042.082-.02.354-.07.594-.114.58-.107 1.464-.095 2.587.05.108.013.373.045.6.064.227.025.43.057.454.076.026.012.474.037.998.056.934.026 1.104.007 1.3-.189.126-.133.385-.631.498-.985.209-.643.417-.921.366-.492-.113.966-.322 1.692-.713 2.411-.259.499-.663 1.092-.934 1.395-.322.347-.315.36.088.315.619-.063 1.471-.397 2.096-.82.827-.562 1.647-1.691 2.19-3.03.107-.27.22-.22.183.083-.013.094-.038.315-.057.498l-.031.328.353-.202c.833-.48 1.414-1.262 2.127-2.884.227-.518.877-2.922 1.073-3.976a9.64 9.64 0 01.271-1.042c.127-.429.196-.555.48-.858.183-.19.625-.555.978-.808.72-.505.953-.75 1.187-1.205.208-.417.284-1.13.132-1.357-.132-.202-.284-.196-.763.006Z" fill="white"/>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
                   </svg>
                 </div>
                 <div className="stack-info">
-                  <span className="stack-label">Base de datos</span>
-                  <span className="stack-desc">MariaDB</span>
+                  <span className="stack-label">{t('stack.persistencia')}</span>
+                  <span className="stack-desc">{t('stack.persistenciaDesc')}</span>
                 </div>
               </div>
             </div>
 
-            <h3>Evolución del proyecto</h3>
-            <p>
-              La primera versión del servidor procesa una conexión a la vez —acepta un cliente, atiende sus solicitudes, y solo entonces pasa al siguiente— y usa una única conexión a la base de datos, compartida y sin sincronización. Funciona, pero no escala: dos clientes en simultáneo pueden generar resultados inconsistentes.
-              Por eso el equipo está migrando a una segunda versión con concurrencia real, donde cada conexión se atiende en su propio hilo (o mediante un thread pool), y la persistencia se mueve de MariaDB a archivos sincronizados entre sí, eliminando la dependencia de un motor de base de datos externo.
-            </p>
+            <h3>{t('funcionalidades.titulo')}</h3>
+            <div className="features-grid">
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.tripulantes')}</span>
+                <span className="feature-desc">{t('funcionalidades.tripulantesDesc')}</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.misiones')}</span>
+                <span className="feature-desc">{t('funcionalidades.misionesDesc')}</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.eventos')}</span>
+                <span className="feature-desc">{t('funcionalidades.eventosDesc')}</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.roles')}</span>
+                <span className="feature-desc">{t('funcionalidades.rolesDesc')}</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.logs')}</span>
+                <span className="feature-desc">{t('funcionalidades.logsDesc')}</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                </div>
+                <span className="feature-label">{t('funcionalidades.cuentas')}</span>
+                <span className="feature-desc">{t('funcionalidades.cuentasDesc')}</span>
+              </div>
+            </div>
 
+            <h3>{t('evolucion.titulo')}</h3>
+            <p>{t('evolucion.parrafo1')}</p>
+            <p>{t('evolucion.parrafo2')}</p>
 
       </div>
       <div className="separator"></div>
 
       <div className="section-container team-section reveal" id='equipo'>
-            <h2>Conoce al equipo</h2>
+            <h2>{t('equipo.titulo')}</h2>
             <div className="team-grid">
               <div className="team-card reveal-card">
                 <div className="team-avatar">
@@ -166,9 +237,7 @@ export function Landing() {
                 </div>
                 <div className="team-card-body">
                   <span className="team-name">Gael Schenone</span>
-                  <p className="team-desc">
-                    Desarrollo del cliente en React JS y Springboot, diseño de UI/UX en figma.
-                  </p>
+                  <p className="team-desc">{t('equipo.gael')}</p>
                   <div className="team-links">
                     <a href="https://github.com/GaelSchenone" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
@@ -185,24 +254,19 @@ export function Landing() {
 
               <div className="team-card reveal-card">
                 <div className="team-avatar">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <img src="/Imgs/team/LucaGuarna.png" alt="Luca Guarna" className="team-img" />
                 </div>
                 <div className="team-card-body">
-                  <span className="team-name">Nombre del integrante</span>
-                  <p className="team-desc">
-                    Descripción de su rol en el proyecto.
-                  </p>
+                  <span className="team-name">Luca Guarna</span>
+                  <p className="team-desc">{t('equipo.luca')}</p>
                   <div className="team-links">
-                    <a href="#" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/LucaGMB" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
                     </a>
-                    <a href="#" className="team-link" title="LinkedIn" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/lucaguarna/" className="team-link" title="LinkedIn" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                     </a>
-                    <a href="#" className="team-link" title="Portfolio" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.lucagmb.com.ar/" className="team-link" title="Portfolio" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                     </a>
                   </div>
@@ -211,25 +275,17 @@ export function Landing() {
 
               <div className="team-card reveal-card">
                 <div className="team-avatar">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <img src="/Imgs/team/EmilianoMontero.png" alt="Emiliano Montero" className="team-img" />
                 </div>
                 <div className="team-card-body">
-                  <span className="team-name">Nombre del integrante</span>
-                  <p className="team-desc">
-                    Descripción de su rol en el proyecto.
-                  </p>
+                  <span className="team-name">Emiliano Montero</span>
+                  <p className="team-desc">{t('equipo.emiliano')}</p>
                   <div className="team-links">
-                    <a href="#" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/ECubeCode" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
                     </a>
-                    <a href="#" className="team-link" title="LinkedIn" target="_blank" rel="noopener noreferrer">
+                    <a href="https://www.linkedin.com/in/emiliano-gael-montero-ceballos-5709083b8/" className="team-link" title="LinkedIn" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                    </a>
-                    <a href="#" className="team-link" title="Portfolio" target="_blank" rel="noopener noreferrer">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                     </a>
                   </div>
                 </div>
@@ -237,16 +293,11 @@ export function Landing() {
 
               <div className="team-card reveal-card">
                 <div className="team-avatar">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <img src="/Imgs/team/JuanAlmaraz.jpeg" alt="Juan Almaraz" className="team-img" />
                 </div>
                 <div className="team-card-body">
-                  <span className="team-name">Nombre del integrante</span>
-                  <p className="team-desc">
-                    Descripción de su rol en el proyecto.
-                  </p>
+                  <span className="team-name">Juan Almaraz</span>
+                  <p className="team-desc">{t('equipo.juan')}</p>
                   <div className="team-links">
                     <a href="#" className="team-link" title="GitHub" target="_blank" rel="noopener noreferrer">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
@@ -263,9 +314,6 @@ export function Landing() {
             </div>
       </div>
 
-      <div className="separator"></div>
-
-
       <footer className="landing-footer reveal">
         <div className="footer-content">
           <div className="footer-brand">
@@ -274,15 +322,14 @@ export function Landing() {
           </div>
 
           <div className="footer-links">
-            <span className="footer-heading">Navegación</span>
-            <a href="#proyecto" onClick={(e) => { e.preventDefault(); scrollTo('proyecto') }}>Proyecto</a>
-            <a href="#como-funciona" onClick={(e) => { e.preventDefault(); scrollTo('como-funciona') }}>Cómo funciona</a>
-            <a href="#equipo" onClick={(e) => { e.preventDefault(); scrollTo('equipo') }}>Equipo</a>
-            <a href="#capturas" onClick={(e) => { e.preventDefault(); scrollTo('capturas') }}>Capturas</a>
+            <span className="footer-heading">{t('footer.navegacion')}</span>
+            <a href="#proyecto" onClick={(e) => { e.preventDefault(); scrollTo('proyecto') }}>{t('nav.proyecto')}</a>
+            <a href="#como-funciona" onClick={(e) => { e.preventDefault(); scrollTo('como-funciona') }}>{t('nav.comoFunciona')}</a>
+            <a href="#equipo" onClick={(e) => { e.preventDefault(); scrollTo('equipo') }}>{t('nav.equipo')}</a>
           </div>
 
           <div className="footer-links">
-            <span className="footer-heading">Links</span>
+            <span className="footer-heading">{t('footer.links')}</span>
         
             <a href="https://github.com/GreatXLabs" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
@@ -292,8 +339,8 @@ export function Landing() {
         </div>
 
         <div className="footer-bottom">
-          <span>© {new Date().getFullYear()} Ikaros. Todos los derechos reservados.</span>
-          <span>Hecho por GreatXLabs</span>s
+          <span>© {new Date().getFullYear()} Ikaros. {t('footer.derechos')}</span>
+          <span>{t('footer.hecho')}</span>
         </div>
       </footer>
     </div>

@@ -1,8 +1,6 @@
 package com.greatxlabs.ikaros.ikaros_gateway.controller;
 
 import com.greatxlabs.ikaros.ikaros_gateway.dto.RespuestaProtocolo;
-import com.greatxlabs.ikaros.ikaros_gateway.service.RegistradorLogs;
-import com.greatxlabs.ikaros.ikaros_gateway.service.SesionGateway;
 import com.greatxlabs.ikaros.ikaros_gateway.socket.ClienteSocketIkaros;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +12,9 @@ import java.util.Map;
 public class ControladorUsuarios {
 
     private final ClienteSocketIkaros clienteSocket;
-    private final RegistradorLogs registradorLogs;
-    private final SesionGateway sesionGateway;
 
-    public ControladorUsuarios(ClienteSocketIkaros clienteSocket, RegistradorLogs registradorLogs, SesionGateway sesionGateway) {
+    public ControladorUsuarios(ClienteSocketIkaros clienteSocket) {
         this.clienteSocket = clienteSocket;
-        this.registradorLogs = registradorLogs;
-        this.sesionGateway = sesionGateway;
     }
 
     @GetMapping
@@ -41,13 +35,6 @@ public class ControladorUsuarios {
                 + cuerpo.get("rol");
         RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
-        if (respuesta.esExitosa()) {
-            Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-            if (usuarioID != null) {
-                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_ALTA_USUARIO, RegistradorLogs.ENT_USUARIO, 0);
-            }
-        }
-
         return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
     }
 
@@ -63,13 +50,6 @@ public class ControladorUsuarios {
                 + cuerpo.get("rol");
         RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
-        if (respuesta.esExitosa()) {
-            Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-            if (usuarioID != null) {
-                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_USUARIO, RegistradorLogs.ENT_USUARIO, 0);
-            }
-        }
-
         return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
     }
 
@@ -78,13 +58,6 @@ public class ControladorUsuarios {
     public ResponseEntity<Map<String, Object>> darDeBajaUsuario(@PathVariable int id, @RequestHeader("Authorization") String token) {
         String solicitud = "BAJA_USUARIO|" + token + "|" + id;
         RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
-
-        if (respuesta.esExitosa()) {
-            Integer usuarioID = sesionGateway.obtenerUsuarioID(token);
-            if (usuarioID != null) {
-                registradorLogs.registrar(usuarioID, RegistradorLogs.ACC_MODIFICAR_USUARIO, RegistradorLogs.ENT_USUARIO, 0);
-            }
-        }
 
         return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
     }

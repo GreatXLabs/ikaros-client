@@ -176,8 +176,13 @@ export function TripulanteView() {
   }
 
   const handleDelete = async () => {
-    await bajaTripulante(id)
-    navigate('/Tripulantes')
+    setShowDeleteConfirm(false)
+    const res = await bajaTripulante(id)
+    if (res?.success) {
+      navigate('/Tripulantes')
+    } else {
+      setError(res?.message || 'Error al dar de baja el tripulante')
+    }
   }
 
   if (loading) {
@@ -241,6 +246,8 @@ export function TripulanteView() {
               {ellipsisItems.length > 0 && <EllipsisMenu items={ellipsisItems} />}
             </div>
           </div>
+
+          {error && <div className="form-error">{error}</div>}
 
           <div className="hero-tripulante ">
             {imageUrl ? (

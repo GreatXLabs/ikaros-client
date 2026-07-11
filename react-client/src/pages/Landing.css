@@ -1,6 +1,5 @@
 .landing-page-wrapper{
   padding: 0 clamp(20px, 6vw, 150px);
-  overflow-x: hidden;
 }
 
 
@@ -90,7 +89,7 @@ p{
 
 }
 
-.hero{
+.landing-page-wrapper .hero{
   flex: 1;
   padding: clamp(20px, 4vh, 50px) 0;
   display: flex;
@@ -101,7 +100,7 @@ p{
   overflow-x: hidden;
 }
 
-.hero h1{
+.landing-page-wrapper .hero h1{
   font-size: clamp(2.5rem, 6vw, 8rem);
   max-width: 100%;
   overflow-wrap: break-word;
@@ -196,6 +195,60 @@ p{
   color: rgba(255, 255, 255, 0.9);
 }
 
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 10px 0 20px 0;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 20px;
+  background: rgba(36, 36, 36, 0.2);
+  border: 1px solid rgba(153, 153, 153, 0.15);
+  border-radius: 14px;
+  backdrop-filter: blur(5px);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.feature-item:hover {
+  border-color: rgba(153, 153, 153, 0.35);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4px;
+}
+
+.feature-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.feature-label {
+  font-family: 'Funnel Display';
+  font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.feature-desc {
+  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+}
+
 .team-info{
   background: rgba(36, 36, 36, 0.2);
   border: 1px solid rgba(153, 153, 153, 0.2);
@@ -288,7 +341,7 @@ p{
   line-height: 1.5;
   width: 100% !important;
   margin-top: 4px;
-  text-align: justify;
+  text-align: center;
 }
 
 .team-links {
@@ -386,6 +439,7 @@ p{
 }
 
 .footer-bottom {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
