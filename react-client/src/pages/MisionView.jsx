@@ -107,7 +107,7 @@ export function MisionView() {
 			if (tripRes.success && tripRes.data) {
 				const tripItems = tripRes.data.split(';').map(item => {
 					const parts = item.split('~')
-					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', Imagen: parts[3] || '', Estado: parts[4] || '' }
+					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', Imagen: parts[3] || '', EstadoNombre: parts[4] || '' }
 				}).filter(t => t.TripulanteID)
 				setTripulantes(tripItems)
 			}

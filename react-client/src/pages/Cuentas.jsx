@@ -155,7 +155,6 @@ export function Cuentas() {
             <div className="cuenta-list-header">
               <span>Id</span>
               <span>Usuario</span>
-              <span>Contraseña</span>
               <span>Rol</span>
               <span>Estado</span>
             </div>
