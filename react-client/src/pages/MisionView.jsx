@@ -107,9 +107,23 @@ export function MisionView() {
 			if (tripRes.success && tripRes.data) {
 				const tripItems = tripRes.data.split(';').map(item => {
 					const parts = item.split('~')
-					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', Imagen: parts[3] || '', Estado: parts[4] || '' }
+					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', EstadoNombre: parts[3] || '' }
 				}).filter(t => t.TripulanteID)
-				setTripulantes(tripItems)
+
+				// Fetch individual tripulante data to get images
+				const tripulantesConImagen = await Promise.all(
+					tripItems.map(async (t) => {
+						try {
+							const res = await api.consultarTripulante(t.TripulanteID)
+							if (res.success && res.data) {
+								const parts = res.data.split('|')
+								return { ...t, Imagen: parts[5] || '' }
+							}
+						} catch {}
+						return t
+					})
+				)
+				setTripulantes(tripulantesConImagen)
 			}
 		} catch {
 			setError('Error de conexión con el servidor')

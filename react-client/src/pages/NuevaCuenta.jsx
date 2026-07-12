@@ -51,7 +51,7 @@ export function NuevaCuenta() {
 					api.listarUsuarios()
 				])
 				if (rolesRes.success) {
-					const parsed = parseRoles(rolesRes.data)
+					const parsed = parseRoles(rolesRes.data).filter(r => r.nombre !== 'JEFE')
 					setRoles(parsed)
 					if (parsed.length > 0) {
 						setFormData(prev => ({ ...prev, RolID: parsed[0].id }))

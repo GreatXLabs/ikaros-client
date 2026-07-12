@@ -176,6 +176,13 @@ export async function subirImagenTripulante(file) {
       body: formData,
       signal: controller.signal
     })
+
+    if (res.status === 401) {
+      sessionStorage.removeItem('ikaros_user')
+      window.dispatchEvent(new CustomEvent('auth:expired'))
+      throw new Error('Sesión expirada')
+    }
+
     return res.json()
   } finally {
     clearTimeout(timeout)

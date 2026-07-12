@@ -36,7 +36,7 @@ function parseTripulante(data) {
     altura: parts[4] || '',
     imagen: parts[5] || '',
     fechaNacimiento: parts[6] || '',
-    estadoNombre: parts[7] || 'ACTIVO',
+    estadoNombre: (parts[7] || 'ACTIVO').toUpperCase(),
     sexoNombre: parts[8] || 'Masculino'
   }
 }
