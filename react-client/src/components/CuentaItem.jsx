@@ -5,20 +5,12 @@ import './CuentaItem.css'
 
 export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true, style }) {
   const navigate = useNavigate()
-  const { UsuarioID, Usuario, Clave, RolNombre, EstadoNombre } = cuenta
+  const { UsuarioID, Usuario, RolNombre, EstadoNombre } = cuenta
   const [showMenu, setShowMenu] = useState(false)
   const [menuPos, setMenuPos] = useState({ x: 0, y: 0 })
   const menuRef = useRef(null)
 
   const isInactive = EstadoNombre?.toLowerCase() === 'inactivo'
-
-  const formatClave = (clave) => {
-    if (!clave) return '—'
-    const len = clave.length
-    const visibleChars = Math.min(4, len)
-    const maskedLen = Math.max(3, len - visibleChars)
-    return '*'.repeat(maskedLen) + clave.slice(-visibleChars)
-  }
 
   const handleContextMenu = (e) => {
     if (!canEdit && !canDelete) return
@@ -61,10 +53,9 @@ export function CuentaItem({ cuenta, onDelete, canEdit = true, canDelete = true,
 
   return (
     <>
-      <div className={`cuenta-item${isInactive ? ' cuenta-inactive' : ''}`} style={style} onContextMenu={handleContextMenu}>
+      <div className={`cuenta-item${isInactive ? ' cuenta-inactive' : ''}`} style={style} onClick={handleEdit} onContextMenu={handleContextMenu}>
         <span className="cuenta-cell cell-id">{UsuarioID}</span>
         <span className="cuenta-cell cell-nombre">{Usuario}</span>
-        <span className="cuenta-cell cell-clave">{formatClave(Clave)}</span>
         <span className="cuenta-cell cell-rol">
           <span className={`rol-badge rol-${RolNombre?.toLowerCase()}`}>{RolNombre}</span>
         </span>

@@ -107,9 +107,23 @@ export function MisionView() {
 			if (tripRes.success && tripRes.data) {
 				const tripItems = tripRes.data.split(';').map(item => {
 					const parts = item.split('~')
-					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', Imagen: parts[3] || '', Estado: parts[4] || '' }
+					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', EstadoNombre: parts[3] || '' }
 				}).filter(t => t.TripulanteID)
-				setTripulantes(tripItems)
+
+				// Fetch individual tripulante data to get images
+				const tripulantesConImagen = await Promise.all(
+					tripItems.map(async (t) => {
+						try {
+							const res = await api.consultarTripulante(t.TripulanteID)
+							if (res.success && res.data) {
+								const parts = res.data.split('|')
+								return { ...t, Imagen: parts[5] || '' }
+							}
+						} catch {}
+						return t
+					})
+				)
+				setTripulantes(tripulantesConImagen)
 			}
 		} catch {
 			setError('Error de conexión con el servidor')
@@ -162,40 +176,57 @@ export function MisionView() {
 		eventosEllipsisItems.push({ label: 'Registrar evento', onClick: () => setShowAddEvent(true) })
 	}
 
-	const handlePrepararMision = async () => {
-		await api.actualizarEstadoMision(id, 'PREPARADA')
-		setShowPrepararConfirm(false)
-		loadData()
-	}
+  const handlePrepararMision = async () => {
+    setShowPrepararConfirm(false)
+    const res = await api.actualizarEstadoMision(id, 'PREPARADA')
+    if (res?.success) {
+      loadData()
+    } else {
+      setError(res?.message || 'Error al preparar la misión')
+    }
+  }
 
-	const handleDelete = async () => {
-		await api.actualizarEstadoMision(id, 'CANCELADA')
-		navigate('/Misiones')
-	}
+  const handleDelete = async () => {
+    setShowDeleteConfirm(false)
+    const res = await api.actualizarEstadoMision(id, 'CANCELADA')
+    if (res?.success) {
+      navigate('/Misiones')
+    } else {
+      setError(res?.message || 'Error al cancelar la misión')
+    }
+  }
 
-	const handleStartMission = async () => {
-		let retrasoInicio = null
-		if (mision.fechaInicioEstimada) {
-			const estimada = new Date(mision.fechaInicioEstimada).getTime()
-			const ahora = Date.now()
-			retrasoInicio = Math.round((ahora - estimada) / 1000)
-		}
-		await api.actualizarEstadoMision(id, 'EN CURSO', retrasoInicio, undefined)
-		setShowStartConfirm(false)
-		loadData()
-	}
+  const handleStartMission = async () => {
+    let retrasoInicio = null
+    if (mision.fechaInicioEstimada) {
+      const estimada = new Date(mision.fechaInicioEstimada).getTime()
+      const ahora = Date.now()
+      retrasoInicio = Math.round((ahora - estimada) / 1000)
+    }
+    setShowStartConfirm(false)
+    const res = await api.actualizarEstadoMision(id, 'EN CURSO', retrasoInicio, undefined)
+    if (res?.success) {
+      loadData()
+    } else {
+      setError(res?.message || 'Error al iniciar la misión')
+    }
+  }
 
-	const handleEndMission = async () => {
-		let retrasoFin = null
-		if (mision.fechaFinEstimada) {
-			const estimada = new Date(mision.fechaFinEstimada).getTime()
-			const ahora = Date.now()
-			retrasoFin = Math.round((ahora - estimada) / 1000)
-		}
-		await api.actualizarEstadoMision(id, 'FINALIZADA', undefined, retrasoFin)
-		setShowEndConfirm(false)
-		loadData()
-	}
+  const handleEndMission = async () => {
+    let retrasoFin = null
+    if (mision.fechaFinEstimada) {
+      const estimada = new Date(mision.fechaFinEstimada).getTime()
+      const ahora = Date.now()
+      retrasoFin = Math.round((ahora - estimada) / 1000)
+    }
+    setShowEndConfirm(false)
+    const res = await api.actualizarEstadoMision(id, 'FINALIZADA', undefined, retrasoFin)
+    if (res?.success) {
+      loadData()
+    } else {
+      setError(res?.message || 'Error al finalizar la misión')
+    }
+  }
 
 	const handleAddEvent = async (evento) => {
 		await api.registrarEvento(evento)
@@ -236,7 +267,9 @@ export function MisionView() {
 						</div>
 					</div>
 
-					<div className="hero">
+          {error && <div className="form-error">{error}</div>}
+
+          <div className="hero">
 						<h1 className='mision-title'>{mision.nombre}</h1>
 						<p className="mision-description">{mision.descripcion}</p>
 					</div>

@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react'
-import { login as apiLogin } from '../services/ikarosApi'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { login as apiLogin, checkSession } from '../services/ikarosApi'
 
 const AuthContext = createContext(null)
 
@@ -29,6 +29,32 @@ export function AuthProvider({ children }) {
     return stored ? JSON.parse(stored) : null
   })
 
+  // Clear session when auth:expired event fires (from API interceptor)
+  useEffect(() => {
+    const handleExpired = () => setUser(null)
+    window.addEventListener('auth:expired', handleExpired)
+    return () => window.removeEventListener('auth:expired', handleExpired)
+  }, [])
+
+  // Proactively check session every 5 minutes while logged in
+  useEffect(() => {
+    if (!user?.token) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await checkSession()
+        if (!res.success) {
+          sessionStorage.removeItem('ikaros_user')
+          setUser(null)
+        }
+      } catch {
+        // Network error — ignore, will retry next interval
+      }
+    }, 5 * 60 * 1000)
+
+    return () => clearInterval(interval)
+  }, [user?.token])
+
   useEffect(() => {
     if (user) {
       sessionStorage.setItem('ikaros_user', JSON.stringify(user))
@@ -41,21 +67,26 @@ export function AuthProvider({ children }) {
     try {
       const res = await apiLogin(username, password)
       if (res.success) {
-        setUser({
+        const userData = {
           token: res.token,
           RolNombre: res.rol
-        })
-        return true
+        }
+        setUser(userData)
+        return { ok: true, user: userData }
       }
-      return false
+      return { ok: false, error: res.message || 'Usuario o contraseña incorrectos' }
     } catch {
-      return false
+      return { ok: false, error: 'Error de conexión con el servidor' }
     }
   }
 
-  const logout = () => {
+  const clearSession = useCallback(() => {
     setUser(null)
     sessionStorage.removeItem('ikaros_user')
+  }, [])
+
+  const logout = () => {
+    clearSession()
   }
 
   const role = user?.RolNombre || null

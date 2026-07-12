@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { LogItem } from '../components/LogItem'
 import { DateRangeFilter } from '../components/DateRangeFilter'
+import { Pagination } from '../components/Pagination'
 import * as api from '../services/ikarosApi'
 import './Logs.css'
 
@@ -18,10 +19,22 @@ function parseLogs(data) {
 			accion: parts[3] || '',
 			tipoEntidad: parts[4] || '',
 			entidadID: parts[5] || '',
-			fechaHora: parts[6] || ''
+			fechaHora: parts[6] || '',
+			descripcion: parts[7] || ''
 		}
 	}).filter(l => l.id)
 }
+
+const ALL_ACCIONES = [
+	'Crear Mision', 'Modificar Mision', 'Cancelar Mision', 'Finalizar Mision',
+	'Asignar Trip. Mision', 'Registrar Evento', 'Desestimar Evento',
+	'Alta Tripulante', 'Modificar Tripulante', 'Baja Tripulante',
+	'Asignar Aptitud', 'Modificar Calificacion',
+	'Alta Usuario', 'Modificar Usuario',
+	'Inicio de Sesion', 'Cierre de Sesion'
+]
+
+const ALL_ENTIDADES = ['Mision', 'Tripulante', 'Evento', 'Usuario', 'Capacidad']
 
 export function Logs() {
 	const [searchTerm, setSearchTerm] = useState('')
@@ -32,6 +45,11 @@ export function Logs() {
 			key: 'selection'
 		}
 	])
+	const [selectedAccion, setSelectedAccion] = useState('')
+	const [selectedEntidad, setSelectedEntidad] = useState('')
+	const [sortBy, setSortBy] = useState('fecha-desc')
+	const [page, setPage] = useState(1)
+	const [pageSize, setPageSize] = useState(15)
 	const [logsData, setLogsData] = useState([])
 	const [loading, setLoading] = useState(true)
 
@@ -51,28 +69,57 @@ export function Logs() {
 		setLoading(false)
 	}
 
-	const filteredLogs = logsData.filter(log => {
-		const matchesSearch =
-			log.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			log.accion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			log.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			log.entidadID.toString().includes(searchTerm)
+	const filteredLogs = useMemo(() => {
+		let result = logsData.filter(log => {
+			const matchesSearch =
+				log.usuario.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				log.accion.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				log.rol.toLowerCase().includes(searchTerm.toLowerCase()) ||
+				log.entidadID.toString().includes(searchTerm) ||
+			log.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
 
-		const start = dateRange[0].startDate
-		const end = dateRange[0].endDate
-		if (!start && !end) return matchesSearch
+			const start = dateRange[0].startDate
+			const end = dateRange[0].endDate
+			let matchesDate = true
+			if (start || end) {
+				const logDate = new Date(log.fechaHora)
+				if (!isNaN(logDate.getTime())) {
+					const startDate = start ? new Date(start.setHours(0, 0, 0, 0)) : null
+					const endDate = end ? new Date(end.setHours(23, 59, 59, 999)) : null
+					if (startDate && logDate < startDate) matchesDate = false
+					if (endDate && logDate > endDate) matchesDate = false
+				}
+			}
 
-		const logDate = new Date(log.fechaHora)
-		if (isNaN(logDate.getTime())) return matchesSearch
+			const matchesAccion = selectedAccion === '' || log.accion === selectedAccion
+			const matchesEntidad = selectedEntidad === '' || log.tipoEntidad === selectedEntidad
 
-		const startDate = start ? new Date(start.setHours(0, 0, 0, 0)) : null
-		const endDate = end ? new Date(end.setHours(23, 59, 59, 999)) : null
+			return matchesSearch && matchesDate && matchesAccion && matchesEntidad
+		})
 
-		if (startDate && logDate < startDate) return false
-		if (endDate && logDate > endDate) return false
+		result.sort((a, b) => {
+			const dateA = new Date(a.fechaHora).getTime()
+			const dateB = new Date(b.fechaHora).getTime()
+			switch (sortBy) {
+				case 'fecha-asc': return dateA - dateB
+				case 'fecha-desc': return dateB - dateA
+				case 'usuario': return a.usuario.localeCompare(b.usuario)
+				default: return dateB - dateA
+			}
+		})
 
-		return matchesSearch
-	})
+		return result
+	}, [logsData, searchTerm, dateRange, selectedAccion, selectedEntidad, sortBy])
+
+	const totalPages = Math.max(1, Math.ceil(filteredLogs.length / pageSize))
+	const paginatedLogs = filteredLogs.slice((page - 1) * pageSize, page * pageSize)
+
+	useEffect(() => {
+		setPage(1)
+	}, [searchTerm, dateRange, selectedAccion, selectedEntidad, sortBy])
+
+	const uniqueAcciones = [...new Set(logsData.map(l => l.accion).filter(Boolean))].sort()
+	const uniqueEntidades = [...new Set(logsData.map(l => l.tipoEntidad).filter(Boolean))].sort()
 
 	return (
 		<>
@@ -91,22 +138,62 @@ export function Logs() {
 							/>
 						</div>
 						<div className="filters-container">
+							<select
+								className="filter-select"
+								value={selectedAccion}
+								onChange={(e) => setSelectedAccion(e.target.value)}
+							>
+								<option value="">Todas las acciones</option>
+								{uniqueAcciones.map(accion => (
+									<option key={accion} value={accion}>{accion}</option>
+								))}
+							</select>
+
+							<select
+								className="filter-select"
+								value={selectedEntidad}
+								onChange={(e) => setSelectedEntidad(e.target.value)}
+							>
+								<option value="">Todas las entidades</option>
+								{uniqueEntidades.map(ent => (
+									<option key={ent} value={ent}>{ent}</option>
+								))}
+							</select>
+
 							<DateRangeFilter
 								dateRange={dateRange}
 								onDateChange={setDateRange}
 							/>
+
+							<select
+								className="filter-select"
+								value={sortBy}
+								onChange={(e) => setSortBy(e.target.value)}
+							>
+								<option value="fecha-desc">Más reciente</option>
+								<option value="fecha-asc">Más antiguo</option>
+								<option value="usuario">Por usuario</option>
+							</select>
 						</div>
 					</div>
 					<div className="logs-list">
 						{loading ? (
 							<div className="no-results">Cargando logs...</div>
-						) : filteredLogs.map((log, index) => (
+						) : paginatedLogs.map((log, index) => (
 							<LogItem key={log.id} log={log} style={{ '--index': index }} />
 						))}
 						{!loading && filteredLogs.length === 0 && (
 							<div className="no-results">No se encontraron logs</div>
 						)}
 					</div>
+
+					<Pagination
+						currentPage={page}
+						totalPages={totalPages}
+						pageSize={pageSize}
+						onPageChange={setPage}
+						onPageSizeChange={setPageSize}
+					/>
 				</div>
 			</div>
 		</>

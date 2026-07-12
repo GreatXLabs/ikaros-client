@@ -26,10 +26,6 @@ replay_pid*
 # Separate repos
 ikaros-server/
 
-# Claude
-.claude/
-CLAUDE.md
-
 # Uploads
 ikaros-gateway/uploads/
 

@@ -25,7 +25,7 @@ export function Header() {
 	}
 
 	return (
-		<header>
+		<header className='header-app'>
 			<Logo />
 
 			<div className="tabs">

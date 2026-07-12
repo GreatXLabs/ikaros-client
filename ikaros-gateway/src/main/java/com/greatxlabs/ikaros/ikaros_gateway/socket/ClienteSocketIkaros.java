@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 @Component
@@ -22,9 +23,12 @@ public class ClienteSocketIkaros {
     }
 
     public String enviarSolicitud(String mensaje) {
-        try (Socket socket = new Socket(host, puerto);
-             BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintWriter salida = new PrintWriter(socket.getOutputStream(), true)) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(host, puerto), 5000);
+            socket.setSoTimeout(5000);
+
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
 
             salida.println(mensaje);
             return entrada.readLine();

@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Background } from '../components/Background'
 import { Header } from '../components/Header'
 import { EventItem } from '../components/EventItem'
 import { AddEventForm } from '../components/AddEventForm'
+import { DateRangeFilter } from '../components/DateRangeFilter'
+import { Pagination } from '../components/Pagination'
 import { ConfirmModal } from '../components/ConfirmModal'
 import { useAuth } from '../contexts/AuthContext'
 import { registrarEvento, bajaEvento, listarMisiones, listarTodosEventos } from '../services/ikarosApi'
@@ -37,6 +39,12 @@ export function Eventos() {
   const { hasPermission } = useAuth()
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedMision, setSelectedMision] = useState('')
+  const [dateRange, setDateRange] = useState([
+    { startDate: null, endDate: null, key: 'selection' }
+  ])
+  const [sortBy, setSortBy] = useState('fecha-desc')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(15)
   const [showAddEvent, setShowAddEvent] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [misionesList, setMisionesList] = useState([])
@@ -68,15 +76,52 @@ export function Eventos() {
 
   const misiones = misionesList.map(m => m.nombre)
 
-  const filteredEventos = eventosData.filter(event => {
-    const matchesSearch =
-      event.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
+  const processedEventos = useMemo(() => {
+    let result = eventosData.filter(event => {
+      const matchesSearch =
+        event.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        event.descripcion.toLowerCase().includes(searchTerm.toLowerCase())
 
-    const matchesMision = !selectedMision || event.misionNombre === selectedMision
+      const matchesMision = !selectedMision || event.misionNombre === selectedMision
 
-    return matchesSearch && matchesMision
-  })
+      const rangeStart = dateRange[0].startDate
+      const rangeEnd = dateRange[0].endDate
+      let matchesDate = true
+      if (rangeStart || rangeEnd) {
+        const eventDate = new Date(event.fecha)
+        if (!isNaN(eventDate.getTime())) {
+          const dayStart = rangeStart ? new Date(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate()) : null
+          const dayEnd = rangeEnd ? new Date(rangeEnd.getFullYear(), rangeEnd.getMonth(), rangeEnd.getDate(), 23, 59, 59, 999) : null
+          if (dayStart && eventDate < dayStart) matchesDate = false
+          if (dayEnd && eventDate > dayEnd) matchesDate = false
+        }
+      }
+
+      return matchesSearch && matchesMision && matchesDate
+    })
+
+    result.sort((a, b) => {
+      const dateA = new Date(a.fecha).getTime()
+      const dateB = new Date(b.fecha).getTime()
+      switch (sortBy) {
+        case 'fecha-asc': return dateA - dateB
+        case 'fecha-desc': return dateB - dateA
+        case 'titulo-asc': return a.titulo.localeCompare(b.titulo)
+        case 'titulo-desc': return b.titulo.localeCompare(a.titulo)
+        case 'mision': return a.misionNombre.localeCompare(b.misionNombre)
+        default: return dateB - dateA
+      }
+    })
+
+    return result
+  }, [eventosData, searchTerm, selectedMision, dateRange, sortBy])
+
+  const totalPages = Math.max(1, Math.ceil(processedEventos.length / pageSize))
+  const paginatedEventos = processedEventos.slice((page - 1) * pageSize, page * pageSize)
+
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm, selectedMision, dateRange, sortBy])
 
   const handleAddEvent = async (evento) => {
     await registrarEvento(evento)
@@ -115,6 +160,17 @@ export function Eventos() {
             <div className="filters-container">
               <select
                 className="filter-select"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="fecha-desc">Más reciente</option>
+                <option value="fecha-asc">Más antiguo</option>
+                <option value="titulo-asc">Título A-Z</option>
+                <option value="titulo-desc">Título Z-A</option>
+                <option value="mision">Por misión</option>
+              </select>
+              <select
+                className="filter-select"
                 value={selectedMision}
                 onChange={(e) => setSelectedMision(e.target.value)}
               >
@@ -123,6 +179,10 @@ export function Eventos() {
                   <option key={mision} value={mision}>{mision}</option>
                 ))}
               </select>
+              <DateRangeFilter
+                dateRange={dateRange}
+                onDateChange={setDateRange}
+              />
               {hasPermission('eventos:create') && (
                 <button className="add-event-btn" onClick={() => setShowAddEvent(true)}>
                   + Evento
@@ -133,10 +193,10 @@ export function Eventos() {
           <div className="eventos-list">
             {loading ? (
               <div className="no-results">Cargando eventos...</div>
-            ) : filteredEventos.length === 0 ? (
+            ) : paginatedEventos.length === 0 ? (
               <div className="no-results">No hay eventos registrados</div>
             ) : (
-              filteredEventos.map((event, index) => (
+              paginatedEventos.map((event, index) => (
                 <EventItem
                   key={event.id}
                   event={event}
@@ -147,6 +207,14 @@ export function Eventos() {
               ))
             )}
           </div>
+
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={setPageSize}
+          />
         </div>
       </div>
 
