@@ -3,6 +3,7 @@ package com.greatxlabs.ikaros.ikaros_gateway.controller;
 import com.greatxlabs.ikaros.ikaros_gateway.dto.RespuestaProtocolo;
 import com.greatxlabs.ikaros.ikaros_gateway.service.MinioService;
 import com.greatxlabs.ikaros.ikaros_gateway.socket.ClienteSocketIkaros;
+import com.greatxlabs.ikaros.ikaros_gateway.util.SanitizadorProtocolo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,7 +95,7 @@ public class ControladorTripulantes {
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> registrarTripulante(@RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "REGISTRAR_TRIPULANTE|" + token + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + cuerpo.getOrDefault("nombre", "") + "|" + cuerpo.getOrDefault("apellido", "") + "|" + cuerpo.getOrDefault("imagen", "");
+		String solicitud = "REGISTRAR_TRIPULANTE|" + token + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("nombre", "")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("apellido", "")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("imagen", ""));
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
@@ -102,7 +103,7 @@ public class ControladorTripulantes {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> modificarTripulante(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "MODIFICAR_TRIPULANTE|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "ACTIVO") + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + cuerpo.getOrDefault("nombre", "") + "|" + cuerpo.getOrDefault("apellido", "") + "|" + cuerpo.getOrDefault("imagen", "");
+		String solicitud = "MODIFICAR_TRIPULANTE|" + token + "|" + id + "|" + cuerpo.getOrDefault("estado", "ACTIVO") + "|" + cuerpo.getOrDefault("sexo", "M") + "|" + cuerpo.get("fechaNacimiento") + "|" + cuerpo.get("peso") + "|" + cuerpo.get("altura") + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("nombre", "")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("apellido", "")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.getOrDefault("imagen", ""));
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
