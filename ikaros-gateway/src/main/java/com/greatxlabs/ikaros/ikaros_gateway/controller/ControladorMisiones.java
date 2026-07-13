@@ -1,6 +1,7 @@
 package com.greatxlabs.ikaros.ikaros_gateway.controller;
 
 import com.greatxlabs.ikaros.ikaros_gateway.dto.RespuestaProtocolo;
+import com.greatxlabs.ikaros.ikaros_gateway.util.SanitizadorProtocolo;
 import com.greatxlabs.ikaros.ikaros_gateway.socket.ClienteSocketIkaros;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class ControladorMisiones {
 
 	@PostMapping
 	public ResponseEntity<Map<String, Object>> registrarMision(@RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "REGISTRAR_MISION|" + token + "|1|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
+		String solicitud = "REGISTRAR_MISION|" + token + "|1|" + SanitizadorProtocolo.sanitizar(cuerpo.get("nombre")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.get("descripcion")) + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());
@@ -48,7 +49,7 @@ public class ControladorMisiones {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Map<String, Object>> modificarMision(@PathVariable int id, @RequestBody Map<String, String> cuerpo, @RequestHeader("Authorization") String token) {
-		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + cuerpo.get("nombre") + "|" + cuerpo.get("descripcion") + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
+		String solicitud = "MODIFICAR_MISION|" + token + "|" + id + "|" + SanitizadorProtocolo.sanitizar(cuerpo.get("nombre")) + "|" + SanitizadorProtocolo.sanitizar(cuerpo.get("descripcion")) + "|" + cuerpo.get("fechaInicio") + "|" + cuerpo.get("fechaFin");
 		RespuestaProtocolo respuesta = RespuestaProtocolo.desdeRespuestaCruda(clienteSocket.enviarSolicitud(solicitud));
 
 		return ResponseEntity.ok(respuesta.aCuerpoRespuesta());

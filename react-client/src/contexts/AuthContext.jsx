@@ -29,14 +29,13 @@ export function AuthProvider({ children }) {
     return stored ? JSON.parse(stored) : null
   })
 
-  // Clear session when auth:expired event fires (from API interceptor)
+  // limpio la sesión cuando se dispara auth:expired
   useEffect(() => {
     const handleExpired = () => setUser(null)
     window.addEventListener('auth:expired', handleExpired)
     return () => window.removeEventListener('auth:expired', handleExpired)
   }, [])
 
-  // Proactively check session every 5 minutes while logged in
   useEffect(() => {
     if (!user?.token) return
 
@@ -48,7 +47,7 @@ export function AuthProvider({ children }) {
           setUser(null)
         }
       } catch {
-        // Network error — ignore, will retry next interval
+        // error de red, lo ignoro y reintenta solo
       }
     }, 5 * 60 * 1000)
 
