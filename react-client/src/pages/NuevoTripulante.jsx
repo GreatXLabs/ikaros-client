@@ -258,7 +258,7 @@ export function NuevoTripulante() {
               </div>
               <div className="form-group">
                 <label className="form-label">Fecha de nacimiento</label>
-                <input type="date" name="FechaDeNacimiento" max={new Date().toISOString().split("T")[0]} className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
+                <input type="date" lang="es" name="FechaDeNacimiento" max={new Date().toISOString().split("T")[0]} className="form-input" value={formData.FechaDeNacimiento} onChange={handleChange} />
               </div>
             </div>
 
@@ -308,6 +308,7 @@ export function NuevoTripulante() {
                   <div className="form-group aptitud-fecha-group">
                     <input
                       type="date"
+                      lang="es"
                       className="form-input"
                       value={aptitud.fechaExamen}
                       onChange={(e) => handleAptitudChange(index, 'fechaExamen', e.target.value)}

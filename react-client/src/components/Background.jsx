@@ -6,7 +6,6 @@ export function Background() {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      // Calculamos la posición relativa al centro de la pantalla
       const x = (e.clientX - window.innerWidth / 2) / 50;
       const y = (e.clientY - window.innerHeight / 2) / 50;
       setPosition({ x, y });

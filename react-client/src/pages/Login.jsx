@@ -21,7 +21,7 @@ export function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  // Redirect to dashboard if already logged in
+  // si ya está logueado lo mando al home
   useEffect(() => {
     if (user) {
       const home = DEFAULT_ROUTES[user.RolNombre?.toUpperCase()] || '/Misiones'
