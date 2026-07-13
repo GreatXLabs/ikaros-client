@@ -110,7 +110,6 @@ export function MisionView() {
 					return { TripulanteID: parseInt(parts[0]) || 0, Nombre: parts[1] || '', Apellido: parts[2] || '', EstadoNombre: parts[3] || '' }
 				}).filter(t => t.TripulanteID)
 
-				// Fetch individual tripulante data to get images
 				const tripulantesConImagen = await Promise.all(
 					tripItems.map(async (t) => {
 						try {
