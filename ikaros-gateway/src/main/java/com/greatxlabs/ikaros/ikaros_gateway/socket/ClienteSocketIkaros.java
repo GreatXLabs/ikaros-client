@@ -24,8 +24,8 @@ public class ClienteSocketIkaros {
 
     public String enviarSolicitud(String mensaje) {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host, puerto), 15000);
-            socket.setSoTimeout(15000);
+            socket.connect(new InetSocketAddress(host, puerto), 25000);
+            socket.setSoTimeout(25000);
 
             BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
